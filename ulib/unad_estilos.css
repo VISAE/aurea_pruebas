@@ -1,0 +1,861 @@
+/* 
+CSS Document 
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2014 - 2015 ---
+--- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
+*/
+
+::-webkit-input-placeholder{color:#FF0000;}
+:-moz-placeholder{color: #FF0000;}
+::-moz-placeholder{color: #FF0000;}
+::-ms-input-placeholder{color: #FF0000;}
+
+.alarma{
+	font-size:22px;
+	font-weight:300;
+	margin:0 0 0 0;
+	position: fixed;
+	z-index: 500;
+	bottom: 0;
+	padding: 4px 0;
+	width: 100%;
+	color: #FFF;
+    background: #A70707;
+	border-top: 1px solid #32B3FF;
+	}
+
+.areaform{
+	padding:0 5px;
+}
+.areatitulo{
+	float:left;
+	display:block;
+	height:26px;
+	padding-left:8px;
+	background:url('../ulib/img/cabeFizq.gif') transparent 0 0 no-repeat;
+}
+.areatitulo h3{
+	float:left;
+	display:block;
+	margin:0;
+	padding:4px 8px 4px 0;
+	color:#FFF;
+	background:url('../ulib/img/cabeFder.gif') transparent right top no-repeat;
+}
+.alarma_azul{
+    background: #1F487C;
+	border-top: 1px solid #32B3FF;
+	bottom: 0;
+	color: #FFF;
+	margin:0 0 0 0;
+	padding: 4px 0;
+	position: fixed;
+	text-align:center;
+	width: 100%;
+	z-index: 500;
+	}
+.alarma_azul div{
+	padding: 0 0;
+	}
+.alarma_roja{
+    background: #A70707;
+	border-top: 1px solid #32B3FF;
+	bottom: 0;
+	color: #FFF;
+	margin:0 0 0 0;
+	padding: 4px 0;
+	position: fixed;
+	text-align:center;
+	width: 100%;
+	z-index: 500;
+	}
+.alarma_roja div{
+	padding: 0 0;
+	}
+.alarma_transparente{
+	background-color:transparent;
+	bottom: 0;
+	color: #000;
+	margin:0 0 0 0;
+	padding: 4px 0;
+	position: fixed;
+	text-align:center;
+	width: 100%;
+	z-index: 500;
+	}
+.alarma_transparente div{
+	padding: 0 0;
+	}
+.alarma_verde{
+    background: #23530E;
+	border-top: 1px solid #32B3FF;
+	bottom: 0;
+	color: #FFF;
+	margin:0 0 0 0;
+	padding: 4px 0;
+	position: fixed;
+	text-align:center;
+	width: 100%;
+	z-index: 500;
+	}
+.alarma_verde div{
+	padding: 0 0;
+	}
+.Ancho120{
+	width:123px;
+	}
+.areatrabajo{
+	float:left;
+	display:block;
+	width:99%;
+	margin-bottom:10px;
+	padding:15px 0.5% 10px 0.5%;
+	background-color:#F2F2F2;
+	border: 1px solid #999; 
+}
+.areatrabajo input:hover{
+	background-position:0 -24px;
+}
+.Campo220{
+	float:left;
+	width:220px;
+	height:auto; 
+	}
+.Campo300{
+	float:left;
+	width:300px;
+	height:auto; 
+	}
+.campo_HoraMin{
+	float:left;
+	width:120px;
+	height:auto; 
+	}
+.campo_HoraMinSeg{
+	float:left;
+	width:162px;
+	height:auto; 
+	}
+.campo_moneda{
+	width:164px;
+	text-align:right;
+	}
+.color_aguamarina{
+	color:#32B3FF;
+	font-weight:bold;
+	}
+.cuerpo{
+	float:left;
+	display:block;
+	margin-bottom:20px;
+	width:100%;
+	height:auto;
+}
+
+.cuerpo h1, h2, h3{
+	color: #FE850C;
+	margin-bottom:10px;
+}
+
+.cuerpo p{
+	text-align:justify;
+}
+
+.divScroll100{
+	height:100px;
+	overflow:scroll;
+	overflow-x:hidden;
+	}
+.divScroll200{
+	height:200px;
+	overflow:scroll;
+	overflow-x:hidden;
+	}
+.flotante{
+	margin:0;
+	position: fixed;
+	z-index: 100;
+	bottom: 0;
+	right: 5px;
+	padding: 0;
+	width: 150px;
+	text-align: right;
+	float:right;
+	}
+.flotante div{
+	padding: 0 0;
+	}
+.fondoazul{
+	background-color:#99BBDD;
+	}
+
+.FuenteGrande{
+	font-size:16px;
+	font-weight:300;
+	}
+
+.GrupoCampos {
+	border-width:1px;
+	border-color:#999999;
+	border-style:solid;
+	padding-left:5px;
+	padding-top:0px;
+	padding-bottom:0px;
+	margin-left:5px;
+	margin-top:5px;
+	background-color:#FFFFDD;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	border-right-width:5px;
+	}
+.GrupoCampos300{
+	width:295px;
+	float:left;
+	padding:5px;
+	margin-left:5px;
+	margin-top:5px;
+	background-color:#F9F9F9;
+	border-width:1px;
+	border-color:#999999;
+	border-style:solid;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	border-right-width:5px;
+	}
+.GrupoCamposAyuda {
+	border-width:1px;
+	border-color:#999999;
+	border-style:solid;
+	padding-left:5px;
+	padding-top:0px;
+	padding-bottom:0px;
+	margin-left:5px;
+	margin-top:5px;
+	background-color:#DBEBF6;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	border-right-width:5px;
+	}
+.GrupoCampos50Porc {
+	width:48%;
+	float:left;
+	border-width:1px;
+	border-color:#999999;
+	border-style:solid;
+	padding-left:5px;
+	padding-top:0px;
+	padding-bottom:0px;
+	margin-left:5px;
+	margin-top:5px;
+	background-color:#FFFFDD;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	border-right-width:5px;
+	}
+.GrupoCampos50PorcLimpio{
+	width:48%;
+	float:left;
+	padding-left:5px;
+	padding-top:0px;
+	padding-bottom:0px;
+	margin-left:5px;
+	margin-top:5px;
+	border-right-width:5px;
+	}
+.GrupoCampos400{
+	width:420px;
+	float:left;
+	border-width:1px;
+	border-color:#999999;
+	border-style:solid;
+	padding-left:5px;
+	padding-top:0px;
+	padding-bottom:0px;
+	margin-left:5px;
+	margin-top:5px;
+	background-color:#FFFFDD;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	border-right-width:5px;
+	}
+	
+.GrupoCampos450 {
+	width:445px;
+	float:left;
+	border-width:1px;
+	border-color:#999999;
+	border-style:solid;
+	padding-left:5px;
+	padding-top:0px;
+	padding-bottom:0px;
+	margin-left:5px;
+	margin-top:5px;
+	background-color:#FFFFDD;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	border-right-width:5px;
+	}
+.GrupoCampos520 {
+	width:515px;
+	float:left;
+	border-width:1px;
+	border-color:#999999;
+	border-style:solid;
+	padding-left:5px;
+	padding-top:0px;
+	padding-bottom:0px;
+	margin-left:5px;
+	margin-top:5px;
+	background-color:#FFFFDD;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	border-right-width:5px;
+	}
+
+	
+input.btMiniActualizar,
+input.btMiniAnexar,
+input.btMiniAprobar,
+input.btMiniAyuda,
+input.btMiniBuscar,
+input.btMiniDerecha,
+input.btMiniDescargar,
+input.btMiniEliminar,
+input.btMiniExcel,
+input.btMiniExpandir,
+input.btMiniGuardar,
+input.btMiniHoy,
+input.btMiniLimpiar,
+input.btMiniMail,
+input.btMiniMas,
+input.btMiniMenos,
+input.btMiniPersona,
+input.btMiniRecoger,
+input.btMiniTxt,
+input.btMiniZip{
+	float:left; 
+	display:block;
+	width:22px;
+	height:22px;
+	margin-left:5px;
+	text-indent:-9000px;
+	outline:hidden;
+	background: url('../ulib/img/btMiniBuscar.jpg') 0 0 no-repeat;
+	border:none;
+	}
+input.btMiniActualizar{	background-image: url('../ulib/img/btMiniActualizar.jpg');}
+input.btMiniAnexar{	background-image: url('../ulib/img/btMiniAnexar.jpg');}
+input.btMiniAprobar{	background-image: url('../ulib/img/btMiniAprobar.jpg');}
+input.btMiniAyuda{	background-image: url('../ulib/img/btMiniAyuda.jpg');}
+input.btMiniDerecha{	background-image: url('../ulib/img/btMiniDerecha.jpg');}
+input.btMiniDescargar{	background-image: url('../ulib/img/btMiniBajar.jpg');}
+input.btMiniEliminar{	background-image: url('../ulib/img/btMiniEliminar.jpg');}
+input.btMiniExcel{	background-image: url('../ulib/img/btMiniExcel.jpg');}
+input.btMiniExpandir{	background-image: url('../ulib/img/btMiniExpandir.jpg');}
+input.btMiniGuardar{	background-image: url('../ulib/img/btMiniGuardar.jpg');}
+input.btMiniHoy{	background-image: url('../ulib/img/btMiniHoy.jpg');}
+input.btMiniLimpiar{	background-image: url('../ulib/img/btMiniLimpiar.jpg');}
+input.btMiniMail{	background-image: url('../ulib/img/btMiniMail.jpg');}
+input.btMiniMas{	background-image: url('../ulib/img/btMiniMas.jpg');}
+input.btMiniMenos{	background-image: url('../ulib/img/btMiniMenos.jpg');}
+input.btMiniPersona{	background-image: url('../ulib/img/btMiniPersona.jpg');}
+input.btMiniRecoger{	background-image: url('../ulib/img/btMiniRecoger.jpg');}
+input.btMiniTxt{	background-image: url('../ulib/img/btMiniTxt.jpg');}
+input.btMiniZip{	background-image: url('../ulib/img/btMiniZip.jpg');}
+
+input.btEnviarExcel,
+input.btEnviarPDF,
+input.btSupAbrir,
+input.btSupAnotaciones,
+input.btSupAnular,
+input.btSupAyuda,
+input.btSupCerrar,
+input.btSupClonar,
+input.btSupNada,
+input.btSupNegar,
+input.btSupVolver,
+input.btUpAnular,
+input.btUpAyuda,
+input.btUpEliminar,
+input.btUpGuardar,
+input.btUpBuscar,
+input.btUpLimpiar,
+input.btUpPrint{
+	float:right;
+	display:block;
+	width:33px;
+	height:36px;
+	margin:0 0 5px 5px;
+	text-indent:-9000px;
+	background: #FFF url('../ulib/img/btUpEliminar.jpg') 0 0 no-repeat;
+	border:none;
+}
+input.btEnviarExcel{ background-image:url('../ulib/img/btSupExcel.jpg');}
+input.btEnviarPDF{ background-image:url('../ulib/img/btSupPDF.jpg');}
+input.btSupAbrir{ background-image:url('../ulib/img/btSupAbrir.jpg');}
+input.btSupAnotaciones{ background-image:url('../ulib/img/btSupAnotaciones.jpg');}
+input.btSupAnular{ background-image:url('../ulib/img/btUpAnular.jpg');}
+input.btSupAyuda{ background-image:url('../ulib/img/btUpAyuda.jpg');}
+input.btSupCerrar{ background-image:url('../ulib/img/btSupCerrar.jpg');}
+input.btSupClonar{ background-image:url('../ulib/img/btSupClonar.jpg');}
+input.btSupNada{ background-image:url('../ulib/img/btSupNada.jpg');}
+input.btSupNegar{ background-image:url('../ulib/img/btSupNegar.jpg');}
+input.btSupVolver{ background-image:url('../ulib/img/btSupVolver.jpg');}
+input.btUpAnular{ background-image:url('../ulib/img/btUpAnular.jpg');}
+input.btUpAyuda{ background-image:url('../ulib/img/btUpAyuda.jpg');}
+input.btUpGuardar{ background-image:url('../ulib/img/btUpGuardar.jpg');}
+input.btUpBuscar{ background-image:url('../ulib/img/btUpBuscar.jpg');}
+input.btUpLimpiar{ background-image:url('../ulib/img/btUpLimpiar.jpg');}
+input.btUpPrint{ background-image:url('../ulib/img/btUpPrint.jpg');}
+
+input.btSoloGuardar{
+	z-index:1200;
+	border:none;
+	text-indent:-9000px;
+	padding: 0 0 0 8px;
+
+	float:left;
+	display:block;
+	height:33px;
+	margin-right:10px;
+	color: #FFF;
+
+	width:29px;
+	line-height: 500px;
+	overflow: hidden;
+	background: url('../ulib/img/btSoloGuardar.png') 0 0 no-repeat;
+	}
+input.btSoloGuardar{ background-image:url('../ulib/img/btSoloGuardar.png');}
+input.btSoloGuardar:hover{
+	background-position:0 -33px;
+	}
+
+input.btSolo,
+input.btSoloAnexar,
+input.btSoloProceso{
+	float:left;
+	display:block;
+	width:95px;
+	height:33px;
+	margin-right:0px;
+	color: #FFF;
+	background: url('../ulib/img/btSolo.jpg') 0 0 no-repeat;
+	border:none;
+	text-align:left;
+	}
+input.btSoloAnexar{ background: url('../ulib/img/btSoloAnexar.png') 0 0 no-repeat; }
+input.btSoloProceso{ background: url('../ulib/img/btSoloProceso.png') 0 0 no-repeat; }
+input.btSoloAnexar:hover,
+input.btSoloProceso:hover{
+	background-position:0 -33px;
+	}
+input.btTextoProceso150{
+	float:left;
+	display:block;
+	width:148px;
+	height:33px;
+	margin-right:0px;
+	color: #FFF;
+	background: url('../ulib/img/btTextoProceso150.png') transparent 0 0 no-repeat;
+	border:none;
+	text-align:left;
+	}
+input.btTextoProceso150:hover{
+	background-position:0 -33px;
+	}
+input.dos {
+	width:24px;
+	}
+input.tres {
+	width:45px;
+	}
+input.cuatro {
+	width:48px;
+	}
+input.diez {
+	width:82px;
+	}
+input.veinte {
+	width:164px;
+	}
+input.veinticinco {
+	width:205px;
+	}
+input.treinta {
+	width:249px;
+	}
+input.cien {
+	width:470px;
+	}
+.interna{
+	margin:0 25px;
+}
+
+.ir_derecha {
+	float:right;
+	}
+
+label{
+	float:left;
+	display:block;
+	width:100%;
+	margin-bottom:5px;
+	vertical-align: bottom;
+	width:300px;
+	height:auto;
+	}
+.Label30{
+	width:30px;
+	height:auto;
+}
+.Label60{
+	width:60px;
+	height:auto;
+}
+.Label90{
+	width:90px;
+	height:auto;
+}
+.Label130{
+	width:130px;
+	height:auto;
+}
+.Label160{
+	width:160px;
+	height:auto;
+}
+.Label200{
+	width:200px;
+	height:auto; 
+}
+.Label220{
+	width:220px;
+	height:auto; 
+}
+.Label250{
+	width:250px;
+	height:auto; 
+}
+.Label320{
+	width:320px;
+	height:auto; 
+}
+.Label350{
+	width:350px;
+	height:auto; 
+}
+.Label380{
+	width:380px;
+	height:auto; 
+}
+.Label450{
+	width:450px;
+	height:auto;
+}
+.Label500{
+	width:500px;
+	height:auto;
+}
+.Label600{
+	width:600px;
+	height:auto;
+}
+.Label700{
+	width:700px;
+	height:auto;
+}
+.todo{
+	width: 100%;
+}
+.L{
+	width:98%;
+	height:auto;
+	}
+
+label.txtAreaS, label.txtAreaM, label.txtAreaL, label.txtAreaEXTRA{
+	float:left;
+	width:100%;
+	height:88px;
+	}
+
+label.txtAreaS textarea, label.txtAreaM textarea, label.txtAreaL textarea, label.txtAreaEXTRA textarea{
+	width:98%;
+	height:60px;
+	margin-bottom:10px;
+	font:88% Verdana, Arial, Helvetica, sans-serif;
+	padding:0 2px;
+	border: 1px solid #999;
+	}
+label.txtAreaM{			height:158px;}
+label.txtAreaM textarea{	height:130px;}
+label.txtAreaL{			height:188px;}
+label.txtAreaL textarea{	height:150px;}
+label.txtAreaEXTRA{			height:438px;}
+label.txtAreaEXTRA textarea{	height:400px;}
+
+.lnkresalte{
+	clear: both;
+	margin-top: 5px;
+	padding: 2px 5px;
+	color:#FFF;
+	font-weight: bold;
+	background: #83A33E;
+	color:#FFFFFF !important;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	}
+.lnkresalte:hover{
+	background: #1F487C;
+	}
+.lnkresalte:visited{
+	color:#FFFFCC !important;
+	}
+
+.MarquesinaMedia{
+	font-size:24px;
+	}
+
+.MarquesinaGrande{
+	font-size:36px;
+	}
+
+#menuapp{
+	float: left;
+	display: block;
+	margin: 0 0 20px 0;
+	width: 100%;
+	height: 24px;
+	padding: 0;
+	border-top: 1px solid #E9E9E9;
+}
+
+.resalte{
+	color:#FE850C;
+	font-weight: bold;
+	}
+.resaltetabla{
+	background-color:#FFFFEE;
+	}
+.resalte2{
+	color:#A70707;
+	font-weight: bold;
+	}
+.rojo{
+	color:#FF0000;
+	font-weight:bold;
+	}
+.rojooscuro{
+	color:#990000;
+	font-weight:bold;
+	}
+
+ul#navmenu-h {
+	position: absolute;
+	z-index: 10;
+	margin: 0;
+	padding: 0;
+	width: 100%; /*For KHTML*/
+	list-style: none;
+	font: 14px Arial, Helvetica, sans-serif;
+	height: 22px;
+	border-left: 1px solid #EEE;
+}
+
+ul#navmenu-h li {
+	margin: 0;
+	border: 0 none;
+	padding: 0;
+	float: left; /*For Gecko*/
+	display: inline;
+	list-style: none;
+	position: relative;
+	/*  height: 24px; ALTO NO DEJA CUADRARLO*/
+}
+
+ul#navmenu-h ul {
+	position: absolute;
+	display: none;
+
+	top: 22px;
+	left: -1px;
+
+	margin: 0;
+	padding: 0;
+	width: 160px;
+
+	list-style: none;
+	border: 0 none;
+}
+
+ul#navmenu-h ul:after /*From IE 7 lack of compliance*/{
+	clear: both;
+	display: block;
+	font: 1px/0px serif;
+	content: ".";
+	height: 0;
+	visibility: hidden;
+}
+
+ul#navmenu-h ul li {
+	width: 160px;
+	float: left; /*For IE 7 lack of compliance*/
+	display: block !important;
+	display: inline; /*For IE*/
+}
+
+
+/* Root Menu */
+ul#navmenu-h a {
+	float: none !important; /*For Opera*/
+	float: left; /*For IE*/
+	display: block;
+	
+	padding: 4px 8px;
+	height: auto !important;
+	height: 1%; /*For IE*/
+	
+	color: #000000; 
+	text-decoration: none;
+	border-right: 1px solid #EEE;
+}
+
+/* Root Menu Hover Persistence */
+ul#navmenu-h a:hover,
+ul#navmenu-h li:hover a,
+ul#navmenu-h li.iehover a {
+	color:#000;
+	background: #FEFAEE;
+}
+
+/* 2nd Menu */
+ul#navmenu-h li:hover li a,
+ul#navmenu-h li.iehover li a {
+	float: none;
+	padding: 6px 8px;
+	color: #000;
+	background: #FEFAEE;
+	border: none;
+}
+
+/* 2nd Menu Hover Persistence */
+ul#navmenu-h li:hover li a:hover,
+ul#navmenu-h li:hover li:hover a,
+ul#navmenu-h li.iehover li a:hover,
+ul#navmenu-h li.iehover li.iehover a {
+	background:#FBFBFB;
+}
+
+/* 3rd Menu */
+ul#navmenu-h li:hover li:hover li a,
+ul#navmenu-h li.iehover li.iehover li a {
+  background: #EEE;
+  color: #666;
+}
+
+/* 3rd Menu Hover Persistence */
+ul#navmenu-h li:hover li:hover li a:hover,
+ul#navmenu-h li:hover li:hover li:hover a,
+ul#navmenu-h li.iehover li.iehover li a:hover,
+ul#navmenu-h li.iehover li.iehover li.iehover a {
+  background: #CCC;
+  color: #FFF;
+}
+
+/* 4th Menu */
+ul#navmenu-h li:hover li:hover li:hover li a,
+ul#navmenu-h li.iehover li.iehover li.iehover li a {
+  background: #EEE;
+  color: #666;
+}
+
+/* 4th Menu Hover */
+ul#navmenu-h li:hover li:hover li:hover li a:hover,
+ul#navmenu-h li.iehover li.iehover li.iehover li a:hover {
+  background: #CCC;
+  color: #FFF;
+}
+
+ul#navmenu-h ul ul,
+ul#navmenu-h ul ul ul {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 160px;
+}
+
+/* Do Not Move - Must Come Before display:block for Gecko */
+ul#navmenu-h li:hover ul ul,
+ul#navmenu-h li:hover ul ul ul,
+ul#navmenu-h li.iehover ul ul,
+ul#navmenu-h li.iehover ul ul ul {
+  display: none;
+}
+
+ul#navmenu-h li:hover ul,
+ul#navmenu-h ul li:hover ul,
+ul#navmenu-h ul ul li:hover ul,
+ul#navmenu-h li.iehover ul,
+ul#navmenu-h ul li.iehover ul,
+ul#navmenu-h ul ul li.iehover ul {
+  display: block;
+}
+
+.salto1px{
+	clear:both;
+	height:1px;
+	}
+.salto5px{
+	clear:both;
+	height:5px;
+	}
+.TituloGrupo{
+	font-weight:bold;
+	}
+
+.titulos{
+	float:left;
+	display:block;
+	width:100%;
+	margin-bottom:10px;
+	padding-bottom:3px;
+	border-bottom:1px solid #CCC;
+}
+
+.titulos h2{
+	margin:0;
+	float:left;
+}
+.titulos input{
+	float: right;
+	margin: 0 0 0 2px;
+}
+
+.titulosD{
+	float:right;
+	width: 580px;
+}
+.titulosD input:hover{
+	background-position:0 -53px;
+}
+.titulosI{
+	margin-right:320px;
+	padding-top:10px;
+}
+.titulosI h2{
+	font-size:24px;
+}
+.tablaapp{
+	width:100%;
+	}
+.verde{
+	color:#003300;
+	font-weight:bold;
+	}
+

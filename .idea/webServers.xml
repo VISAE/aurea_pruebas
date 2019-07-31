@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="728a13a7-208a-4e0e-8913-a1ef34b262ae" name="campus29" url="http://129.191.25.161/omarbautista">
+        <fileTransfer host="129.191.25.161" port="22" privateKey="$PROJECT_DIR$/../omarbautista.ppk" rootFolder="/var/www/omarbautista" accessType="SFTP" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

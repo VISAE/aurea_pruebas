@@ -1,0 +1,111 @@
+body{
+  font-family: 'Open Sans',sans-serif;
+  font-size: 16px;
+}
+
+div#jssor_1{
+  display: none;
+}
+
+div.menuSuperior{
+  background: #EFEFEF;
+  color: #000;
+  padding: 5px;
+}
+
+div.menuSuperior ul{
+  font-size: 14px;
+  list-style: none;
+  margin: 0 auto;
+  /* max-width: 950px; */
+  padding: 0;
+  text-align: right;
+}
+
+div.menuSuperior ul li{
+  display: inline-block;
+  margin: 0 10px;
+}
+
+div.menuSuperior ul li a{
+  display: block;
+  color: #000;
+  text-decoration: none;
+}
+
+div.menuSuperior ul li a:hover{
+  text-decoration: underline;
+}
+
+form.login{
+  background: #FFF;
+  margin: 0 auto;
+  padding: 20px 20px;
+  margin-bottom: 10px;
+  max-width: 450px;
+  overflow: hidden;
+}
+
+form.login input[type=text],form.login input[type=password]{
+  color: #666;
+  display: block;
+  border: 0;
+  border-bottom: 2px #014D65 solid;
+  margin-bottom: 20px;
+  padding: 5px;
+  width: 97%;
+}
+
+form.login input[type=submit]{
+  background: #014D65;
+  border: 0;
+  color: #FFF;
+  display: block;
+  margin: 0 auto;
+  padding: 7px 12px;
+  width: 120px;
+}
+
+h1{
+  color: #014D65;
+  font-size: 20px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+header{
+  height: 55px;
+}
+
+main{
+  /* max-width: 1200px; */
+  margin: 0 auto 0 auto;
+  padding: 30px 10px 130px 10px;
+  display:block;
+}
+
+main h2{
+  color: #014D65;
+  font-size: 20px;
+  margin: 20px 0;
+}
+
+@media screen and (min-width:1000px){
+  header{
+      border-bottom: 2px solid #F4B945;
+      height: 158px;
+      position: relative;
+  }
+
+  header div.barraHeader{
+    height: 30px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }
+
+  div#jssor_1{
+    display: block;
+  }
+
+}

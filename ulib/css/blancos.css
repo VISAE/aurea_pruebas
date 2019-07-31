@@ -1,0 +1,1060 @@
+html,body{margin:0;padding:0}
+
+body {
+	padding:0;
+	margin:0;
+	font:85% Verdana, Arial, Helvetica, sans-serif;
+	color:#000;
+}
+
+.fondoblanco {
+	padding:0;
+	margin:0;
+	font:85% Verdana, Arial, Helvetica, sans-serif;
+	color:#000;
+}
+
+/******************************************************************************************************************
+CONTENEDOR
+******************************************************************************************************************/
+#contenedor {
+	float:left;
+/*	margin-left: auto;
+	margin-right: auto;*/
+	width:100%;
+	text-align: left;
+/*	border:1px solid #0000CC;*/
+}
+
+/******************************************************************************************************************
+CABEZA
+******************************************************************************************************************/
+#cabeza{
+	clear: both;
+	height:154px;
+	background: url('../interfaz/header.jpg') left top no-repeat;
+/*	border-bottom:1px solid #00FF00;*/
+}
+
+#cabeza	img{
+	margin:0;
+	padding:0;
+}
+/*
+MENU IZQUIERDO --------------------------------------------------------------------------------------------------*/
+#menuh {
+	position:absolute;
+	z-index:2;
+	top:100px;
+	left:165px;
+	font-size:88%;
+}
+
+#menuh ul {
+	margin: 0;
+	padding: 0;
+/*	height:
+	border:1px solid red;*/
+}
+
+#menuh ul, li {	list-style-type: none;}
+
+#menuh li {		float: left;}
+
+
+#menuh a {
+	float:left;
+	margin:0;
+	padding:0 0 0 8px;
+	text-decoration:none;
+	background:url('../interfaz/menUpOvIz.gif') transparent left -200px no-repeat;
+}
+#menuh a span {
+	float:left;
+	display:block;
+	padding:4px 11px 4px 6px;
+	color:#FFF;
+	background:#FFF url('../interfaz/menUpOvDr.gif') transparent right -200px no-repeat;
+}
+/* Commented Backslash Hack hides rule from IE5-Mac \*/
+#menuh a span {float:none;}
+/* End IE5-Mac hack */
+
+
+#menuh a:hover, #menuh a.actual {
+/*	background:#FFF url('../interfaz/menUpOvIz.gif') left top no-repeat;*/
+	background-position:left top;
+}
+#menuh a:hover span, #menuh a.actual span{
+	padding:6px 11px 20px 6px;
+	color:#2B286B;
+	background:#FFF url('../interfaz/menUpOvDr.gif') right top no-repeat;
+}
+
+/******************************************************************************************************************
+CUERPO
+******************************************************************************************************************/
+#cuerpo{
+	float:left;
+	display:block;
+	margin-bottom:20px;
+	width:100%;
+	height:auto;
+}
+
+#cuerpo h1, h2, h3{
+	color: #FE850C;
+	margin-bottom:10px;
+}
+
+#cuerpo p{
+	text-align:justify;
+}
+
+#interna{
+	margin:0 25px;
+}
+
+/* TITULACION -------------------------------------------------------------------------- */
+#titulacion{
+	float:left;
+	display:block;
+	width:100%;
+	margin-bottom:10px;
+	padding-bottom:3px;
+	border-bottom:1px solid #CCC;
+}
+
+#titulacion h2{
+	margin:0;
+	float:left;
+}
+#titulacion input{
+	float: right;
+	margin: 0 0 0 2px;
+}
+
+#titulacionD{
+	float:right;
+	width: 580px;
+}
+
+#titulacionD input.btUpEliminar,
+#titulacionD input.btUpGuardar,
+#titulacionD input.btUpBuscar,
+#titulacionD input.btUpLimpiar,
+#titulacionD input.btUpPrint,
+#titulacionD input.btUpAyuda,
+#titulacionD input.btUpVolver,
+#titulacionD input.btUpCerrar,
+#titulacionD input.btUpAnexar,
+#titulacionD input.btUpPublicar,
+#titulacionD input.btUpSuspender,
+#titulacionD input.btUpCerProceso,
+#titulacionD input.btUpDistribuir,
+#titulacionD input.btUpHistorial,
+#titulacionD input.btUpArchivar,
+#titulacionD input.btUpResponder,
+#titulacionD input.btUpReasignar,
+#titulacionD input.btUpRadicar,
+#titulacionD input.btUpVisto,
+#titulacionD input.btUpSupervisor,
+#titulacionD input.btUpAprobado,
+#titulacionD input.btUpDenegado,
+#titulacionD input.btUpDesechar,
+#titulacionD input.btUpPersonal,
+#titulacionD input.btUpBandeja,
+#titulacionD input.btUpDocumento,
+#titulacionD input.btUpEstudios,
+#titulacionD input.btUpLaboral,
+#titulacionD input.btUpAnotaciones,
+#titulacionD input.btUpAfiliaciones,
+#titulacionD input.btUpFamiliares,
+input.btUpBuscarSolo,
+input.btUpVolverSolo,
+input.btUpAprobado,
+input.btGuardar,
+input.btEnviarExcel,
+input.btEnviarPDF
+{
+	float:right;
+	display:block;
+	width:33px;
+	height:36px;
+	margin:0 0 5px 5px;
+	/* text-indent:-9000px; */
+	background: #FFF url('../interfaz/btUpEliminar.jpg') 0 0 no-repeat;
+	border:none;
+}
+#titulacionD input.btUpGuardar{ background-image:url(../interfaz/btUpGuardar.jpg)}
+#titulacionD input.btUpBuscar{ background-image:url(../interfaz/btUpBuscar.jpg)}
+#titulacionD input.btUpLimpiar{ background-image:url(../interfaz/btUpLimpiar.jpg)}
+#titulacionD input.btUpPrint{ background-image:url(../interfaz/btUpPrint.jpg)}
+#titulacionD input.btUpAyuda{ background-image:url(../interfaz/btUpAyuda.jpg)}
+#titulacionD input.btUpVolver{ background-image:url(../interfaz/btUpVolver.jpg)}
+#titulacionD input.btUpCerrar{ background-image:url(../interfaz/btUpCerrar.jpg)}
+#titulacionD input.btUpAnexar{ background-image:url(../interfaz/btUpAnexar.jpg)}
+#titulacionD input.btUpPublicar{ background-image:url(../interfaz/btUpPublicar.jpg)}
+#titulacionD input.btUpSuspender{ background-image:url(../interfaz/btUpSuspender.jpg)}
+#titulacionD input.btUpCerProceso{ background-image:url(../interfaz/btUpCerProceso.jpg)}
+#titulacionD input.btUpDistribuir{ background-image:url(../interfaz/btUpDistribuir.jpg)}
+#titulacionD input.btUpHistorial{ background-image:url(../interfaz/btUpHistorial.jpg)}
+#titulacionD input.btUpArchivar{ background-image:url(../interfaz/btUpArchivar.jpg)}
+#titulacionD input.btUpResponder{ background-image:url(../interfaz/btUpResponder.jpg)}
+#titulacionD input.btUpReasignar{ background-image:url(../interfaz/btUpReasignar.jpg)}
+#titulacionD input.btUpRadicar{ background-image:url(../interfaz/btUpRadicar.jpg)}
+#titulacionD input.btUpVisto{ background-image:url(../interfaz/btUpVisto.jpg)}
+#titulacionD input.btUpSupervisor{ background-image:url(../interfaz/btUpSupervisor.jpg)}
+#titulacionD input.btUpAprobado{ background-image:url(../interfaz/btUpAprobado.jpg)}
+#titulacionD input.btUpDenegado{ background-image:url(../interfaz/btUpDenegado.jpg)}
+#titulacionD input.btUpDesechar{ background-image:url(../interfaz/btUpDesechar.jpg)}
+#titulacionD input.btUpPersonal{ background-image:url(../interfaz/btUpPersonal.jpg)}
+#titulacionD input.btUpBandeja{ background-image:url(../interfaz/btUpBandeja.jpg)}
+#titulacionD input.btUpDocumento{ background-image:url(../interfaz/btUpDocumento.jpg)}
+#titulacionD input.btUpEstudios{ background-image:url(../interfaz/btUpEstudios.jpg)}
+#titulacionD input.btUpLaboral{ background-image:url(../interfaz/btUpLaboral.jpg)}
+#titulacionD input.btUpAnotaciones{ background-image:url(../interfaz/btUpAnotaciones.jpg)}
+#titulacionD input.btUpAfiliaciones{ background-image:url(../interfaz/btUpAfiliaciones.jpg)}
+#titulacionD input.btUpFamiliares{ background-image:url(../interfaz/btUpFamiliares.jpg)}
+input.btUpBuscarSolo{ background-image:url(../interfaz/btUpBuscar2.jpg)}
+input.btUpVolverSolo{ background-image:url(../interfaz/btUpVolver2.jpg)}
+input.btUpAprobado{ background-image:url(../interfaz/btUpAprobado2.jpg)}
+input.btGuardar{ background-image:url(../interfaz/btUpGuardar.jpg)}
+input.btEnviarExcel{ background-image:url(../interfaz/btExcel.jpg)}
+input.btEnviarPDF{ background-image:url(../interfaz/btPDF.jpg)}
+
+input.btAnexar
+{
+	float:left;
+	display:block;
+	width:33px;
+	height:36px;
+	margin:0 0 5px 5px;
+	/* text-indent:-9000px; */
+	background: #FFF url('../interfaz/btUpEliminar.jpg') 0 0 no-repeat;
+	border:none;
+}
+input.btAnexar{ background-image:url(../interfaz/btUpAnexar.jpg)}
+
+#titulacionD input:hover{
+	background-position:0 -53px;
+}
+
+#titulacionD div.bg input[type=submit]:hover, div.bg input[type=reset]:hover, div.bg input[type=button]:hover{
+	background-position:0 bottom;
+}
+
+#titulacionI{
+	margin-right:320px;
+	padding-top:10px;
+/*	border:1px solid red;*/
+}
+
+#titulacionI h2{
+	font-size:24px;
+}
+
+#titulacionI input.titulacion{
+	padding:0;
+	width:auto;
+	height:auto;
+	font-size:24px;
+	font-weight:bold;
+	color:#2B286B;
+	border:none;
+}
+
+#titulacionI span{
+/*	border:1px solid red;*/
+}
+
+#titulacionI label{
+	width:auto;
+	padding:2px 0 0 0;
+	margin:0;
+	margin-left:6px;
+/*	border:1px solid red;*/
+}
+
+
+/* cargaForm -------------------------------------------------------------------------- */
+#cargaForm{
+	padding:0 5px;
+}
+
+
+/******************************************************************************************************************
+FORMULARIO
+******************************************************************************************************************/
+#centro form{
+/*	border: 1px solid #F00;*/
+}
+
+#titulo{
+	float:left;
+	display:block;
+	height:26px;
+	padding-left:8px;
+	background:url('../interfaz/cabeFizq.gif') transparent 0 0 no-repeat;
+/*	border: 1px solid red;*/
+}
+#titulo h3{
+	float:left;
+	display:block;
+	margin:0;
+	padding:4px 8px 4px 0;
+	color:#FFF;
+	background:url('../interfaz/cabeFder.gif') transparent right top no-repeat;
+}
+
+
+fieldset{	margin:0 0 0 0;}
+legend { 	font-weight:bold;}
+
+form #area{
+	float:left;
+	display:block;
+	width:99%;
+	margin-bottom:10px;
+	padding:15px 0.5% 10px 0.5%;
+	background-color:#F2F2F2;
+	border: 1px solid #999; 
+}
+
+form #area.area1{
+	background-color:#E4E2E2;
+}
+form #area.area2{
+	background-color:#C8C6C6;
+}
+form #area.area3{
+	background-color:#E4E2E2;
+}
+form #area.area4{
+	background-color:#C8C6C6;
+}
+/* LABEL ----------------#D6D5D5---#C8C6C6-----#EFFBEF-------------------------------------------------- */
+form label{
+	float:left;
+	display:block;
+	width:100%;
+	margin-bottom:5px;
+	vertical-align: bottom;
+/*	height:44px;
+	font-weight:bold;*/
+}
+form #area label{
+	width:300px;
+	height:auto;  /*44px*/
+	/*height:30px;*/
+/*	border: 1px solid blue;*/
+}
+form #area label.LabelP81{
+	width:81%;
+	height:auto;
+}
+form #area label.Label30{
+	width:30px;
+	height:auto;
+}
+.Label60{
+	width:60px;
+	height:auto;
+}
+form #area label.Label90{
+	width:90px;
+	height:auto;
+}
+.Label130{
+	width:130px;
+	height:auto;
+}
+form #area label.Label160{
+	width:160px;
+	height:auto;
+}
+form #area label.Label200{
+	width:200px;
+	height:auto; 
+}
+form #area label.Label220{
+	width:220px;
+	height:auto; 
+}
+form #area label.Label250{
+	width:250px;
+	height:auto; 
+}
+form #area label.Label320{
+	width:320px;
+	height:auto; 
+}
+form #area label.Label350{
+	width:350px;
+	height:auto; 
+}
+form #area label.Label380{
+	width:380px;
+	height:auto; 
+}
+form #area label.Label450{
+	width:450px;
+	height:auto;
+}
+form #area label.Label500{
+	width:500px;
+	height:auto;
+}
+form #area label.Label600{
+	width:600px;
+	height:auto;
+}
+form #area label.Label700{
+	width:700px;
+	height:auto;
+}
+
+form label span{
+	float:left;
+	display:block;
+	width:100%;
+	margin-bottom:3px;
+}
+form label span{
+	float:left;
+	display:block;
+	width:97%;
+	margin-bottom:3px;
+}
+
+label.mensaje{
+	float:left;
+	padding:5px 0;
+	margin-bottom:10px;
+	width:100%;
+	text-align:center;
+	font-weight:bold;
+	color:#A70707;
+	border: 1px solid #A70707;
+}
+
+form #area label.mensajepermanente{
+	width:98%;
+	float:left;
+	margin-bottom:10px;
+	text-align:center;
+	font-weight:bold;
+	color:#A70707;
+	border: 1px solid #A70707;
+}
+
+form #area label.mensaje{
+	float:left;
+	padding:5px 0;
+	margin-bottom:10px;
+	width:100%;
+	text-align:center;
+	font-weight:bold;
+	color:#A70707;
+/*	background-color:#CCC;
+	background:#A70707 url('../interfaz/XbkMensaje.gif') 0 0 ;*/
+	border: 1px solid #A70707;
+}
+
+
+form #area label.L{
+	width:100%;
+	height:auto;
+/*	border: 1px solid blue;*/
+}
+form #area label.treinta{
+	width:30%;
+	height:auto;
+/*	border: 1px solid blue;*/
+}
+form #area label.L input{
+	margin-right:8px;
+	
+/* ancho de la text en clase L */
+}
+form #area label.L input.L{
+	width:98%;
+}
+form #area label.L input.Lm{
+	width:87%;
+}
+input.L{
+	width:98%;
+}
+
+form #area label.Lc{
+	width:100%;
+	height:auto;
+	text-align:center;
+/*	border: 1px solid blue;*/
+}
+
+
+/* TEXTAREA -------------------------------------------------------------------------- */
+form #area label.txtAreaS, form #area label.txtAreaM, form #area label.txtAreaL{
+	float:left;
+	width:100%;
+	height:88px;
+}
+form #area label.txtAreaS textarea, form #area label.txtAreaM textarea, form #area label.txtAreaL textarea{
+	width:98%;
+	height:60px;
+	margin-bottom:10px;
+	font:88% Verdana, Arial, Helvetica, sans-serif;
+	padding:0 2px;
+	border: 1px solid #999;
+}
+
+form #area label.txtAreaM{			height:158px;}
+form #area label.txtAreaM textarea{	height:130px;}
+
+form #area label.txtAreaL{			height:188px;}
+form #area label.txtAreaL textarea{	height:150px;}
+
+form textarea{
+	margin-bottom:5px;
+	border: 1px solid #2B286B;
+}
+
+
+/* SPAN -------------------------------------------------------------------------- */
+form #area span{
+	float:left;
+	padding-top:2px;
+}
+
+form #area label span.sm,
+form #area label span span{
+	width:auto;
+	margin:0;
+	padding:0;
+/*	border: 1px solid yellow;*/
+}
+
+
+/* INPUT -------------------------------------------------------------------------- */
+form input{
+	width:280px; 
+	height:18px;
+	padding:0px 0;
+	margin-bottom:4px;
+	font:88% Verdana, Arial, Helvetica, sans-serif;
+	padding:2px 2px 0 2px;
+	border: 1px solid #999;/*2B286B*/
+}
+
+ form input[type=checkbox]{
+	width:40px; 
+	border: 0px;/*2B286B*/
+}
+/*
+form table input{
+	margin-bottom:0px;
+}
+
+/*form input[type=radio], input[type=checkbox] {*/
+form input.mini, form span.mini input{
+	float:left;
+	padding-top:2px;
+	margin-bottom:6px;
+	width:20px;
+	border:none;
+	/*border: 1px solid yellow;*/
+}
+
+form #area label span.mini label{
+	float:left;
+	display:block;
+	width:260px;
+	/*border: 1px solid green;*/
+}
+form input.dos {
+	width:24px;
+}
+form input.tres {
+	width:45px;
+}
+form input.cuatro {
+	width:48px;
+}
+form input.diez {
+	width:82px;
+}
+form input.veinte {
+	width:164px;
+}
+form input.veinticinco {
+	width:205px;
+}
+form input.treinta {
+	width:249px;
+}
+form input.cien {
+	width:470px;
+}
+
+form table input[type=radio], input[type=checkbox] {
+	margin:0 10px 0 5px;
+}
+
+
+/* SELECT -------------------------------------------------------------------------- */
+form select{
+	margin-bottom:8px;
+	font:88% Verdana, Arial, Helvetica, sans-serif;
+	border: 1px solid #999; 
+}
+
+
+/* LABEL BUSCAR -------------------------------------------------------------------------- */
+form #area label.buscar{
+}
+
+form input.campoBoton{
+	float:left;
+	width:255px;
+/*	background-color:#0099FF;*/
+}
+
+
+/* BOTONES CHICOS -------------------------------------------------------------------------- */
+input.botonBuscarS,
+input.btBajarS,
+input.btGuardarS,
+input.btMiniActualizar,
+input.btPersonaS,
+input.btSubirS{
+	float:left; 
+	display:block;
+	width:22px;
+	height:22px;
+	margin-left:5px;
+	/* text-indent:-9000px; */
+	outline:hidden;
+	background: url('../interfaz/btBuscarS.jpg') 0 0 no-repeat;
+	border:none;
+	}
+
+input.btBajarS{	background-image: url('../interfaz/btBajarS.jpg');}
+input.btGuardarS{	background-image: url('../interfaz/btGuardarS.jpg');}
+input.btPersonaS{	background-image: url('../interfaz/btPersonaS.jpg');}
+input.btSubirS{	background-image: url('../interfaz/btSubirS.jpg');}
+input.btMiniActualizar{	background-image: url('../interfaz/btMiniActualizar.jpg');}
+/* LINK CHICO JS -------------------------------------------------------------------------- */
+form a.btTextoS{
+	float:left;
+	display:block;
+	padding-left: 13px;
+	width: auto;
+	height: 24px;
+	margin-left:5px;
+	text-decoration: none;
+	font-size: 12px;
+	background: url('../interfaz/bt_mini1.jpg') 0 0 no-repeat;
+}
+form a.btTextoS span{
+	float:left;
+	display:block;
+	padding-right: 13px;
+	width: auto;
+	height:22px;
+	color: #FFF;
+	background: url('../interfaz/bt_mini2.jpg') 100% 0 no-repeat;
+}
+form a.btTextoS:hover{ background-position: 0 -24px; }
+form a.btTextoS:hover span{
+	padding-top: 30px;
+	background-position: 100% -24px;
+}
+
+
+/* DIV's DOBLE -------------------------------------------------------------------------- */
+#area .doble, #area .panel{
+	float:left;
+	display:block;
+	width:100%;
+	margin-bottom:5px;
+	/*border: 1px solid red;*/
+}
+
+#area .dobleI, #area .panelI, #area .panelIdos .panelItres{
+	float:left;
+	display:block;
+	width:30px;
+}
+
+
+#area .dobleD{	margin-left:35px;}
+
+#area .panelI{	width:140px;}
+#area .panelD{	margin-left:150px;}
+
+#area .panelIdos{	width:400px;}
+#area .panelDdos{	margin-left:410px;}
+
+#area .panelItres{	width:400px;}
+#area .panelDtres{	margin-left:410px;}
+
+#area a{
+	color:#000;
+	text-decoration:none;
+}
+
+#area a:hover{
+	color:#2B286B;
+/*	text-decoration:underline;*/
+}
+
+/* tabla -------------------------------------------------------------------------- */
+#area table{
+	width:100%;
+	margin:5px 0;	
+	border-collapse: collapse;
+	border-top: 1px solid #999;
+	border-right: 1px solid #999;
+}
+#area th {
+	padding:8px 10px;
+	text-align: center;
+	border: 1px solid #999;
+	border-bottom: 2px solid #999/*B18E00*/;
+	background-color: #BEBDD2;
+}
+#area td {
+	padding:4px 6px;
+	border-left: 1px solid #999;
+	border-bottom: solid 1px #999;
+}
+
+
+/* BAJA LABEL -------------------------------------------------------------------------- */
+#salto{
+	clear:both;
+}
+
+#salto1px{
+	clear:both;
+	height:1px;
+}
+#salto5px{
+	clear:both;
+	height:5px;
+}
+#saltoCarga{
+	clear:both;
+	height:25px;
+}
+
+/* ENSAYO MAURO -------------------------------------------------------------------------- */
+#ir_derecha {
+	float:right;
+}
+.ir_derecha {
+	float:right;
+}
+
+/* BOTONES NORMALES -------------------------------------------------------------------------- */
+/*form input[type=submit], input[type=reset] , input[type=button]{*/
+form input.botonS,
+form input.botonM,
+form input.botonL,
+form input.botonBuscar,
+form input.botonMas,
+form input.botonMenos,
+form input.btUpDistribuirSolo,
+form input.botonSave,
+form input.botonDel,
+form input.botonSaveShort,
+form input.botonAnexar,
+form input.botonCopiar,
+form input.botonProceso,
+form input.botonClear,
+form input.botonSearch,
+form input.botonPrint,
+form input.botonAprobado
+{
+	float:left;
+	display:block;
+	width:83px;
+	height:37px;
+	margin-right:10px;
+	color: #FFF;
+	/* text-indent:-9000px; */
+	background: url('../interfaz/botonS.jpg') 0 0 no-repeat;
+	border:none;
+}
+form input.botonM{
+	width:125px;
+	background: url('../interfaz/botonM.jpg') 0 0 no-repeat;
+}
+form input.botonL{
+	width:200px;
+	background: url('../interfaz/botonL.jpg') 0 0 no-repeat;
+}
+
+form input.botonSave,
+form input.botonDel,
+form input.botonSaveShort,
+form input.botonAnexar,
+form input.botonCopiar,
+form input.botonProceso,
+form input.botonClear,
+form input.botonSearch,
+form input.botonPrint,
+form input.botonAprobado
+{
+	width: 95px;
+	text-align:left;
+	padding: 0 0 0 8px;
+	height:33px;
+	background: url('../interfaz/botonSave.png') 0 0 no-repeat;
+}
+form input.botonDel{ background: url('../interfaz/botonBorrar.png') 0 0 no-repeat; }
+form input.botonAnexar{ background: url('../interfaz/botonAnexar.png') 0 0 no-repeat; }
+form input.botonCopiar{ background: url('../interfaz/botonCopiar.png') 0 0 no-repeat; }
+form input.botonProceso{ background: url('../interfaz/botonProceso.png') 0 0 no-repeat; }
+form input.botonClear{ background: url('../interfaz/botonClear.png') 0 0 no-repeat; }
+form input.botonSearch{ background: url('../interfaz/botonSearch.png') 0 0 no-repeat; }
+form input.botonPrint{ background: url('../interfaz/botonPrint.png') 0 0 no-repeat; }
+form input.botonAprobado{ background: url('../interfaz/botonAprobado.png') 0 0 no-repeat; }
+
+form input.botonSaveShort{
+	width: 29px;
+	overflow: hidden;
+	background: url('../interfaz/botonSaveShort.png') 0 0 no-repeat;
+}
+
+form input.botonBuscar{
+	width:95px;
+	text-align:left;
+	padding-left:10px;
+	background: url('../interfaz/botonBuscar.jpg') 0 0 no-repeat;
+}
+form input.botonMas, form input.botonMenos{
+	width:26px;
+	height:30px;
+	text-indent:-9000px;
+	outline:hidden;
+	background: url('../interfaz/btMas.jpg') 0 0 no-repeat;
+}
+form input.botonMenos{
+	background: url('../interfaz/btMenos.jpg') 0 0 no-repeat;
+}
+form input.btUpDistribuirSolo{
+	background: url('../interfaz/btUpDistribuir.jpg') 0 0 no-repeat;
+}
+
+
+input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover{
+	background-position:0 bottom;
+}
+
+
+/* BOTONES SIMPLES -------------------------------------------------------------------------- */
+input.btAyuda{
+	float:left;
+	display:block;
+	width:46px;
+	height:44px;
+	text-indent:-9000px;
+	overflow: hidden;
+	background: url('../interfaz/btAyuda.jpg') 0 0 no-repeat;
+	border:none;
+}
+
+
+
+/******************************************************************************************************************
+PIE
+******************************************************************************************************************/
+#pie {
+	clear: both;
+	height:120px;
+	padding:25px 0 0 15px;
+	background:#FFF url('../interfaz/pie.gif') 0 top repeat-x;
+/*	border-top: 1px solid #CCC;*/
+}
+
+#pie h1{
+	font: bold 95% "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #000;
+	margin-left:10px;
+}
+#pie h2{
+	margin-bottom:-20px;
+	font-size:19px;
+	text-transform:uppercase;
+}
+
+#piePunto{
+	float:right;
+	margin-right:30px;
+}
+
+.modalBackground {
+	background-color:Gray;
+	filter:alpha(opacity=70);
+	opacity:0.7;
+}
+
+.modalPopup {
+	background-color:#ffffdd;
+	border-width:3px;
+	border-style:solid;
+	border-color:Gray;
+	padding:3px;
+	width:250px;
+}
+
+.lnkresalte{
+	clear: both;
+	margin-top: 5px;
+	padding: 2px 5px;
+	color:#FFF;
+	font-weight: bold;
+	background: #FE850C;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
+.lnkresalte:hover{
+	background: #1F487C;
+}
+.resalte{
+	color:#FE850C;
+	font-weight: bold;
+}
+
+.resalte2{
+	color:#A70707;
+	font-weight: bold;
+}
+.fuenteayuda{
+	color:#006633;
+	font-size:75%;
+	font-weight: bold;
+}
+.setentaporciento{
+	font-size:70%;
+}
+form #area label.NivelRiesgo{
+	color:#A70707;
+	font-weight: bold;
+	width:30px;
+	height:auto;
+}
+
+.salto { clear: both; }
+.salto1px{
+	clear:both;
+	height:1px;
+}
+.salto5px{
+	clear:both;
+	height:5px;
+}
+.salto50px{
+	clear:both;
+	height:50px;
+}
+/* PRUEBA DE MAURO */
+
+.limpio{
+	border:0px;
+	width:auto;
+	}
+	
+form a.cmdSoloTexto{
+	float:left;
+	display:block;
+	padding-left: 13px;
+/*	width: auto; */
+	height: 24px;
+	margin-left:5px;
+	text-decoration: none;
+	font-size: 12px;
+	color:White;
+	background-color:Orange;
+}
+
+#alarma{
+	margin:0 0 0 0;
+	position: fixed;
+	z-index: 99;
+	bottom: 0;
+	padding: 4px 0;
+	width: 100%;
+	color: #FFF;
+    background: #A70707;
+	border-top: 1px solid #32B3FF;
+}
+
+#alarma div{
+	padding: 0 0;
+}
+
+.contbusqueda{
+	padding:0;
+	margin-top:0px;
+	margin-left:0px;
+	width:780px;
+	font:85% Verdana, Arial, Helvetica, sans-serif;
+	color:#000;
+	background:none;
+    }
+    
+.novisible
+{
+    border-style:hidden;
+    border-color:#FFFFFF;
+    background-color:#FFFFFF;
+    }
+.GrupoCampos {
+	border-width:1px;
+	border-color:#999999;
+	border-style:solid;
+	padding-left:5px;
+	padding-top:0px;
+	padding-bottom:0px;
+	margin-top:5px;
+	background-color:#FFFFDD;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	border-right-width:5px;
+	}
+.GrupoCampos450 {
+	width:450px;
+	float:left;
+	border-width:1px;
+	border-color:#999999;
+	border-style:solid;
+	padding-left:5px;
+	padding-top:0px;
+	padding-bottom:0px;
+	margin-left:5px;
+	margin-top:5px;
+	background-color:#FFFFDD;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	border-right-width:5px;
+	}
+.Campo300{
+	float:left;
+	width:300px;
+	height:auto; 
+}
+.Campo220{
+	float:left;
+	width:220px;
+	height:auto; 
+}
+.TituloGrupo{
+	font-weight:bold;
+	}
