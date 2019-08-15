@@ -2,11 +2,14 @@
 /*
 --- © Angel Mauro Avellaneda Barreto - UNAD - 2015 - 2018 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
+--- © Saul Alexander Hernandez Albarracin - UNAD - 2019 ---
+--- saul.hernandez@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 2.9.1 jueves, 30 de julio de 2015
 --- Modelo Versión 2.14.3 miércoles, 20 de julio de 2016
 --- Modelo Versión 2.17.3 miércoles, 29 de marzo de 2017
 --- Modelo Versión 2.19.7c viernes, 09 de febrero de 2018
 --- Modelo Versión 2.21.0 jueves, 14 de junio de 2018
+--- Modelo Versión 2.22.6 jueves, 15 de noviembre de 2018
 --- 111 unad11terceros
 */
 function html_combo_unad11deptoorigen($objdb, $valor, $vrunad11nacionalidad){
@@ -169,12 +172,12 @@ function f111_ExisteDato($datos){
 		$objdb=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 		if ($APP->dbpuerto!=''){$objdb->dbPuerto=$APP->dbpuerto;}
 		$objdb->xajax();
-		$sql='SELECT unad11doc FROM unad11terceros WHERE unad11doc="'.$unad11doc.'" AND unad11tipodoc="'.$unad11tipodoc.'"';
-		$res=$objdb->ejecutasql($sql);
+		$sSQL='SELECT unad11doc FROM unad11terceros WHERE unad11doc="'.$unad11doc.'" AND unad11tipodoc="'.$unad11tipodoc.'"';
+		$res=$objdb->ejecutasql($sSQL);
 		if ($objdb->nf($res)==0){
 			//Intentamos importarlo primero.
 			unad11_importar_V2($unad11doc, '', $objdb);
-			$res=$objdb->ejecutasql($sql);
+			$res=$objdb->ejecutasql($sSQL);
 			}
 		if ($objdb->nf($res)==0){$bHayLlave=false;}
 		$objdb->CerrarConexion();
@@ -249,6 +252,15 @@ function f111_TablaDetalleV2($params, $objdb, $bDebug=false){
 	if (isset($params[105])==0){$params[105]='';}
 	if (isset($params[106])==0){$params[106]='';}
 	if (isset($params[107])==0){$params[107]='';}
+	if (isset($params[108])==0){$params[108]='';}
+	if (isset($params[109])==0){$params[109]='';}
+	if (isset($params[110])==0){$params[110]='';}
+	if (isset($params[111])==0){$params[111]='';}
+	if (isset($params[112])==0){$params[112]='';}
+	if (isset($params[113])==0){$params[113]='';}
+	if (isset($params[114])==0){$params[114]='';}
+	if (isset($params[115])==0){$params[115]='';}
+	if (isset($params[116])==0){$params[116]='';}
 	//$params[103]=numeros_validar($params[103]);
 	$sDebug='';
 	$pagina=$params[101];
@@ -262,72 +274,128 @@ function f111_TablaDetalleV2($params, $objdb, $bDebug=false){
 <div class="salto1px"></div>
 </div>';
 		}
-	$sqladd='';
-	$sqladd1='';
+	$sSQLadd='';
+	$sSQLadd1='';
 	$limite='';
 	//if (isset($params[0])==0){$params[0]='';}
-	//if ((int)$params[0]!=-1){$sqladd=$sqladd.' AND TB.campo='.$params[0];}
+	//if ((int)$params[0]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$params[0];}
+/*	if ($params[109]!=''){
+		$sSubConsulta='SELECT T16.core16tercero FROM core16actamatricula AS T16 WHERE T16.core16peraca='.$params[109].'';
+		$sSQLadd=$sSQLadd.' TB.unad11id IN ('.$sSubConsulta.')';
+		}
+		*/
 	if ($params[103]!=''){
-		$sqladd=$sqladd.' TB.unad11doc LIKE "%'.$params[103].'%"';
+		if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
+		$sSQLadd=$sSQLadd.' TB.unad11doc LIKE "%'.$params[103].'%"';
 		unad11_importar_V2($params[103], '', $objdb);
 		}
 	if ($params[104]!=''){
-		if ($sqladd!=''){$sqladd=$sqladd.' AND ';}
-		$sqladd=$sqladd.'TB.unad11razonsocial LIKE "%'.$params[104].'%"';
+		if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
+		$sSQLadd=$sSQLadd.'TB.unad11razonsocial LIKE "%'.$params[104].'%"';
 		}
 	if ($params[105]!=''){
-		if ($sqladd!=''){$sqladd=$sqladd.' AND ';}
-		$sqladd=$sqladd.'TB.unad11usuario LIKE "%'.$params[105].'%"';
+		if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
+		$sSQLadd=$sSQLadd.'TB.unad11usuario LIKE "%'.$params[105].'%"';
 		unad11_importar_V2('', $params[105], $objdb);
 		}
 	//parametro de correo electronico.
 	if ($params[106]!=''){
-		if ($sqladd!=''){$sqladd=$sqladd.' AND ';}
+		if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
 		switch($params[107]){
 			case 1: //Correo personal
-			$sqladd=$sqladd.'TB.unad11correo LIKE "%'.$params[106].'%"';
+			$sSQLadd=$sSQLadd.'TB.unad11correo LIKE "%'.$params[106].'%"';
 			break;
 			case 2: //Correo notificaciones
-			$sqladd=$sqladd.'TB.unad11correonotifica LIKE "%'.$params[106].'%"';
+			$sSQLadd=$sSQLadd.'TB.unad11correonotifica LIKE "%'.$params[106].'%"';
 			break;
 			case 3: //Correo institucional
-			$sqladd=$sqladd.'TB.unad11correoinstitucional LIKE "%'.$params[106].'%"';
+			$sSQLadd=$sSQLadd.'TB.unad11correoinstitucional LIKE "%'.$params[106].'%"';
+			break;
+			case 4: //Correo funcionario
+			$sSQLadd=$sSQLadd.'TB.unad11correofuncionario LIKE "%'.$params[106].'%"';
 			break;
 			default:
 			//Todos los correos...
-			$sqladd=$sqladd.'((TB.unad11correo LIKE "%'.$params[106].'%") OR (TB.unad11correonotifica LIKE "%'.$params[106].'%") OR (TB.unad11correoinstitucional LIKE "%'.$params[106].'%"))';
+			$sSQLadd=$sSQLadd.'((TB.unad11correo LIKE "%'.$params[106].'%") OR (TB.unad11correonotifica LIKE "%'.$params[106].'%") OR (TB.unad11correoinstitucional LIKE "%'.$params[106].'%") OR (TB.unad11correofuncionario LIKE "%'.$params[106].'%"))';
 			break;
 			}
 		}
+	switch($params[108]){
+		case 1:
+		if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
+		$sSQLadd=$sSQLadd.'TB.unad11fechaconfmail<>0';
+		break;
+		case 2:
+		if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
+		$sSQLadd=$sSQLadd.'TB.unad11fechaconfmail=0';
+		break;
+		}
+	//Convenio.
+	$sTablaConvenio='';
+	if ($params[110]!=''){
+		$sTablaConvenio=', core51convenioest AS T51';
+		if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
+		$sSQLadd=$sSQLadd.'TB.unad11id=T51.core51idtercero AND T51.core51idconvenio='.$params[110].' AND T51.core51activo="S"';
+		}
+	//Fecha Desde Hasta
+	if ($params[111]!='0'){
+		if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
+			$sSQLadd=$sSQLadd.'TB.unad11fechaultingreso >= '.$params[111].' ';
+		}	
+	if ($params[112]!='0'){
+		if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
+			$sSQLadd=$sSQLadd.'TB.unad11fechaultingreso <= '.$params[112].' ';
+		}	
+	
+	// cead
+	if ($params[114]!=''){
+		if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
+		$sSQLadd=$sSQLadd.' TB.unad11idcead='.$params[114].'  ';
+		}else{
+		if ($params[113]!=''){
+			if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
+			$sSQLadd=$sSQLadd.' TB.unad11idzona='.$params[113].'  ';}
+		}
+	
+       //Escuela
+				
+	if ($params[116]!=''){ //112 programa
+		if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
+	    $sSQLadd=$sSQLadd.' TB.unad11idprograma='.$params[116].'  ';
+		}else{
+		if ($params[115]!=''){ //111 escuela
+			if ($sSQLadd!=''){$sSQLadd=$sSQLadd.' AND ';}
+			$sSQLadd=$sSQLadd.'  TB.unad11idescuela='.$params[115].'  ';}
+		}	
+	
 	//, TB.unad11dv, TB.unad11nombre1, TB.unad11nombre2, TB.unad11apellido1, TB.unad11apellido2, TB.unad11genero
-	if ($sqladd!=''){$sqladd=' WHERE '.$sqladd.'';}
+	if ($sSQLadd!=''){$sSQLadd=' WHERE '.$sSQLadd.'';}
 	$sErrConsulta='';
-	$sql='SELECT TB.unad11id 
-FROM unad11terceros AS TB 
-'.$sqladd.' ';
-	$tabladetalle=$objdb->ejecutasql($sql);
+	$sSQL='SELECT 1 
+FROM unad11terceros AS TB'.$sTablaConvenio.' 
+'.$sSQLadd.' ';
+	$tabladetalle=$objdb->ejecutasql($sSQL);
 	$registros=$objdb->nf($tabladetalle);
 	if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 	if ($registros>$lineastabla){
 		$rbase=($pagina-1)*$lineastabla;
 		$limite=' LIMIT '.$rbase.', '.$lineastabla;
 		}
-	$sTitulos='doc, usuario, razonsocial, direccion, telefono, correo personal, fecha tablero, correo notificaciones, fecha confirma correo';
-	$sql='SELECT TB.unad11doc, TB.unad11usuario, TB.unad11razonsocial, TB.unad11direccion, TB.unad11telefono, TB.unad11correo, TB.unad11fechatablero, TB.unad11correonotifica, TB.unad11fechaconfmail, 
-TB.unad11fechanace, TB.unad11id, TB.unad11tipodoc 
-FROM unad11terceros AS TB 
-'.$sqladd.' 
-ORDER BY TB.unad11razonsocial';
-	//TB.unad11idmoodle, TB.unad11sitioweb, TB.unad11pais, TB.unad11ecivil, TB.unad11nacionalidad, TB.unad11deptoorigen, TB.unad11ciudadorigen, TB.unad11deptodoc, TB.unad11ciudaddoc, TB.unad11rh
-	$sqllista=str_replace("'","|",$sql);
-	$sqllista=str_replace('"',"|",$sqllista);
-	$sErrConsulta='<input id="consulta_111" name="consulta_111" type="hidden" value="'.$sqllista.'"/>
+	$sTitulos='Tipo doc,doc, usuario, razonsocial, direccion, telefono, correo personal, fecha tablero, correo notificaciones, fecha confirma correo,Fecha Nace,Escuela,Programa,Zona,Cead';
+	
+
+$sSQL='SELECT TB.unad11tipodoc, TB.unad11doc, TB.unad11usuario, TB.unad11razonsocial, TB.unad11direccion, TB.unad11telefono, TB.unad11correo, TB.unad11fechatablero, TB.unad11correonotifica, TB.unad11fechaconfmail, TB.unad11id,
+TB.unad11fechanace FROM unad11terceros AS TB'.$sTablaConvenio.$sSQLadd.'  ORDER BY TB.unad11razonsocial';
+//TB.unad11idmoodle, TB.unad11sitioweb, TB.unad11pais, TB.unad11ecivil, TB.unad11nacionalidad, TB.unad11deptoorigen, TB.unad11ciudadorigen, TB.unad11deptodoc, TB.unad11ciudaddoc, TB.unad11rh
+	$sSQLlista=str_replace("'","|",$sSQL);
+	$sSQLlista=str_replace('"',"|",$sSQLlista);
+	$sErrConsulta='<input id="consulta_111" name="consulta_111" type="hidden" value="'.$sSQLlista.'"/>
 <input id="titulos_111" name="titulos_111" type="hidden" value="'.$sTitulos.'"/>';
-	$tabladetalle=$objdb->ejecutasql($sql.$limite);
+	$tabladetalle=$objdb->ejecutasql($sSQL.$limite);
 	if ($tabladetalle==false){
-		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 111: '.$sql.'<br>';}
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 111: '.$sSQL.'<br>';}
 		$registros=0;
-		$sErrConsulta=$sErrConsulta.'..<input id="err" name="err" type="hidden" value="'.$sql.' '.$objdb->serror.'"/>';
+		$sErrConsulta=$sErrConsulta.'..<input id="err" name="err" type="hidden" value="'.$sSQL.' '.$objdb->serror.'"/>';
 		}
 	$res=$sErrConsulta.$sLeyenda.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
 <tr class="fondoazul">
@@ -460,6 +528,7 @@ function f111_db_GuardarV2($DATA, $objdb, $bDebug=false){
 	$DATA['unad11idcead']=numeros_validar($DATA['unad11idcead']);
 	$DATA['unad11idescuela']=numeros_validar($DATA['unad11idescuela']);
 	$DATA['unad11idprograma']=numeros_validar($DATA['unad11idprograma']);
+	$DATA['unad11correofuncionario']=htmlspecialchars(trim($DATA['unad11correofuncionario']));
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
 	if ($DATA['unad11idmoodle']==''){$DATA['unad11idmoodle']=0;}
 	if ($DATA['unad11idncontents']==''){$DATA['unad11idncontents']=0;}
@@ -511,8 +580,8 @@ function f111_db_GuardarV2($DATA, $objdb, $bDebug=false){
 	// -- Se verifican los valores de campos de otras tablas.
 	if ($sError==''){
 		if ($DATA['paso']==10){
-			$sql='SELECT unad11tipodoc FROM unad11terceros WHERE unad11tipodoc="'.$DATA['unad11tipodoc'].'" AND unad11doc="'.$DATA['unad11doc'].'"';
-			$result=$objdb->ejecutasql($sql);
+			$sSQL='SELECT unad11tipodoc FROM unad11terceros WHERE unad11tipodoc="'.$DATA['unad11tipodoc'].'" AND unad11doc="'.$DATA['unad11doc'].'"';
+			$result=$objdb->ejecutasql($sSQL);
 			if ($objdb->nf($result)!=0){
 				$sError=$ERR['existe'];
 				}else{
@@ -536,7 +605,7 @@ function f111_db_GuardarV2($DATA, $objdb, $bDebug=false){
 			$unad11modm=fecha_MinutoMod();
 			$scampos='unad11tipodoc, unad11doc, unad11id, unad11pais, unad11usuario, unad11dv, unad11nombre1, unad11nombre2, unad11apellido1, unad11apellido2, unad11genero, unad11fechanace, unad11rh, unad11ecivil, unad11razonsocial, unad11direccion, unad11telefono, unad11correo, unad11sitioweb, unad11nacionalidad, unad11deptoorigen, unad11ciudadorigen, unad11deptodoc, unad11ciudaddoc, unad11clave, unad11idmoodle, unad11idncontents, unad11iddatateca, unad11idcampus, unad11claveapps, unad11fechaclaveapps, unad11fechatablero, unad11bloqueado, unad11modf, unad11modm, unad11aceptanotificacion, unad11correonotifica, unad11correoinstitucional';
 			$svalores='"'.$DATA['unad11tipodoc'].'", "'.$DATA['unad11doc'].'", '.$DATA['unad11id'].', "'.$DATA['unad11pais'].'", "'.$DATA['unad11usuario'].'", "'.$DATA['unad11dv'].'", "'.$DATA['unad11nombre1'].'", "'.$DATA['unad11nombre2'].'", "'.$DATA['unad11apellido1'].'", "'.$DATA['unad11apellido2'].'", "'.$DATA['unad11genero'].'", "'.$DATA['unad11fechanace'].'", "'.$DATA['unad11rh'].'", "'.$DATA['unad11ecivil'].'", "'.$DATA['unad11razonsocial'].'", "'.$DATA['unad11direccion'].'", "'.$DATA['unad11telefono'].'", "'.$DATA['unad11correo'].'", "'.$DATA['unad11sitioweb'].'", "'.$DATA['unad11nacionalidad'].'", "'.$DATA['unad11deptoorigen'].'", "'.$DATA['unad11ciudadorigen'].'", "'.$DATA['unad11deptodoc'].'", "'.$DATA['unad11ciudaddoc'].'", "'.$DATA['unad11clave'].'", '.$DATA['unad11idmoodle'].', '.$DATA['unad11idncontents'].', '.$DATA['unad11iddatateca'].', '.$DATA['unad11idcampus'].', "'.$DATA['unad11claveapps'].'", "'.$DATA['unad11fechaclaveapps'].'", "'.$DATA['unad11fechatablero'].'", "'.$DATA['unad11bloqueado'].'", '.$unad11modf.', '.$unad11modm.', "'.$DATA['unad11aceptanotificacion'].'", "'.$DATA['unad11correonotifica'].'", "'.$DATA['unad11correoinstitucional'].'"';
-			$sql='INSERT INTO unad11terceros ('.$scampos.') VALUES ('.$svalores.');';
+			$sSQL='INSERT INTO unad11terceros ('.$scampos.') VALUES ('.$svalores.');';
 			$sdetalle=$scampos.'['.$svalores.']';
 			$idaccion=2;
 			$bpasa=true;
@@ -583,6 +652,7 @@ function f111_db_GuardarV2($DATA, $objdb, $bDebug=false){
 			$scampo[40]='unad11idcead';
 			$scampo[41]='unad11idescuela';
 			$scampo[42]='unad11idprograma';
+			$scampo[43]='unad11correofuncionario';
 			$sdato[1]=$DATA['unad11nombre1'];
 			$sdato[2]=$DATA['unad11nombre2'];
 			$sdato[3]=$DATA['unad11apellido1'];
@@ -625,12 +695,13 @@ function f111_db_GuardarV2($DATA, $objdb, $bDebug=false){
 			$sdato[40]=$DATA['unad11idcead'];
 			$sdato[41]=$DATA['unad11idescuela'];
 			$sdato[42]=$DATA['unad11idprograma'];
-			$numcmod=42;
+			$sdato[43]=$DATA['unad11correofuncionario'];
+			$numcmod=43;
 			$sWhere='unad11id='.$DATA['unad11id'].'';
-			$sql='SELECT * FROM unad11terceros WHERE '.$sWhere;
+			$sSQL='SELECT * FROM unad11terceros WHERE '.$sWhere;
 			$sdatos='';
 			$bPrimera=true;
-			$result=$objdb->ejecutasql($sql);
+			$result=$objdb->ejecutasql($sSQL);
 			if ($objdb->nf($result)>0){
 				$filabase=$objdb->sf($result);
 				if ($bDebug&&$bPrimera){
@@ -654,19 +725,19 @@ function f111_db_GuardarV2($DATA, $objdb, $bDebug=false){
 				$unad11modf=fecha_DiaMod();
 				$unad11modm=fecha_MinutoMod();
 				$sdatos=$sdatos.', unad11modf='.$unad11modf.', unad11modm='.$unad11modm.'';
-				$sql='UPDATE unad11terceros SET '.$sdatos.' WHERE '.$sWhere.';';
+				$sSQL='UPDATE unad11terceros SET '.$sdatos.' WHERE '.$sWhere.';';
 				$sdetalle=$sdatos.'['.$sWhere.']';
 				$idaccion=3;
 				}
 			}
 		if ($bpasa){
-			$result=$objdb->ejecutasql($sql);
+			$result=$objdb->ejecutasql($sSQL);
 			if ($result==false){
-				$sError=$ERR['falla_guardar'].' [111] ..<!-- '.$sql.' -->';
+				$sError=$ERR['falla_guardar'].' [111] ..<!-- '.$sSQL.' -->';
 				if ($idaccion==2){$DATA['unad11id']='';}
 				$DATA['paso']=$DATA['paso']-10;
 				}else{
-				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Guardar 111 '.$sql.'<br>';}
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Guardar 111 '.$sSQL.'<br>';}
 				if ($bAudita[$idaccion]){seg_auditar($icodmodulo, $_SESSION['unad_id_tercero'], $idaccion, $DATA['unad11id'], $sdetalle, $objdb);}
 				$DATA['paso']=2;
 				list($sErrorM, $sDebugM)=AUREA_ActualizarPerfilMoodle($DATA['unad11id'], $objdb, $bDebug);
@@ -722,8 +793,8 @@ function f111_TablaDetalleBusquedas($params, $objdb){
 	$pagina=$params[101];
 	$lineastabla=$params[102];
 	$babierta=true;
-	//$sql='SELECT Campo FROM Tabla WHERE Id='.$sValorId;
-	//$tabla=$objdb->ejecutasql($sql);
+	//$sSQL='SELECT Campo FROM Tabla WHERE Id='.$sValorId;
+	//$tabla=$objdb->ejecutasql($sSQL);
 	//if ($objdb->nf($tabla)>0){
 		//$fila=$objdb->sf($tabla);
 		//if ($fila['Campo']!='S'){$babierta=true;}
@@ -736,17 +807,17 @@ function f111_TablaDetalleBusquedas($params, $objdb){
 <div class="salto1px"></div>
 </div>';
 		}
-	$sqladd='';
-	$sqladd1='';
-	//if ((int)$params[103]!=-1){$sqladd=$sqladd.' AND TB.campo='.$params[103];}
-	if ($params[105]!=''){$sqladd1=$sqladd1.'TB.unad11doc LIKE "%'.$params[105].'%" AND ';}
+	$sSQLadd='';
+	$sSQLadd1='';
+	//if ((int)$params[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$params[103];}
+	if ($params[105]!=''){$sSQLadd1=$sSQLadd1.'TB.unad11doc LIKE "%'.$params[105].'%" AND ';}
 	if ($params[103]!=''){
 		$sBase=trim(strtoupper($params[103]));
 		$aNoms=explode(' ', $sBase);
 		for ($k=1;$k<=count($aNoms);$k++){
 			$sCadena=$aNoms[$k-1];
 			if ($sCadena!=''){
-				$sqladd1=$sqladd1.'TB.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
+				$sSQLadd1=$sSQLadd1.'TB.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
 				}
 			}
 		}
@@ -756,29 +827,40 @@ function f111_TablaDetalleBusquedas($params, $objdb){
 		for ($k=1;$k<=count($aNoms);$k++){
 			$sCadena=$aNoms[$k-1];
 			if ($sCadena!=''){
-				$sqladd1=$sqladd1.'TB.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
+				$sSQLadd1=$sSQLadd1.'TB.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
 				}
 			}
 		}
 	$sTitulos='Tipodoc, Documento, DV, Razonsocial, Genero, Fecha nacimiento, Direccion, Telefono';
 	$sOrden='';
-	if ($sqladd1!=''){
+	if ($sSQLadd1!=''){
 		$sOrden='ORDER BY TB.unad11doc';
 		}
-	$sqladd1='WHERE TB.unad11id>0 AND '.$sqladd1.' TB.unad11doc<>"0" ';
-	$sql='SELECT TB.unad11tipodoc, TB.unad11doc, TB.unad11razonsocial, TB.unad11dv, TB.unad11genero, TB.unad11fechanace, TB.unad11direccion, TB.unad11telefono, TB.unad11id 
+	$sSQLadd1='WHERE TB.unad11id>0 AND '.$sSQLadd1.' TB.unad11doc<>"0" ';
+	$limite='';
+	$sSQL='SELECT 1 
 FROM unad11terceros AS TB 
-'.$sqladd1.'
+'.$sSQLadd1.' ';
+	$tabladetalle=$objdb->ejecutasql($sSQL);
+	$registros=$objdb->nf($tabladetalle);
+	if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
+	if ($registros>$lineastabla){
+		$rbase=($pagina-1)*$lineastabla;
+		$limite=' LIMIT '.$rbase.', '.$lineastabla;
+		}
+	$sSQL='SELECT TB.unad11tipodoc, TB.unad11doc, TB.unad11razonsocial, TB.unad11dv, TB.unad11genero, TB.unad11fechanace, TB.unad11direccion, TB.unad11telefono, TB.unad11id 
+FROM unad11terceros AS TB 
+'.$sSQLadd1.'
 '.$sOrden.'';
-	$sqllista=str_replace("'","|",$sql);
-	$sqllista=str_replace('"',"|",$sqllista);
-	$sErrConsulta='<input id="consulta_busqueda" name="consulta_busqueda" type="hidden" value="'.$sqllista.'"/>
+	$sSQLlista=str_replace("'","|",$sSQL);
+	$sSQLlista=str_replace('"',"|",$sSQLlista);
+	$sErrConsulta='<input id="consulta_busqueda" name="consulta_busqueda" type="hidden" value="'.$sSQLlista.'"/>
 <input id="titulos_busqueda" name="titulos_busqueda" type="hidden" value="'.$sTitulos.'"/>';
-	$tabladetalle=$objdb->ejecutasql($sql);
+	$tabladetalle=$objdb->ejecutasql($sSQL.$limite);
 	if ($tabladetalle==false){
 		$registros=0;
-		$sErrConsulta=$sErrConsulta.'..<input id="err" name="err" type="hidden" value="'.$sql.' '.$objdb->serror.'"/>';
-		//$sLeyenda=$sql;
+		$sErrConsulta=$sErrConsulta.'..<input id="err" name="err" type="hidden" value="'.$sSQL.' '.$objdb->serror.'"/>';
+		//$sLeyenda=$sSQL;
 		}else{
 		$registros=$objdb->nf($tabladetalle);
 		if ($registros==0){
@@ -840,8 +922,8 @@ function upd_dv($params){
 	if ($APP->dbpuerto!=''){$objdb->dbPuerto=$APP->dbpuerto;}
 	$objdb->xajax();
 	$res='';
-	$sql='SELECT unad11tipodoc, unad11doc FROM unad11terceros WHERE unad11id='.$params[0];
-	$tabla=$objdb->ejecutasql($sql);
+	$sSQL='SELECT unad11tipodoc, unad11doc FROM unad11terceros WHERE unad11id='.$params[0];
+	$tabla=$objdb->ejecutasql($sSQL);
 	if ($objdb->nf($tabla)>0){
 		$fila=$objdb->sf($tabla);
 		switch ($fila['unad11tipodoc']){
@@ -850,8 +932,8 @@ function upd_dv($params){
 			case 'TI':
 			$res=numeros_dv($fila['unad11doc']);
 			}
-		$sql='UPDATE unad11terceros SET unad11dv="'.$res.'" WHERE unad11id='.$params[0];
-		$result=$objdb->ejecutasql($sql);
+		$sSQL='UPDATE unad11terceros SET unad11dv="'.$res.'" WHERE unad11id='.$params[0];
+		$result=$objdb->ejecutasql($sSQL);
 		}
 	$sfinal=html_oculto('unad11dv', $res);
 	$objResponse=new xajaxResponse();

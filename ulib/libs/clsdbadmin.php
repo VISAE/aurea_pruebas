@@ -1,6 +1,6 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2014 -2017
+--- ï¿½ Angel Mauro Avellaneda Barreto - UNAD - 2014 -2017
 - Los datos de conexion deben pasarse como parametros al momento de iniciar la clase, esos parametros pueden venir del archivo de configuracion o de una base de datos
 --- Octubre 2 de 2014 se empieza el uso de MySQLi en lugar de mysql_coneect
 --- Junio 25 de 2016 - Se ajusta la funcion conectar.

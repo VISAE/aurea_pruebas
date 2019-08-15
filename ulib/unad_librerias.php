@@ -327,6 +327,14 @@ function fecha_adate($sFecha){
 function fecha_agno(){
 	return date('Y');
 	}
+function fecha_AgnoMes(){
+	$iMes=date('Ym');
+	if ($iMes==201811){
+		return 2018;
+		}else{
+		return date('Ym');
+		}
+	}
 function fecha_armar($idia='', $imes='', $iagno=''){
 	$res='';
 	if ($idia==''){$idia=date('j');}
@@ -347,6 +355,9 @@ function fecha_ArmarNumero($idia='', $imes='', $iagno=''){
 	}
 function fecha_desdenumero($iNumero, $sVacio='00/00/0000'){
 	$res=$sVacio;
+	if ($iNumero===0){
+		return $res;
+		}
 	list($iDia, $iMes, $iAgno)=fecha_DividirNumero($iNumero);
 	if ($iAgno>0){
 		$res=fecha_armar($iDia, $iMes, $iAgno);
@@ -1376,12 +1387,19 @@ function html_menu($idsistema, $objDB, $iPiel=0){
 	list($sHTML, $sDebug)=html_menuV2($idsistema, $objDB, $iPiel);
 	return $sHTML;
 	}
-function html_menuV2($idsistema, $objDB, $iPiel=0, $bDebug=false){
+function html_menuV2($idsistema, $objDB, $iPiel=0, $bDebug=false, $idTercero=0){
 	//if (isset($_SESSION['ent_chat'])==0){$_SESSION['ent_chat']='N';}
 	$bpasa=true;
 	$sDebug='';
+	require './app.php';
+	$idEntidad=0;
+	if (isset($APP->entidad)!=0){
+		if ($APP->entidad==1){$idEntidad=1;}
+		}
 	$_SESSION['u_ultimominuto']=iminutoavance();
-	$idTercero=$_SESSION['unad_id_tercero'];
+	if ($idTercero==0){
+		$idTercero=$_SESSION['unad_id_tercero'];
+		}
 	$sDebug=sesion_actualizar_v2($objDB, $bDebug);
 	$et_ini='Inicio';
 	$et_panel='Panel';
@@ -1501,7 +1519,9 @@ ORDER BY unad08id';
 			}
 		}else{
 		//no hay tercero
-		$res=$res.$sInicioBloque.$sInicioItem.'<a href="http://campus.unad.edu.co"'.$sClaseLinkItem.'><span>'.$et_inisesion.'</span></a>'.$sFinItem.$sFinBloque;
+		$sRutaLogin='http://campus.unad.edu.co';
+		if ($idEntidad==1){$sRutaLogin='http://aurea.unad.us/campus/';}
+		$res=$res.$sInicioBloque.$sInicioItem.'<a href="'.$sRutaLogin.'"'.$sClaseLinkItem.'><span>'.$et_inisesion.'</span></a>'.$sFinItem.$sFinBloque;
 		}
 	$res=$res.'<li'.$sClaseLiBase.'><a href="#"'.$sClaseLinkBase.'><span>'.$et_ayuda.'</span></a>'.$sInicioBloque;
 	//Acceso a los modulos en los que tiene permiso.
@@ -1764,8 +1784,15 @@ function html_TablaHoraMin($iHora, $iMin, $iFormato=1){
 	return $res;
 	}
 function html_TablaHoraMinDesdeNumero($iHoraMin, $iFormato=1){
+	$iHoraMin=numeros_validar($iHoraMin);
 	$iHora=0;
 	$iMinuto=0;
+	if ($iHoraMin==''){
+		return '';
+		}
+	if ($iHoraMin==0){
+		return '00:00';
+		}
 	if ($iHoraMin>1440){
 		$iDias=(int)($iHoraMin/1440);
 		$iHoraMin=$iHoraMin-($iDias*1440);
@@ -1805,6 +1832,7 @@ function html_TablaTiempo($iHora, $iMin, $iSeg, $iMilecimas=2){
 		}
 	return $res;
 	}
+//04 de Junio de 2019 - Esta funcion se deprecia, se deberia usar la libreria clsHtmlTercero->Traer
 function html_tercero($sTipoDoc, $sDoc, $id, $iModelo, $objDB){
 	$sHTML='';
 	$sCondi='';
@@ -1817,7 +1845,7 @@ function html_tercero($sTipoDoc, $sDoc, $id, $iModelo, $objDB){
 	$tablater=$objDB->ejecutasql($sql);
 	if ($objDB->nf($tablater)>0){
 		$filater=$objDB->sf($tablater);
-		$sHTML='<b>'.cadena_notildes($filater['unad11razonsocial']).'</b>';//<br>'.cadena_notildes($filater['unad11direccion']).' - '.$filater['unad11telefono']
+		$sHTML='<b>'.cadena_notildes($filater['unad11razonsocial']).'</b>';
 		$id=$filater['unad11id'];
 		$sTipoDoc=$filater['unad11tipodoc'];
 		$sDoc=$filater['unad11doc'];
@@ -1889,7 +1917,7 @@ function login_cerrarsesion_v2($idsesion, $objDB, $bDebug=false){
 	$sDebug='';
 	if ($idsesion!=0){
 		if (isset($_SESSION['unad_agno'])==0){$_SESSION['unad_agno']='';}
-		$sTabla='unad71sesion'.$_SESSION['unad_agno'];
+		$sTabla='unad71sesion'.fecha_AgnoMes();
 		if (!tabla_existe($sTabla, $objDB)){
 			$sTabla='unad71sesion';
 			}
@@ -1915,11 +1943,12 @@ function login_iniciarsesion($objDB, $bDebug=false){
 		$_SESSION['unad_id_sesion']=0;
 		$_SESSION['u_ipusuario']='';
 		}
+	$iAgnoMes=fecha_AgnoMes();
 	if ($bDebug){
-		$sDebug=$sDebug.fecha_microtiempo().' A&ntilde;o de la sesion '.$_SESSION['unad_agno'].'<br>';
-		$sTabla71='unad71sesion'.$_SESSION['unad_agno'];
+		$sDebug=$sDebug.fecha_microtiempo().' Sesiones de '.$iAgnoMes.'<br>';
+		$sTabla71='unad71sesion'.$iAgnoMes;
 		if (!tabla_existe($sTabla71, $objDB)){
-			$sDebug=$sDebug.fecha_microtiempo().' No existe la tabla <b>unad71sesion'.$_SESSION['unad_agno'].'</b><br>';
+			$sDebug=$sDebug.fecha_microtiempo().' No existe la tabla <b>unad71sesion'.$iAgnoMes.'</b><br>';
 			}
 		}
 	if ($_SESSION['unad_id_sesion']==0){
@@ -1927,9 +1956,9 @@ function login_iniciarsesion($objDB, $bDebug=false){
 		$fechaini=fecha_DiaMod();
 		$horaini=fecha_hora();
 		$minutoini=fecha_minuto();
-		$sTabla71='unad71sesion'.$_SESSION['unad_agno'];
+		$sTabla71='unad71sesion'.$iAgnoMes;
 		if (!tabla_existe($sTabla71, $objDB)){
-			if (!tabla_crear(71, $_SESSION['unad_agno'], '', $objDB)){
+			if (!tabla_crear(71, $iAgnoMes, '', $objDB)){
 				$sTabla71='unad71sesion';
 				}
 			}
@@ -1942,14 +1971,18 @@ function login_iniciarsesion($objDB, $bDebug=false){
 		if (isset($_COOKIE['idPC'])!=0){
 			$sHost=$_COOKIE['idPC'];
 			}
+		$_SESSION['unad_sesion_minuto']=($horaini*60)+$minutoini;
 		$scampos='unad71id, unad71idtercero, unad71iporigen, unad71fechaini, unad71horaini, unad71minutoini, unad71fechafin, unad71horafin, unad71minutofin, unad71tiempototal, unad71navegador, unad71sistoperativo, unad71latgrados, unad71latdecimas, unad71longrados, unad71longdecimas, unad71proximidad, unad71estado, unad71hostname';
 		$svalores=''.$res.', '.$_SESSION['unad_id_tercero'].', "'.$dirip.'", "'.$fechaini.'", '.$horaini.', '.$minutoini.', "'.$fechaini.'", '.$horaini.', '.$minutoini.', 0,"'.$sNavegador.'","", 0, "", 0, "", 0, 0, "'.$sHost.'"';
 		$sql='INSERT INTO '.$sTabla71.'('.$scampos.') VALUES ('.$svalores.');';
 		$result=$objDB->ejecutasql($sql);
-		//Junio 14 agregamos la ultima fecha de acceso al sistema.
+		//Junio 14 2018 agregamos la ultima fecha de acceso al sistema.
 		$sql='UPDATE unad11terceros SET unad11fechaultingreso='.$fechaini.'  WHERE unad11id='.$_SESSION['unad_id_tercero'].'';
 		$result=$objDB->ejecutasql($sql);
 		seg_rastro(17, 1, 0, $_SESSION['unad_id_tercero'], 'Inicia sesion '.$res.' en '.$sTabla71.'', $objDB);
+		//Enero 23 de 2019 - Se incluye la revision de perfiles que se deja en la libdatos.
+		list($sError, $sDebugG)=f107_VerificarPerfiles($_SESSION['unad_id_tercero'], '', $objDB, $bDebug);
+		$sDebug=$sDebug.$sDebugG;
 		}
 	return $sDebug;
 	}
@@ -2253,7 +2286,8 @@ function seg_auditar($idmodulo, $idtercero, $idaccion, $idregistro, $sdetalle, $
 	$res=false;
 	$sDebug='';
 	//Alistar las variables.
-	require './app.php';
+	$sDirBase=__DIR__.'/';
+	require $sDirBase.'app.php';
 	if (isset($APP->idsistema)==0){$APP->idsistema=0;}
 	//ubicar la tabla de auditoria.
 	$stabla='unad52auditoria'.date('Y');
@@ -2329,48 +2363,55 @@ function seg_revisa_permiso($idModulo, $permiso, $objDB){
 	return $devuelve;
 	}
 function seg_revisa_permisoV2($idModulo, $idPermiso, $idTercero, $objDB){
+	list($devuelve, $sDebug)=seg_revisa_permisoV3($idModulo, $idPermiso, $idTercero, $objDB, false);
+	return $devuelve;
+	}
+function seg_revisa_permisoV3($idModulo, $idPermiso, $idTercero, $objDB, $bDebug=false){
 	$devuelve=false;
+	$sDebug='';
 	if (($idTercero!=0)&&($idModulo!=0)){
-		$sql="SELECT T6.unad06vigente 
+		$sSQL="SELECT TB.unad07idperfil 
 FROM unad07usuarios AS TB, unad06perfilmodpermiso AS T6 
 WHERE TB.unad07idtercero=".$idTercero." AND TB.unad07vigente='S' AND TB.unad07idperfil=T6.unad06idperfil AND T6.unad06vigente='S' AND T6.unad06idmodulo=".$idModulo." AND T6.unad06idpermiso=".$idPermiso.'';
-		$result=$objDB->ejecutasql($sql);
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Revision del permiso ['.$idPermiso.']: '.$sSQL.'<br>';}
+		$result=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($result)>0){$devuelve=true;}
+		}else{
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' No se ha recibido tercero ['.$idTercero.'] o modulo ['.$idModulo.'] al revisar el permiso '.$idPermiso.'<br>';}
 		}
-	return $devuelve;
+	return array($devuelve, $sDebug);
 	}
 // -- Funciones para le manejo de sesiones.
 function sesion_actualizar_v2($objDB, $bDebug=false){
 	$bHayDB=false;
 	$sDebug='';
-	require './app.php';
-	if ($objDB==NULL){
-		$bHayDB=true;
-		if (!class_exists('clsdbadmin')){
-			require_once $APP->rutacomun.'libs/clsdbadmin.php';
-			}
-		$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
-		if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
-		$objDB->xajax();
-		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Conectando la DB<br>';}
-		}
-	//Actualizar la sesion...
-	if (isset($_SESSION['unad_id_sesion'])==0){
-		//require $APP->rutacomun.'unad_sesion.php';
-		}
+	$bEntra=false;
 	if (isset($_SESSION['unad_id_sesion'])!=0){
+		$bEntra=true;
+		if (isset($_SESSION['unad_sesion_minuto'])==0){$_SESSION['unad_sesion_minuto']=0;}
 		$hora=fecha_hora();
 		$minuto=fecha_minuto();
-		if (isset($_SESSION['unad_agno'])==0){$_SESSION['unad_agno']=fecha_agno();}
-		$sTabla71='unad71sesion'.$_SESSION['unad_agno'];
-		$sql='UPDATE '.$sTabla71.' SET unad71horafin='.$hora.', unad71minutofin='.$minuto.' WHERE unad71id='.$_SESSION['unad_id_sesion'].'';
-		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Actualizando la sesion '.$sql.'<br>';}
-		$result=$objDB->ejecutasql($sql);
-		}else{
-		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' NO HAY SESION !!!!<br>';}
+		if ($_SESSION['unad_sesion_minuto']==(($hora*60)+$minuto)){$bEntra=false;}
 		}
-	if ($bHayDB){
-		$objDB->CerrarConexion();
+	if ($bEntra){
+		if ($objDB==NULL){
+			$bHayDB=true;
+			require './app.php';
+			if (!class_exists('clsdbadmin')){
+				require_once $APP->rutacomun.'libs/clsdbadmin.php';
+				}
+			$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+			if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+			$objDB->xajax();
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Conectando la DB<br>';}
+			}
+		$sTabla71='unad71sesion'.fecha_AgnoMes();
+		$sSQL='UPDATE '.$sTabla71.' SET unad71horafin='.$hora.', unad71minutofin='.$minuto.' WHERE unad71id='.$_SESSION['unad_id_sesion'].'';
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Actualizando la sesion '.$sSQL.'<br>';}
+		$result=$objDB->ejecutasql($sSQL);
+		if ($bHayDB){
+			$objDB->CerrarConexion();
+			}
 		}
 	return $sDebug;
 	}
@@ -2426,7 +2467,7 @@ function sys_traeripreal(){
 
 function tercero_anexos_cargar($idtercero, $objDB){
 	$id60=0;
-	$sql60='';
+	$sSQL60='';
 	}
 function tercero_historial($idtercero, $sdir, $stel, $smail, $objDB){
 	}
@@ -2443,15 +2484,15 @@ function tabla_consecutivo($stabla, $scampoconsec, $swhere, $objDB, $bNegativo=f
 		$scondi='';
 		if ($swhere!=''){$scondi=' WHERE '.$swhere;}
 		if ($bNegativo){
-			$sql='SELECT MIN('.$scampoconsec.') FROM '.$stabla.' '.$scondi;
+			$sSQL='SELECT MIN('.$scampoconsec.') FROM '.$stabla.' '.$scondi;
 			$iPaso=-1;
 			}else{
-			$sql='SELECT MAX('.$scampoconsec.') FROM '.$stabla.' '.$scondi;
+			$sSQL='SELECT MAX('.$scampoconsec.') FROM '.$stabla.' '.$scondi;
 			$iPaso=1;
 			}
-		$hhhh=$objDB->ejecutasql($sql);
+		$hhhh=$objDB->ejecutasql($sSQL);
 		if ($hhhh==false){
-			$sError=$sql;
+			$sError=$sSQL;
 			$res=-1;
 			}else{
 			if ($objDB->nf($hhhh)>0){
@@ -2477,15 +2518,15 @@ function tabla_campoxid($stabla, $scamponombre, $scampoid, $svalorid, $svalordef
 	if ($stabla==''){$sError='Sin tabla';}
 	if ($scamponombre==''){$sError='Sin campos nombre';}
 	if ($sError==''){
-		$sql='SELECT '.$scamponombre.' FROM '.$stabla.' WHERE '.$scampoid.'='.$svalorid;
-		$result=$objDB->ejecutasql($sql);
+		$sSQL='SELECT '.$scamponombre.' FROM '.$stabla.' WHERE '.$scampoid.'='.$svalorid;
+		$result=$objDB->ejecutasql($sSQL);
 		if ($result!=false){
 			if ($objDB->nf($result)>0){
 				$row=$objDB->sf($result);
 				$res=$row[0];
 				}
 			}else{
-			$sError=$sql;
+			$sError=$sSQL;
 			}
 		}
 	return array ($res, $sError);
@@ -2495,29 +2536,29 @@ function tabla_crear($idTabla, $sRef1, $sRef2, $objDB){
 	switch ($idTabla){
 		case 71: // Sesiones.
 		$sTabla='unad71sesion'.$sRef1;
-		$sql='CREATE TABLE '.$sTabla.' (unad71id int NOT NULL, unad71idtercero int NULL DEFAULT 0, unad71iporigen varchar(50) NULL, unad71fechaini int NULL DEFAULT 0, unad71horaini int NULL DEFAULT 0, unad71minutoini int NULL DEFAULT 0, unad71fechafin int NULL DEFAULT 0, unad71horafin int NULL DEFAULT 0, unad71minutofin int NULL DEFAULT 0, unad71tiempototal int NULL DEFAULT 0, unad71navegador varchar(50) NULL, unad71sistoperativo varchar(50) NULL, unad71latgrados int NULL DEFAULT 0, unad71latdecimas varchar(10) NULL, unad71longrados int NULL DEFAULT 0, unad71longdecimas varchar(10) NULL, unad71proximidad int NULL DEFAULT 0, unad71estado int NULL DEFAULT 0, unad71hostname varchar(100) NULL)';
-		$result=$objDB->ejecutasql($sql);
+		$sSQL='CREATE TABLE '.$sTabla.' (unad71id int NOT NULL, unad71idtercero int NULL DEFAULT 0, unad71iporigen varchar(50) NULL, unad71fechaini int NULL DEFAULT 0, unad71horaini int NULL DEFAULT 0, unad71minutoini int NULL DEFAULT 0, unad71fechafin int NULL DEFAULT 0, unad71horafin int NULL DEFAULT 0, unad71minutofin int NULL DEFAULT 0, unad71tiempototal int NULL DEFAULT 0, unad71navegador varchar(50) NULL, unad71sistoperativo varchar(50) NULL, unad71latgrados int NULL DEFAULT 0, unad71latdecimas varchar(10) NULL, unad71longrados int NULL DEFAULT 0, unad71longdecimas varchar(10) NULL, unad71proximidad int NULL DEFAULT 0, unad71estado int NULL DEFAULT 0, unad71hostname varchar(100) NULL)';
+		$result=$objDB->ejecutasql($sSQL);
 		if ($result==false){
 			}else{
 			$bCrea=true;
-			$sql='ALTER TABLE '.$sTabla.' ADD PRIMARY KEY(unad71id)';
-			$result=$objDB->ejecutasql($sql);
-			$sql='ALTER TABLE '.$sTabla.' ADD INDEX unad71sesion_tercero(unad71idtercero)';
-			$result=$objDB->ejecutasql($sql);
-			$sql='ALTER TABLE '.$sTabla.' ADD INDEX unad71sesion_lat(unad71latgrados)';
-			$result=$objDB->ejecutasql($sql);
-			$sql='ALTER TABLE '.$sTabla.' ADD INDEX unad71sesion_dia(unad71fechaini)';
-			$result=$objDB->ejecutasql($sql);
-			$sql='ALTER TABLE '.$sTabla.' ADD INDEX unad71sesion_ip(unad71iporigen)';
-			$result=$objDB->ejecutasql($sql);
+			$sSQL='ALTER TABLE '.$sTabla.' ADD PRIMARY KEY(unad71id)';
+			$result=$objDB->ejecutasql($sSQL);
+			$sSQL='ALTER TABLE '.$sTabla.' ADD INDEX unad71sesion_tercero(unad71idtercero)';
+			$result=$objDB->ejecutasql($sSQL);
+			$sSQL='ALTER TABLE '.$sTabla.' ADD INDEX unad71sesion_lat(unad71latgrados)';
+			$result=$objDB->ejecutasql($sSQL);
+			$sSQL='ALTER TABLE '.$sTabla.' ADD INDEX unad71sesion_dia(unad71fechaini)';
+			$result=$objDB->ejecutasql($sSQL);
+			$sSQL='ALTER TABLE '.$sTabla.' ADD INDEX unad71sesion_ip(unad71iporigen)';
+			$result=$objDB->ejecutasql($sSQL);
 			}
 		}
 	return $bCrea;
 	}
 function tabla_existe($sTabla, $objDB, $bDebug=false){
 	$bExiste=false;
-	$sql='SHOW TABLES LIKE "'.$sTabla.'"';
-	$tabla=$objDB->ejecutasql($sql);
+	$sSQL='SHOW TABLES LIKE "'.$sTabla.'"';
+	$tabla=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla)>0){
 		$bExiste=true;
 		}
@@ -2527,8 +2568,8 @@ function tabla_existe($sTabla, $objDB, $bDebug=false){
 // -- Verificar que un tercero exista.
 function tabla_terceros_existe($td, $doc, $objDB, $spref='El tercero ',$spost=' no existe'){
 	$res='';
-	$sql='SELECT unad11id FROM unad11terceros WHERE unad11tipodoc="'.$td.'" AND unad11doc="'.$doc.'"';
-	$result=$objDB->ejecutasql($sql);
+	$sSQL='SELECT unad11id FROM unad11terceros WHERE unad11tipodoc="'.$td.'" AND unad11doc="'.$doc.'"';
+	$result=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($result)==0){
 		$res=$spref.$td.' '.$doc.$spost;
 		}
@@ -2538,8 +2579,8 @@ function tabla_terceros_existe($td, $doc, $objDB, $spref='El tercero ',$spost=' 
 function tabla_terceros_info($td, $doc, $objDB){
 	$res='';
 	$id=0;
-	$sql='SELECT unad11razonsocial, unad11direccion, unad11telefono, unad11id FROM unad11terceros WHERE unad11doc="'.$doc.'" AND unad11tipodoc="'.$td.'"';
-	$result=$objDB->ejecutasql($sql);
+	$sSQL='SELECT unad11razonsocial, unad11direccion, unad11telefono, unad11id FROM unad11terceros WHERE unad11doc="'.$doc.'" AND unad11tipodoc="'.$td.'"';
+	$result=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($result)>0){
 		$row=$objDB->sf($result);
 		$res='<b>'.cadena_notildes($row[0]).'</b>';

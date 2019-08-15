@@ -132,7 +132,7 @@ class clsHtmlCombos{
 		$this->addItem($sValorSi, $sEtiquetaSi, $sEstiloSi);
 		$this->addItem($sValorNo, $sEtiquetaNo, $sEstiloNo);
 		}
-	function __construct($sNombre, $sValorCombo='', $bConVacio=true, $sEtiVacio='{Seleccione Uno}', $sVrVacio=''){
+	function __construct($sNombre='', $sValorCombo='', $bConVacio=true, $sEtiVacio='{Seleccione Uno}', $sVrVacio=''){
 		$this->nuevo($sNombre, $sValorCombo, $bConVacio, $sEtiVacio);
 		}
 	}
@@ -553,6 +553,179 @@ function __construct($iPiel=1, $iSuperior=0){
 	$this->iSuperior=$iSuperior;
 	}
 }
+class clsHtmlTercero{
+var $bConCorreo=false;
+var $bConDireccion=false;
+var $bConGrupoCampos=true;
+var $bConTelefono=false;
+var $bExiste=false;
+var $bOculto=false;
+var $bSoloDatos=false;
+var $idTercero=0;
+var $iForma=0;
+var $iMarcador=0;
+var $iPiel=0;
+var $sDoc='';
+var $sCorreo='';
+var $sCorreoInstitucional='';
+var $sDireccion='';
+var $sNombreCampo='unad11id';
+var $sRazonSocial='&nbsp;';
+var $sTelefono='';
+var $sTipoDoc='CC';
+var $sTituloCampo='Tercero';
+// datos constantes que se toman de las librerias de idioma o del app.php
+var $STIPODOC='CC';
+var $ETI_INGDOC='';
+var $ETI_CORREO='';
+var $ETI_DIRECCION='';
+var $ETI_TELEFONO='';
+function Cargar($objDB){
+	$this->Traer('', '', $this->idTercero, $objDB);
+	}
+function html(){
+	$sRes='';
+	$sGC='';
+	$sGCc='';
+	if ($this->bConGrupoCampos){
+		$sGC='<div class="GrupoCampos450">
+';
+		$sGCc='<div class="salto1px"></div>
+</div>
+';
+		}
+	$sRes=$this->HtmlTitulo();
+	$sRes=$sRes.html_salto();
+	if ($this->bSoloDatos){
+		$sRes=$sRes.$this->HtmlDatos();
+		}else{
+		$sRes=$sRes.$this->HtmlCuerpo();
+		}
+	return $sGC.$sRes.$sGCc;
+	}
+function Limpiar(){
+	$this->sDoc='';
+	$this->sCorreo='';
+	$this->sCorreoInstitucional='';
+	$this->sDireccion='';
+	$this->sRazonSocial='&nbsp;';
+	$this->sTelefono='';
+	$this->sTipoDoc=$this->STIPODOC;
+	$this->bExiste=false;
+	}
+function HtmlCuerpo(){
+	$sPref='<b>';
+	$sSuf='</b>';
+	if (!$this->bExiste){
+		$sPref='';
+		$sSuf='';
+		}
+	$sRes='<input id="'.$this->sNombreCampo.'" name="'.$this->sNombreCampo.'" type="hidden" value="'.$this->idTercero.'"/>
+<div id="div_'.$this->sNombreCampo.'_llaves">'.html_DivTerceroV3($this->sNombreCampo, $this->sTipoDoc, $this->sDoc, $this->bOculto, $this->iPiel, $this->iMarcador, $this->ETI_INGDOC).'</div>'
+.html_salto().'
+<div id="div_'.$this->sNombreCampo.'" class="L">'.$sPref.cadena_notildes($this->sRazonSocial).$sSuf.'</div>';
+	if ($this->bConDireccion){
+		$sRes=$sRes.html_salto().$this->HtmlDireccion();
+		}
+	if ($this->bConTelefono){
+		$sRes=$sRes.html_salto().$this->HtmlTelefono();
+		}
+	if ($this->bConCorreo){
+		$sRes=$sRes.html_salto().$this->HtmlCorreo();
+		}
+	return $sRes;
+	}
+function HtmlCorreo(){
+	$sRes='<label class="L">'.$this->ETI_CORREO.' <b>'.$this->sCorreoInstitucional.'</b></label>';
+	return $sRes;
+	}
+function HtmlDireccion(){
+	$sRes='<label class="L">'.$this->ETI_DIRECCION.' <b>'.$this->sDireccion.'</b></label>';
+	return $sRes;
+	}
+function HtmlTelefono(){
+	$sRes='<label class="L">'.$this->ETI_TELEFONO.' <b>'.$this->sTelefono.'</b></label>';
+	return $sRes;
+	}
+function HtmlDatos(){
+	$sRes='<label class="Label350"><b>'.$this->sTipoDoc.' '.$this->sDoc.'</b></label>'
+.html_salto().'
+<label class="L"><b>'.cadena_notildes($this->sRazonSocial).'</b></label>';
+	if ($this->bConDireccion){
+		$sRes=$sRes.html_salto().$this->HtmlDireccion();
+		}
+	if ($this->bConTelefono){
+		$sRes=$sRes.html_salto().$this->HtmlTelefono();
+		}
+	if ($this->bConCorreo){
+		$sRes=$sRes.html_salto().$this->HtmlCorreo();
+		}
+	return $sRes;
+	}
+function HtmlTitulo(){
+	$sRes='<label class="TituloGrupo">'.$this->sTituloCampo.'</label>';
+	return $sRes;
+	}
+function Traer($sTipoDoc, $sDoc, $id, $objDB){
+	$this->bExiste=false;
+	$this->Limpiar();
+	$this->idTercero=0;
+	$sError='';
+	$sCondi='unad11id='.$id.'';
+	if ($sDoc!=''){
+		$sVerifica=htmlspecialchars($sTipoDoc.$sDoc);
+		if ($sVerifica!=$sTipoDoc.$sDoc){
+			$sError='Quieto veneno... que estan intentando hacer...';
+			}
+		if ($sError==''){
+			$sCondi='unad11tipodoc="'.$sTipoDoc.'" AND unad11doc="'.$sDoc.'"';
+			}
+		}
+	if ($sError==''){
+		$sSQL='SELECT unad11id, unad11tipodoc, unad11doc, unad11razonsocial, unad11telefono, unad11direccion, unad11correo, unad11correonotifica, unad11correoinstitucional, unad11correofuncionario FROM unad11terceros WHERE '.$sCondi;
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
+			$this->idTercero=$fila['unad11id'];
+			$this->sDoc=$fila['unad11doc'];
+			$this->sCorreo=$fila['unad11correo'];
+			$this->sCorreoInstitucional=$fila['unad11correoinstitucional'];
+			if (correo_VerificarDireccion($fila['unad11correofuncionario'])){
+				$this->sCorreoInstitucional=$fila['unad11correofuncionario'];
+				}
+			$this->sDireccion=$fila['unad11direccion'];
+			$this->sRazonSocial=$fila['unad11razonsocial'];
+			$this->sTelefono=$fila['unad11telefono'];
+			$this->sTipoDoc=$fila['unad11tipodoc'];
+			$this->bExiste=true;
+			}else{
+			$this->sRazonSocial='{'.'No encontrado'.'}';
+			}
+		}
+	return array($this->sTipoDoc, $this->sDoc, $this->idTercero);
+	}
+function __construct($idTercero=0, $sNombreCampo='unad11id', $sTituloCampo='Tercero', $iMarcador=0){
+	require './app.php';
+	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+	$mensajes_111=$APP->rutacomun.'lg/lg_111_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_111)){$mensajes_111=$APP->rutacomun.'lg/lg_111_es.php';}
+	require $mensajes_todas;
+	require $mensajes_111;
+
+	$this->STIPODOC=$APP->tipo_doc;
+	$this->ETI_INGDOC=$ETI['ing_doc'];
+	$this->ETI_CORREO=$ETI['unad11correo'];
+	$this->ETI_DIRECCION=$ETI['unad11direccion'];
+	$this->ETI_TELEFONO=$ETI['unad11telefono'];
+	
+	$this->Limpiar();
+	$this->idTercero=$idTercero;
+	$this->iMarcador=$iMarcador;
+	$this->sNombreCampo=$sNombreCampo;
+	$this->sTituloCampo=$sTituloCampo;
+	}
+}
 function html_BotonAyuda($sNombreCampo, $sTituloCampo='Informaci&oacute;n relevante'){
 	$res='<label class="Label30">
 <input id="cmdAyuda_'.$sNombreCampo.'" name="cmdAyuda_'.$sNombreCampo.'" type="button" class="btMiniAyuda" onclick="AyudaLocal(\''.$sNombreCampo.'\');" title="'.$sTituloCampo.'" />
@@ -598,13 +771,12 @@ function html_DivTerceroV2($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $idAccion=
 function html_DivTerceroV3($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $iPiel, $idAccion=0, $sPlaceHolder='', $iBotones=3){
 	$sRes='';
 	if ($bOculto){
-		$sRes='<label class="Label350">'.html_oculto($sNombreCampo.'_td',$sTipoDoc).' '.html_oculto($sNombreCampo.'_doc',$sDoc).'</label>';
+		$sRes=''.html_oculto($sNombreCampo.'_td',$sTipoDoc).' '.html_oculto($sNombreCampo.'_doc',$sDoc).'';
 		}else{
 		$sAdd='';
 		if ($sPlaceHolder!=''){$sAdd=' placeholder="'.$sPlaceHolder.'"';}
 		$sRes=html_tipodocV2($sNombreCampo.'_td', $sTipoDoc, "ter_muestra('".$sNombreCampo."', ".$idAccion.")", false).'
-<input id="'.$sNombreCampo.'_doc" name="'.$sNombreCampo.'_doc" type="text" value="'.$sDoc.'" onchange="ter_muestra(\''.$sNombreCampo.'\','.$idAccion.')" maxlength="13" onclick="revfoco(this);"'.$sAdd.'/>
-</label>';
+<input id="'.$sNombreCampo.'_doc" name="'.$sNombreCampo.'_doc" type="text" value="'.$sDoc.'" onchange="ter_muestra(\''.$sNombreCampo.'\','.$idAccion.')" maxlength="13" onclick="revfoco(this);"'.$sAdd.'/>';
 		$bConbuscar=false;
 		$bConCrear=false;
 		switch($iBotones){
@@ -616,13 +788,14 @@ function html_DivTerceroV3($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $iPiel, $i
 			break;
 			}
 		if ($bConbuscar){
-			$sRes=$sRes.'<label class="Label30">
-<input type="button" name="b'.$sNombreCampo.'" value="Buscar" class="btMiniBuscar" onclick="buscarV2016(\''.$sNombreCampo.'\')" title="Buscar Tercero"/>
-</label>';
+			$sRes=$sRes.'</label>
+<label class="Label30">
+<input type="button" name="b'.$sNombreCampo.'" value="Buscar" class="btMiniBuscar" onclick="buscarV2016(\''.$sNombreCampo.'\')" title="Buscar Tercero"/>';
 			}
 		if ($bConCrear){
-			$sRes=$sRes.'<label class="Label30">
-<input type="button" name="c'.$sNombreCampo.'" value="Buscar" class="btMiniPersona" onclick="ter_crea(\''.$sNombreCampo.'\','.$idAccion.')" title="Crear Tercero"/>';
+			$sRes=$sRes.'</label>
+<label class="Label30">
+<input type="button" name="c'.$sNombreCampo.'" value="Crear" class="btMiniPersona" onclick="ter_crea(\''.$sNombreCampo.'\','.$idAccion.')" title="Crear Tercero"/>';
 			}
 		}
 	return '<label class="Label350">'.$sRes.'</label>';
@@ -723,5 +896,8 @@ function html_notaV3($nota,$bocultacero=true, $iVrAprueba=3, $iVrMaximo=5, $iDec
 			}
 		}
 	return $res;
+	}
+function html_salto(){
+	return '<div class="salto1px"></div>';
 	}
 ?>

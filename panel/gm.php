@@ -1,8 +1,8 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2017 ---
+--- ï¿½ Angel Mauro Avellaneda Barreto - UNAD - 2017 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
---- Modelo Versión 2.17.0 sábado, 25 de marzo de 2017
+--- Modelo Versiï¿½n 2.17.0 sï¿½bado, 25 de marzo de 2017
 */
 if (file_exists('./err_control.php')){require './err_control.php';}
 $bDebug=false;

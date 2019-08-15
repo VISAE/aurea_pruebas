@@ -2,12 +2,15 @@
 /*
 --- © Angel Mauro Avellaneda Barreto - UNAD - 2014 - 2018 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
+--- © Saul Alexander Hernandez Albarracin - UNAD - 2019 ---
+--- saul.hernandez@unad.edu.co - http://www.unad.edu.co
 --- Modelo Version 0.4.0 jueves, 06 de febrero de 2014
 --- Modelo Version 0.8.0 miércoles, 19 de marzo de 2014
 --- Modelo Versión 1.2.2 martes, 22 de julio de 2014
 --- Modelo Versión 2.9.1 jueves, 30 de julio de 2015
 --- Modelo Versión 2.19.7c viernes, 09 de febrero de 2018
 --- Modelo Versión 2.21.0 jueves, 14 de junio de 2018
+--- Modelo Versión 2.22.6 jueves, 15 de noviembre de 2018
 */
 if (file_exists('./err_control.php')){require './err_control.php';}
 $bDebug=false;
@@ -58,6 +61,8 @@ require $APP->rutacomun.'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun.'unad_xajax.php';
 require $APP->rutacomun.'libaurea.php';
 require $APP->rutacomun.'unad_login.php';
+require $APP->rutacomun.'libdatos.php';
+require $APP->rutacomun.'lib2202comun.php';
 if (($bPeticionXAJAX)&&($_SESSION['unad_id_tercero']==0)){
 	// viene por xajax.
 	$xajax=new xajax();
@@ -93,6 +98,16 @@ if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 if (isset($APP->piel)==0){$APP->piel=1;}
 $iPiel=$APP->piel;
 $iPiel=1; //Piel 2018.
+if ($bDebug){
+	$sDebug=$sDebug.''.fecha_microtiempo().' Probando conexi&oacute;n con la base de datos <b>'.$APP->dbname.'</b> en <b>'.$APP->dbhost.'</b><br>';
+	}
+if (!$objDB->Conectar()){
+	$bCerrado=true;
+	if ($bDebug){
+		$sDebug=$sDebug.''.fecha_microtiempo().' Error al intentar conectar con la base de datos <b>'.$objDB->serror.'</b><br>';
+		}
+	}
+$idTercero=$_SESSION['unad_id_tercero'];
 if (!seg_revisa_permiso($iCodModulo, 1, $objDB)){
 	header('Location:nopermiso.php');
 	die();
@@ -127,6 +142,8 @@ $xajax->register(XAJAX_FUNCTION,'sesion_retomar');
 $xajax->register(XAJAX_FUNCTION,'f111_HtmlTabla');
 $xajax->register(XAJAX_FUNCTION,'f111_ExisteDato');
 $xajax->register(XAJAX_FUNCTION,'upd_dv');
+$xajax->register(XAJAX_FUNCTION,'f2202_Combobprograma');
+$xajax->register(XAJAX_FUNCTION,'f2202_Combobcead');
 $xajax->processRequest();
 if ($bPeticionXAJAX){
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -205,6 +222,7 @@ if (isset($_REQUEST['unad11idprograma'])==0){$_REQUEST['unad11idprograma']='';}
 if (isset($_REQUEST['unad11presentacion'])==0){$_REQUEST['unad11presentacion']='';}
 if (isset($_REQUEST['unad11fechaclave'])==0){$_REQUEST['unad11fechaclave']='';}//{fecha_hoy();}
 if (isset($_REQUEST['unad11fechaultingreso'])==0){$_REQUEST['unad11fechaultingreso']='';}//{fecha_hoy();}
+if (isset($_REQUEST['unad11correofuncionario'])==0){$_REQUEST['unad11correofuncionario']='';}
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=',';}
 if (isset($_REQUEST['bdoc'])==0){$_REQUEST['bdoc']='';}
@@ -212,20 +230,29 @@ if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
 if (isset($_REQUEST['busuario'])==0){$_REQUEST['busuario']='';}
 if (isset($_REQUEST['bcorreo'])==0){$_REQUEST['bcorreo']='';}
 if (isset($_REQUEST['bcampo'])==0){$_REQUEST['bcampo']='';}
+if (isset($_REQUEST['bzona'])==0){$_REQUEST['bzona']='';}
+if (isset($_REQUEST['bcead'])==0){$_REQUEST['bcead']='';}
+if (isset($_REQUEST['bescuela'])==0){$_REQUEST['bescuela']='';}
+if (isset($_REQUEST['bprograma'])==0){$_REQUEST['bprograma']='';}
+if (isset($_REQUEST['bconvenio'])==0){$_REQUEST['bconvenio']='';}
+if (isset($_REQUEST['badicional'])==0){$_REQUEST['badicional']='';}
+//if (isset($_REQUEST['bmatricula'])==0){$_REQUEST['bmatricula']='';}
+if (isset($_REQUEST['bdesde'])==0){$_REQUEST['bdesde']='0';}
+if (isset($_REQUEST['bhasta'])==0){$_REQUEST['bhasta']='0';}
 //Si Modifica o Elimina Cargar los campos
 if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 	if ($_REQUEST['paso']==1){
-		$sqlcondi='unad11tipodoc="'.$_REQUEST['unad11tipodoc'].'" AND unad11doc="'.$_REQUEST['unad11doc'].'"';
+		$sSQLcondi='unad11doc="'.$_REQUEST['unad11doc'].'" AND unad11tipodoc="'.$_REQUEST['unad11tipodoc'].'"';
 		}else{
-		$sqlcondi='unad11id='.$_REQUEST['unad11id'].'';
+		$sSQLcondi='unad11id='.$_REQUEST['unad11id'].'';
 		}
-	$sql='SELECT * FROM unad11terceros WHERE '.$sqlcondi;
-	$tabla=$objDB->ejecutasql($sql);
+	$sSQL='SELECT * FROM unad11terceros WHERE '.$sSQLcondi;
+	$tabla=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla)==0){
 		//Si no se encuentra y viene por documento habria que importarlo...
 		if ($_REQUEST['paso']==1){
 			unad11_importar_V2($_REQUEST['unad11doc'], '', $objDB);
-			$tabla=$objDB->ejecutasql($sql);
+			$tabla=$objDB->ejecutasql($sSQL);
 			}
 		}
 	if ($objDB->nf($tabla)>0){
@@ -292,6 +319,7 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 		$_REQUEST['unad11presentacion']=str_replace('<br>', '', $_REQUEST['unad11presentacion']);
 		$_REQUEST['unad11fechaclave']=$fila['unad11fechaclave'];
 		$_REQUEST['unad11fechaultingreso']=$fila['unad11fechaultingreso'];
+		$_REQUEST['unad11correofuncionario']=$fila['unad11correofuncionario'];
 		$bcargo=true;
 		$_REQUEST['paso']=2;
 		$_REQUEST['boculta111']=0;
@@ -325,10 +353,10 @@ if ($_REQUEST['paso']==13){
 	if ($sError==''){
 		$sWhere='unad11id='.$_REQUEST['unad11id'].'';
 		//$sWhere='unad11tipodoc="'.$_REQUEST['unad11tipodoc'].'" AND unad11doc="'.$_REQUEST['unad11doc'].'"';
-		$sql='DELETE FROM unad11terceros WHERE '.$sWhere.';';
-		$result=$objDB->ejecutasql($sql);
+		$sSQL='DELETE FROM unad11terceros WHERE '.$sWhere.';';
+		$result=$objDB->ejecutasql($sSQL);
 		if ($result==false){
-			$sError=$ERR['falla_eliminar'].' .. <!-- '.$sql.' -->';
+			$sError=$ERR['falla_eliminar'].' .. <!-- '.$sSQL.' -->';
 			}else{
 			if ($audita[4]){seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 4, $_REQUEST['unad11id'], $sWhere, $objDB);}
 			$_REQUEST['paso']=-1;
@@ -399,6 +427,7 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['unad11presentacion']='';
 	$_REQUEST['unad11fechaclave']='';//fecha_hoy();
 	$_REQUEST['unad11fechaultingreso']='';//fecha_hoy();
+	$_REQUEST['unad11correofuncionario']='';
 	$_REQUEST['paso']=0;
 	}
 //Enviar el codigo de acceso.
@@ -434,6 +463,7 @@ if ($bEnviarMailConfirma){
 if ($bLimpiaHijos){
 	}
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
+//DATOS PARA COMPLETAR EL FORMULARIO
 //Crear los controles que requieran llamado a base de datos
 $objCombos=new clsHtmlCombos('n');
 $unad11bloqueado_nombre=$ETI['msg_nobloqueado'];
@@ -472,6 +502,7 @@ $objCombos->addItem('-1', 'Sin definir');
 $objCombos->addItem('0', 'Estudiante');
 $objCombos->addItem('1', 'Contratista');
 $objCombos->addItem('2', 'Personal de planta');
+$objCombos->addItem('3', 'Egresado');
 $html_unad11rolunad=$objCombos->html('', $objDB);
 $objCombos->nuevo('unad11exluirdobleaut', $_REQUEST['unad11exluirdobleaut'], false);
 $objCombos->sino();
@@ -482,7 +513,7 @@ $html_unad11idzona=$objCombos->html('SELECT unad23id AS id, unad23nombre AS nomb
 $html_unad11idcead=f111_HTMLComboV2_unad11idcead($objDB, $objCombos, $_REQUEST['unad11idcead'], $_REQUEST['unad11idzona']);
 $objCombos->nuevo('unad11idescuela', $_REQUEST['unad11idescuela'], true, '{'.$ETI['msg_ninguna'].'}', 0);
 $objCombos->sAccion='carga_combo_unad11idprograma();';
-$html_unad11idescuela=$objCombos->html('SELECT exte01id AS id, exte01nombre AS nombre FROM exte01escuela ORDER BY exte01nombre', $objDB);
+$html_unad11idescuela=$objCombos->html('SELECT core12id AS id, core12nombre AS nombre FROM core12escuela ORDER BY core12nombre', $objDB);
 $html_unad11idprograma=f111_HTMLComboV2_unad11idprograma($objDB, $objCombos, $_REQUEST['unad11idprograma'], $_REQUEST['unad11idescuela']);
 if ((int)$_REQUEST['paso']==0){
 	$html_unad11pais=html_combo('unad11pais', 'unad18codigo', 'unad18nombre', 'unad18pais', '', 'unad18nombre', $_REQUEST['unad11pais'], $objDB, 'cambiapagina()', true, '{'.$ETI['msg_seleccione'].'}', '');
@@ -496,8 +527,33 @@ $objCombos->nuevo('bcampo', $_REQUEST['bcampo'], true, 'Todos los correos');
 $objCombos->addItem('1', 'Correo personal');
 $objCombos->addItem('2', 'Correo notificaciones');
 $objCombos->addItem('3', 'Correo institucional');
+$objCombos->addItem('4', 'Correo funcionario');
 $objCombos->sAccion='paginarf111()';
 $html_bcampo=$objCombos->html('', $objDB);
+$objCombos->nuevo('badicional', $_REQUEST['badicional'], true, '{Todos}');
+$objCombos->addItem('1', 'Correos confirmados');
+$objCombos->addItem('2', 'Correos SIN confirmar');
+$objCombos->sAccion='paginarf111()';
+$html_badicional=$objCombos->html('', $objDB);
+//$objCombos->nuevo('bmatricula', $_REQUEST['bmatricula'], true, '{Todos}');
+$objCombos->sAccion='paginarf111()';
+$sSQL=f146_ConsultaCombo(2216, $objDB);
+//$html_bmatricula=$objCombos->html($sSQL, $objDB);
+$objCombos->nuevo('bzona', $_REQUEST['bzona'], true, '{'.$ETI['msg_todas'].'}');
+$objCombos->sAccion='carga_combo_bcead()';
+$sSQL='SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona WHERE unad23conestudiantes="S" ORDER BY unad23nombre';
+$html_bzona=$objCombos->html($sSQL, $objDB);
+$html_bcead=f2202_HTMLComboV2_bcead($objDB, $objCombos, $_REQUEST['bcead'], $_REQUEST['bzona']);
+$objCombos->nuevo('bescuela', $_REQUEST['bescuela'], true, '{'.$ETI['msg_todas'].'}');
+$objCombos->sAccion='carga_combo_bprograma()';
+$sSQL='SELECT core12id AS id, core12nombre AS nombre FROM core12escuela WHERE core12tieneestudiantes="S" AND core12id>0 ORDER BY core12nombre';
+$html_bescuela=$objCombos->html($sSQL, $objDB);
+$html_bprograma=f2202_HTMLComboV2_bprograma($objDB, $objCombos, $_REQUEST['bprograma'], $_REQUEST['bescuela'], 0);
+$objCombos->nuevo('bconvenio', $_REQUEST['bconvenio'], true, '{'.$ETI['msg_todos'].'}');
+$objCombos->sAccion='paginarf111()';
+$sSQL='SELECT core50id AS id, core50nombre AS nombre FROM core50convenios ORDER BY core50estado DESC, core50nombre';
+$html_bconvenio=$objCombos->html($sSQL, $objDB);
+
 $id_rpt=0;
 //Permisos adicionales
 $seg_5=0;
@@ -509,7 +565,7 @@ if (true){
 	$objCombos->nuevo('csv_separa', $_REQUEST['csv_separa'], false);
 	$objCombos->addItem(',', $ETI['msg_coma']);
 	$objCombos->addItem(';', $ETI['msg_puntoycoma']);
-	$csv_separa='<label class="Label90">'.$ETI['msg_separador'].'</label><label class="Label130">'.$objCombos->html('', $objDB).'</label>';
+	$csv_separa='<label class="Label130">'.$ETI['msg_separador'].'</label><label class="Label130">'.$objCombos->html('', $objDB).'</label>';
 	}else{
 	$csv_separa='<input id="csv_separa" name="csv_separa" type="hidden" value="," />';
 	}
@@ -526,17 +582,29 @@ if ($_REQUEST['paso']>0){
 		$sDebug=$sDebug.$sDebugM;
 		$sError=$sError.$sErrorN;
 		}
+	list($sCorreoUsuario, $sErrorC, $sDebugC, $sCorreoInstitucional)=AUREA_CorreoPrimario($_REQUEST['unad11id'], $objDB, $bDebug);
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Correo principal: <b>'.$sCorreoUsuario.'</b>, Correo Institucional: <b>'.$sCorreoInstitucional.'</b><br>';}
 	}
 //Cargar las tablas de datos
-$params[0]='';//$_REQUEST['p1_111'];
-$params[101]=$_REQUEST['paginaf111'];
-$params[102]=$_REQUEST['lppf111'];
-$params[103]=$_REQUEST['bdoc'];
-$params[104]=$_REQUEST['bnombre'];
-$params[105]=$_REQUEST['busuario'];
-$params[106]=$_REQUEST['bcorreo'];
-$params[107]=$_REQUEST['bcampo'];
-list($sTabla111, $sDebugTabla)=f111_TablaDetalleV2($params, $objDB, $bDebug);
+$aParametros[0]='';//$_REQUEST['p1_111'];
+$aParametros[101]=$_REQUEST['paginaf111'];
+$aParametros[102]=$_REQUEST['lppf111'];
+$aParametros[103]=$_REQUEST['bdoc'];
+$aParametros[104]=$_REQUEST['bnombre'];
+$aParametros[105]=$_REQUEST['busuario'];
+$aParametros[106]=$_REQUEST['bcorreo'];
+$aParametros[107]=$_REQUEST['bcampo'];
+$aParametros[108]=$_REQUEST['badicional'];
+//$aParametros[109]=$_REQUEST['bmatricula'];
+$aParametros[110]=$_REQUEST['bconvenio'];
+$aParametros[111]=$_REQUEST['bdesde'];
+$aParametros[112]=$_REQUEST['bhasta'];
+
+$aParametros[113]=$_REQUEST['bzona']; //109
+$aParametros[114]=$_REQUEST['bcead'];// 110
+$aParametros[115]=$_REQUEST['bescuela'];//111
+$aParametros[116]=$_REQUEST['bprograma'];//112
+list($sTabla111, $sDebugTabla)=f111_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sDebug=$sDebug.$sDebugTabla;
 list($et_menu, $sDebugM)=html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebug);
 $objDB->CerrarConexion();
@@ -553,6 +621,10 @@ if (false){
 <?php
 	}
 ?>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css"/>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css"/>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css"/>
@@ -616,6 +688,41 @@ function imprimelista(){
 		window.document.frmlista.csv_separa.value=window.document.frmedita.csv_separa.value;
 		window.document.frmlista.nombrearchivo.value='Terceros';
 		window.document.frmlista.submit();
+	}
+function asignarvariables(){
+	window.document.frmimpp.v3.value=window.document.frmedita.bdoc.value;
+	window.document.frmimpp.v4.value=window.document.frmedita.bnombre.value;
+	window.document.frmimpp.v5.value=window.document.frmedita.busuario.value;
+	window.document.frmimpp.v6.value=window.document.frmedita.bcorreo.value;
+	window.document.frmimpp.v7.value=window.document.frmedita.bcampo.value;
+	window.document.frmimpp.v8.value=window.document.frmedita.badicional.value;
+//	window.document.frmimpp.v9.value=window.document.frmedita.bmatricula.value;
+	window.document.frmimpp.v10.value=window.document.frmedita.bconvenio.value;
+	window.document.frmimpp.v11.value=window.document.frmedita.bdesde.value;
+	window.document.frmimpp.v12.value=window.document.frmedita.bhasta.value;
+	window.document.frmimpp.v13.value=window.document.frmedita.bzona.value;
+	window.document.frmimpp.v14.value=window.document.frmedita.bcead.value;
+	window.document.frmimpp.v15.value=window.document.frmedita.bescuela.value;
+	window.document.frmimpp.v16.value=window.document.frmedita.bprograma.value;
+	window.document.frmimpp.separa.value=window.document.frmedita.csv_separa.value.trim();
+	}
+function imprimeexcel(){
+	if (window.document.frmedita.seg_6.value==1){
+		asignarvariables();
+		window.document.frmimpp.action='t111.php';
+		window.document.frmimpp.submit();
+		}else{
+		window.alert("<?php echo $ERR['6']; ?>");
+		}
+	}
+function imprimep(){
+	if (window.document.frmedita.seg_5.value==1){
+		asignarvariables();
+		window.document.frmimpp.action='<?php echo $APP->rutacomun; ?>p111.php';
+		window.document.frmimpp.submit();
+		}else{
+		window.alert("<?php echo $ERR['5']; ?>");
+		}
 	}
 function verrpt(){
 	window.document.frmimprime.submit();
@@ -692,6 +799,15 @@ function paginarf111(){
 	params[105]=window.document.frmedita.busuario.value;
 	params[106]=window.document.frmedita.bcorreo.value;
 	params[107]=window.document.frmedita.bcampo.value;
+	params[108]=window.document.frmedita.badicional.value;
+	//params[109]=window.document.frmedita.bmatricula.value;
+	params[110]=window.document.frmedita.bconvenio.value;
+	params[111]=window.document.frmedita.bdesde.value;
+	params[112]=window.document.frmedita.bhasta.value;
+        params[113]=window.document.frmedita.bzona.value;
+	params[114]=window.document.frmedita.bcead.value;
+	params[115]=window.document.frmedita.bescuela.value;
+	params[116]=window.document.frmedita.bprograma.value;
 	//document.getElementById('div_f111detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf111" name="paginaf111" type="hidden" value="'+params[101]+'" /><input id="lppf111" name="lppf111" type="hidden" value="'+params[102]+'" />';
 	xajax_f111_HtmlTabla(params);
 	}
@@ -755,24 +871,50 @@ function enviarmailpwd(){
 	window.document.frmedita.paso.value=22;
 	window.document.frmedita.submit();
 	}
+function carga_combo_bprograma(){
+	var params=new Array();
+	params[0]=window.document.frmedita.bescuela.value;
+	params[1]=1;
+	xajax_f2202_Combobprograma(params);
+	}
+function carga_combo_bcead(){
+	var params=new Array();
+	params[0]=window.document.frmedita.bzona.value;
+	xajax_f2202_Combobcead(params);
+	}
+function paginarf2202(){
+	paginarf111();
+	}
+function carga_combo_bversion(){
+	paginarf111();
+	}		
 // -->
 </script>
 <?php
-if ($_REQUEST['paso']!=0){
 ?>
-<form id="frmimpp" name="frmimpp" method="post" action="<?php echo $APP->rutacomun; ?>p111.php" target="_blank">
+<form id="frmimpp" name="frmimpp" method="post" action="e111.php" target="_blank">
 <input id="r" name="r" type="hidden" value="111" />
 <input id="id111" name="id111" type="hidden" value="<?php echo $_REQUEST['unad11id']; ?>" />
 <input id="v3" name="v3" type="hidden" value="" />
 <input id="v4" name="v4" type="hidden" value="" />
 <input id="v5" name="v5" type="hidden" value="" />
+<input id="v6" name="v6" type="hidden" value="" />
+<input id="v7" name="v7" type="hidden" value="" />
+<input id="v8" name="v8" type="hidden" value="" />
+<input id="v9" name="v9" type="hidden" value="" />
+<input id="v10" name="v10" type="hidden" value="" />
+<input id="v11" name="v11" type="hidden" value="" />
+<input id="v12" name="v12" type="hidden" value="" />
+<input id="v13" name="v13" type="hidden" value="" />
+<input id="v14" name="v14" type="hidden" value="" />
+<input id="v15" name="v15" type="hidden" value="" />
+<input id="v16" name="v16" type="hidden" value="" />
 <input id="iformato94" name="iformato94" type="hidden" value="0" />
 <input id="separa" name="separa" type="hidden" value="," />
 <input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
 <input id="clave" name="clave" type="hidden" value="" />
 </form>
 <?php
-	}
 ?>
 <form id="frmlista" name="frmlista" method="post" action="listados_csv.php" target="_blank">
 <input id="titulos" name="titulos" type="hidden" value="" />
@@ -797,7 +939,7 @@ if ($_REQUEST['paso']!=0){
 <input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(<?php echo $APP->idsistema.', '.$iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>"/>
 <?php
 $bHayImprimir=false;
-$sScript='imprimelista()';
+$sScript='imprimeexcel()';
 $sClaseBoton='btEnviarExcel';
 if ($seg_6==1){$bHayImprimir=true;}
 if ($_REQUEST['paso']!=0){
@@ -930,7 +1072,7 @@ echo $ETI['unad11nombre1'];
 ?>
 </label>
 <label>
-<input name="unad11nombre1" type="text" id="unad11nombre1" value="<?php echo $_REQUEST['unad11nombre1']; ?>" maxlength="30"/>
+<input id="unad11nombre1" name="unad11nombre1" type="text" value="<?php echo $_REQUEST['unad11nombre1']; ?>" maxlength="30" placeholder="<?php echo $ETI['ing_campo'].$ETI['unad11nombre1']; ?>"/>
 </label>
 <label class="Label160">
 <?php
@@ -938,7 +1080,7 @@ echo $ETI['unad11nombre2'];
 ?>
 </label>
 <label>
-<input name="unad11nombre2" type="text" id="unad11nombre2" value="<?php echo $_REQUEST['unad11nombre2']; ?>" maxlength="30"/>
+<input id="unad11nombre2" name="unad11nombre2" type="text" value="<?php echo $_REQUEST['unad11nombre2']; ?>" maxlength="30" placeholder="<?php echo $ETI['ing_campo'].$ETI['unad11nombre2']; ?>"/>
 </label>
 <div class="salto1px"></div>
 <label class="Label130">
@@ -947,7 +1089,7 @@ echo $ETI['unad11apellido1'];
 ?>
 </label>
 <label>
-<input name="unad11apellido1" type="text" id="unad11apellido1" value="<?php echo $_REQUEST['unad11apellido1']; ?>" maxlength="30"/>
+<input id="unad11apellido1" name="unad11apellido1" type="text" value="<?php echo $_REQUEST['unad11apellido1']; ?>" maxlength="30" placeholder="<?php echo $ETI['ing_campo'].$ETI['unad11apellido1']; ?>"/>
 </label>
 <label class="Label160">
 <?php
@@ -955,7 +1097,7 @@ echo $ETI['unad11apellido2'];
 ?>
 </label>
 <label>
-<input name="unad11apellido2" type="text" id="unad11apellido2" value="<?php echo $_REQUEST['unad11apellido2']; ?>" maxlength="30"/>
+<input id="unad11apellido2" name="unad11apellido2" type="text" value="<?php echo $_REQUEST['unad11apellido2']; ?>" maxlength="30" placeholder="<?php echo $ETI['ing_campo'].$ETI['unad11apellido2']; ?>"/>
 </label>
 <div class="salto1px"></div>
 <label class="Label130">
@@ -973,11 +1115,13 @@ echo $html_unad11genero;
 echo $ETI['unad11fechanace'];
 ?>
 </label>
-<div class="Campo220">
+<label class="Label250">
+<div>
 <?php
-echo html_fecha("unad11fechanace", $_REQUEST['unad11fechanace'], true, '', 1900, date('Y'));
+echo html_fecha('unad11fechanace', $_REQUEST['unad11fechanace'], true, '', 1900, date('Y'));
 ?>
 </div>
+</label>
 <label class="Label60">
 <?php
 echo $ETI['unad11rh'];
@@ -1005,7 +1149,7 @@ echo $html_unad11ecivil;
 echo $ETI['unad11razonsocial'];
 ?>
 
-<input name="unad11razonsocial" type="text" id="unad11razonsocial" value="<?php echo $_REQUEST['unad11razonsocial']; ?>" maxlength="100" class="L"/>
+<input id="unad11razonsocial" name="unad11razonsocial" type="text" value="<?php echo $_REQUEST['unad11razonsocial']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['unad11razonsocial']; ?>"/>
 </label>
 </div>
 <label class="L">
@@ -1013,7 +1157,7 @@ echo $ETI['unad11razonsocial'];
 echo $ETI['unad11direccion'];
 ?>
 
-<input name="unad11direccion" type="text" id="unad11direccion" value="<?php echo $_REQUEST['unad11direccion']; ?>" maxlength="100" class="L"/>
+<input id="unad11direccion" name="unad11direccion" type="text" value="<?php echo $_REQUEST['unad11direccion']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['unad11direccion']; ?>"/>
 </label>
 <label class="Label130">
 <?php
@@ -1021,7 +1165,7 @@ echo $ETI['unad11telefono'];
 ?>
 </label>
 <label class="Label220">
-<input name="unad11telefono" type="text" id="unad11telefono" value="<?php echo $_REQUEST['unad11telefono']; ?>" maxlength="30"/>
+<input id="unad11telefono" name="unad11telefono" type="text" value="<?php echo $_REQUEST['unad11telefono']; ?>" maxlength="30" placeholder="<?php echo $ETI['ing_campo'].$ETI['unad11telefono']; ?>"/>
 </label>
 <label class="Label60">
 <?php
@@ -1201,7 +1345,13 @@ echo html_oculto('unad11fechaconfmail', $_REQUEST['unad11fechaconfmail']);
 <?php
 echo $ETI['unad11correoinstitucional'];
 ?>
-<input id="unad11correoinstitucional" name="unad11correoinstitucional" type="text" value="<?php echo $_REQUEST['unad11correoinstitucional']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'].$ETI['unad11correoinstitucional']; ?>" class="L"/>
+<input id="unad11correoinstitucional" name="unad11correoinstitucional" type="text" value="<?php echo $_REQUEST['unad11correoinstitucional']; ?>" maxlength="50" placeholder="usuario@unadvirtual.edu.co" class="L"/>
+</label>
+<label class="L">
+<?php
+echo $ETI['unad11correofuncionario'];
+?>
+<input id="unad11correofuncionario" name="unad11correofuncionario" type="text" value="<?php echo $_REQUEST['unad11correofuncionario']; ?>" maxlength="50" placeholder="nombre.apellido@unad.edu.co" class="L"/>
 </label>
 <?php
 if ($seg_111==1){
@@ -1279,7 +1429,7 @@ echo $html_unad11rolunad;
 ?>
 </div>
 </label>
-<label class="Label220">
+<label class="Label250">
 <?php
 echo $ETI['unad11exluirdobleaut'];
 ?>
@@ -1403,7 +1553,7 @@ echo $ETI['unad11fechaclave'];
 echo html_oculto('unad11fechaclave', $_REQUEST['unad11fechaclave'], fecha_desdenumero($_REQUEST['unad11fechaclave'], '&nbsp;'));
 ?>
 </label>
-<label class="Label160">
+<label class="Label200">
 <?php
 echo $ETI['unad11fechaultingreso'];
 ?>
@@ -1463,10 +1613,12 @@ echo html_oculto('unad11encuestafecha', $_REQUEST['unad11encuestafecha'], fecha_
 </label>
 <label class="Label130"><div id="div_unad11encuestaminuto">
 <?php
-echo html_oculto('unad11encuestaminuto', $_REQUEST['unad11encuestaminuto'], html_TablaHoraMinDesdeNumero($_REQUEST['unad11encuestaminuto']));
+$et_unad11encuestaminuto='&nbsp;';
+if ($_REQUEST['unad11encuestaminuto']!=0){$et_unad11encuestaminuto=html_TablaHoraMinDesdeNumero($_REQUEST['unad11encuestaminuto']);}
+echo html_oculto('unad11encuestaminuto', $_REQUEST['unad11encuestaminuto'], $et_unad11encuestaminuto);
 ?>
 </div></label>
-<label class="Label220">
+<label class="Label250">
 <?php
 echo $ETI['unad11fechaterminos'];
 ?>
@@ -1504,26 +1656,26 @@ echo '<h3>'.$ETI['bloque1'].'</h3>';
 </div>
 <div class="areatrabajo">
 <div class="ir_derecha">
-<label class="Label90">
+<label class="Label130">
 Documento
 </label>
 <label class="Label220">
 <input name="bdoc" type="text" id="bdoc" value="<?php echo $_REQUEST['bdoc']; ?>" onchange="paginarf111()" autocomplete="off"/>
 </label>
-<label class="Label60">
+<label class="Label90">
 Nombre
 </label>
 <label class="Label220">
 <input id="bnombre" name="bnombre" type="text" value="<?php echo $_REQUEST['bnombre']; ?>" onchange="paginarf111()" autocomplete="off"/>
 </label>
-<label class="Label60">
+<label class="Label90">
 Usuario
 </label>
 <label class="Label200">
 <input name="busuario" type="text" id="busuario" value="<?php echo $_REQUEST['busuario']; ?>" onchange="paginarf111()" autocomplete="off"/>
 </label>
 <div class="salto1px"></div>
-<label class="Label60">
+<label class="Label130">
 Correo
 </label>
 <label class="Label220">
@@ -1534,6 +1686,82 @@ Correo
 echo $html_bcampo;
 ?>
 </label>
+<label class="Label130">
+Verificaciones
+</label>
+<label class="Label200">
+<?php
+echo $html_badicional;
+?>
+</label>
+
+<div class="salto1px"></div>
+<label class="Label130">
+Escuela
+</label>
+<label class="Label600">
+<?php
+echo $html_bescuela;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+Programa
+</label>
+<label class="Label130">
+<div id="div_bprograma">
+<?php
+echo $html_bprograma;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+Zona
+</label>
+<label class="Label350">
+<?php
+echo $html_bzona;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+CEAD
+</label>
+<label class="Label130">
+<div id="div_bcead">
+<?php
+echo $html_bcead;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+Convenio
+</label>
+<label class="Label500">
+<?php
+echo $html_bconvenio;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+Ingreso desde
+</label>
+<label class="Label250">
+<?php
+echo html_FechaEnNumero('bdesde', $_REQUEST['bdesde'], true, 'paginarf111();', 1900, date('Y'));
+?>
+</label>
+<label class="Label130">
+Hasta
+</label>
+<label class="Label250">
+<?php
+echo html_FechaEnNumero('bhasta', $_REQUEST['bhasta'], true, 'paginarf111();', 1900, date('Y'));
+?>
+</label>
+<div class="salto1px"></div>
 <?php
 echo ' '.$csv_separa;
 ?>
@@ -1660,10 +1888,6 @@ if ($bMueveScroll){
 ajustaforma();
 -->
 </script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css"/>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
 <?php
 forma_piedepagina();

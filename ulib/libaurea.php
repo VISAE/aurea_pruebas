@@ -3,86 +3,93 @@
 --- © Angel Mauro Avellaneda Barreto - UNAD - 2017 - 2018 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 */
-function AUREA_ActualizarPerfilMoodle($idTercero, $objdb, $bDebug=false){
+function AUREA_ActualizarPerfilMoodle($idTercero, $objDB, $bDebug=false){
 	$sError='';
 	$sDebug='';
 	require './app.php';
 	if (isset($APP->dbhostcampus)==0){$APP->dbhostcampus='';}
 	if ($APP->dbhostcampus!=''){
 		//alistamos los datos 
-		$sql='SELECT unad11doc, unad11usuario, unad11nombre1, unad11nombre2, unad11apellido1, unad11apellido2, unad11presentacion, unad11pais, unad11ciudaddoc FROM unad11terceros WHERE unad11id='.$idTercero.'';
-		$tabla=$objdb->ejecutasql($sql);
-		$fila=$objdb->sf($tabla);
+		$sSQL='SELECT unad11doc, unad11usuario, unad11nombre1, unad11nombre2, unad11apellido1, unad11apellido2, unad11presentacion, unad11pais, unad11ciudaddoc FROM unad11terceros WHERE unad11id='.$idTercero.'';
+		$tabla=$objDB->ejecutasql($sSQL);
+		$fila=$objDB->sf($tabla);
 		$sCodCiudad=$fila['unad11ciudaddoc'];
 		$sNomCiudad='';
 		$sCodPais=$fila['unad11pais'];
 		$sPrefijoPais='CO';
 		if ($sCodCiudad!=''){
-			$sql='SELECT unad20nombre FROM unad20ciudad WHERE unad20codigo="'.$sCodCiudad.'"';
-			$tabla20=$objdb->ejecutasql($sql);
-			if ($objdb->nf($tabla20)>0){
-				$fila20=$objdb->sf($tabla20);
+			$sSQL='SELECT unad20nombre FROM unad20ciudad WHERE unad20codigo="'.$sCodCiudad.'"';
+			$tabla20=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla20)>0){
+				$fila20=$objDB->sf($tabla20);
 				$sNomCiudad=$fila20['unad20nombre'];
 				}
 			}
 		$bEntraPais=false;
 		if ($sCodPais!=''){
 			if ($sCodPais!='057'){
-				$sql='SELECT unad18sufijo FROM unad18pais WHERE unad18codigo="'.$sCodPais.'"';
-				$tabla20=$objdb->ejecutasql($sql);
-				if ($objdb->nf($tabla20)>0){
-					$fila20=$objdb->sf($tabla20);
+				$sSQL='SELECT unad18sufijo FROM unad18pais WHERE unad18codigo="'.$sCodPais.'"';
+				$tabla20=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tabla20)>0){
+					$fila20=$objDB->sf($tabla20);
 					$sPrefijoPais=strtoupper($fila20['unad18sufijo']);
 					}
 				}
 			}
-		$objdbext=new clsdbadmin($APP->dbhostcampus, $APP->dbusercampus, $APP->dbpasscampus, $APP->dbnamecampus);
-		if ($APP->dbpuertocampus!=''){$objdbext->dbPuerto=$APP->dbpuertocampus;}
-		if ($objdbext->Conectar()){
-			list($sCorreoUsuario, $sErrorC, $sDebugC)=AUREA_CorreoNotifica($idTercero, $objdb, $bDebug);
+		$objDBext=new clsdbadmin($APP->dbhostcampus, $APP->dbusercampus, $APP->dbpasscampus, $APP->dbnamecampus);
+		if ($APP->dbpuertocampus!=''){$objDBext->dbPuerto=$APP->dbpuertocampus;}
+		if ($objDBext->Conectar()){
+			list($sCorreoUsuario, $sErrorC, $sDebugC, $sCorreoInstitucional)=AUREA_CorreoPrimario($idTercero, $objDB, $bDebug);
 			$sDebug=$sDebug.$sDebugC;
-			$sql=utf8_decode('UPDATE mdl_user SET idnumber="'.$fila['unad11doc'].'", email="'.$sCorreoUsuario.'", firstname="'.trim($fila['unad11nombre1'].' '.$fila['unad11nombre2']).'", lastname="'.trim($fila['unad11apellido1'].' '.$fila['unad11apellido2']).'", country="'.$sPrefijoPais.'", city="'.$sNomCiudad.'", description="'.$fila['unad11presentacion'].'" WHERE username="'.$fila['unad11usuario'].'"');
-			$result=$objdbext->ejecutasql($sql);
-			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' PERFIL CAMPUS - Consulta de actualizacion: '.$sql.'.<br>';}
-			$objdbext->CerrarConexion();
+			$sSQL=utf8_decode('UPDATE mdl_user SET idnumber="'.$fila['unad11doc'].'", email="'.$sCorreoUsuario.'", firstname="'.trim($fila['unad11nombre1'].' '.$fila['unad11nombre2']).'", lastname="'.trim($fila['unad11apellido1'].' '.$fila['unad11apellido2']).'", country="'.$sPrefijoPais.'", city="'.$sNomCiudad.'", description="'.$fila['unad11presentacion'].'" WHERE username="'.$fila['unad11usuario'].'"');
+			$result=$objDBext->ejecutasql($sSQL);
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' PERFIL CAMPUS - Consulta de actualizacion: '.$sSQL.'.<br>';}
+			if ($sCorreoInstitucional==''){$sCorreoInstitucional=$sCorreoUsuario;}
+			// Marzo 13 de 2019
+			//Aqui es actualizar el correo institucional en caso de que exista.
+			$sSQL='UPDATE main_user SET email="'.$sCorreoInstitucional.'" WHERE username="'.$fila['unad11usuario'].'"';
+			$result=$objDBext->ejecutasql($sSQL);
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' PERFIL main_user - Consulta de actualizacion: '.$sSQL.'.<br>';}
+			//Termina la actualizacion..
+			$objDBext->CerrarConexion();
 			}else{
-			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' PERFIL CAMPUS - No es posible conectarse a la db de campus Error: '.$objdbext->serror.'.<br>';}
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' PERFIL CAMPUS - No es posible conectarse a la db de campus Error: '.$objDBext->serror.'.<br>';}
 			}
 		}else{
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' PERFIL CAMPUS - No se ha establecido el parametro dbhostcampus en el archivo app.php por tanto no se puede actualizar el perfil del tercero.<br>';}
 		}
 	return array($sError, $sDebug);
 	}
-function AUREA_Aplicativos($idTercero, $objdb){
+function AUREA_Aplicativos($idTercero, $objDB){
 	$sLista='-99';
 	//, unad07fechavence
-	$sql='SELECT T5.unad05aplicativo FROM unad07usuarios AS TB, unad05perfiles AS T5 WHERE TB.unad07idtercero='.$idTercero.' AND TB.unad07idperfil=T5.unad05id AND TB.unad07vigente="S" AND T5.unad05aplicativo=-1';
-	$tabla07=$objdb->ejecutasql($sql);
-	if ($objdb->nf($tabla07)>0){
-		$sql='SELECT unad01id FROM unad01sistema WHERE unad01publico="S"';
-		$tabla07=$objdb->ejecutasql($sql);
-		while($fila07=$objdb->sf($tabla07)){
+	$sSQL='SELECT T5.unad05aplicativo FROM unad07usuarios AS TB, unad05perfiles AS T5 WHERE TB.unad07idtercero='.$idTercero.' AND TB.unad07idperfil=T5.unad05id AND TB.unad07vigente="S" AND T5.unad05aplicativo=-1';
+	$tabla07=$objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla07)>0){
+		$sSQL='SELECT unad01id FROM unad01sistema WHERE unad01publico="S"';
+		$tabla07=$objDB->ejecutasql($sSQL);
+		while($fila07=$objDB->sf($tabla07)){
 			$sLista=$sLista.','.$fila07['unad01id'];
 			}
 		}else{
-		$sql='SELECT T5.unad05aplicativo FROM unad07usuarios AS TB, unad05perfiles AS T5 WHERE TB.unad07idtercero='.$idTercero.' AND TB.unad07idperfil=T5.unad05id AND TB.unad07vigente="S" AND T5.unad05aplicativo>0 GROUP BY T5.unad05aplicativo';
-		$tabla07=$objdb->ejecutasql($sql);
-		while($fila07=$objdb->sf($tabla07)){
+		$sSQL='SELECT T5.unad05aplicativo FROM unad07usuarios AS TB, unad05perfiles AS T5 WHERE TB.unad07idtercero='.$idTercero.' AND TB.unad07idperfil=T5.unad05id AND TB.unad07vigente="S" AND T5.unad05aplicativo>0 GROUP BY T5.unad05aplicativo';
+		$tabla07=$objDB->ejecutasql($sSQL);
+		while($fila07=$objDB->sf($tabla07)){
 			$sLista=$sLista.','.$fila07['unad05aplicativo'];
 			}
 		}
 	return $sLista;
 	}
-function AUREA_SmtpMejor($sTabla, $objdb, $bDebug=false){
+function AUREA_SmtpMejor($sTabla, $objDB, $bDebug=false){
 	//Valor por defecto
 	$idSMTP=2;
 	$sDebug='';
 	$aLista=array();
 	$iTotal=0;
 	//Cargar el listado de SMTPS.
-	$sql='SELECT TB.unad89idsmtp FROM unad89loginsmtp AS TB, unad69smtp AS T1 WHERE TB.unad89activo="S" AND TB.unad89idopciones=1 AND TB.unad89idsmtp=T1.unad69id AND T1.unad69confirmado="S"';
-	$tabla=$objdb->ejecutasql($sql);
-	while($fila=$objdb->sf($tabla)){
+	$sSQL='SELECT TB.unad89idsmtp FROM unad89loginsmtp AS TB, unad69smtp AS T1 WHERE TB.unad89activo="S" AND TB.unad89idopciones=1 AND TB.unad89idsmtp=T1.unad69id AND T1.unad69confirmado="S"';
+	$tabla=$objDB->ejecutasql($sSQL);
+	while($fila=$objDB->sf($tabla)){
 		$iTotal++;
 		$aLista[$iTotal]['cod']=$fila['unad89idsmtp'];
 		$aLista[$iTotal]['uso']=0;
@@ -90,9 +97,9 @@ function AUREA_SmtpMejor($sTabla, $objdb, $bDebug=false){
 	if ($iTotal>0){
 		//Ver que tanto uso ha tenido cada smtp
 		$aure01fecha=fecha_DiaMod();
-		$sql='SELECT aure01idsmtp, COUNT(aure01id) AS Total FROM '.$sTabla.' WHERE aure01fecha='.$aure01fecha.' GROUP BY aure01idsmtp';
-		$tabla=$objdb->ejecutasql($sql);
-		while($fila=$objdb->sf($tabla)){
+		$sSQL='SELECT aure01idsmtp, COUNT(aure01id) AS Total FROM '.$sTabla.' WHERE aure01fecha='.$aure01fecha.' GROUP BY aure01idsmtp';
+		$tabla=$objDB->ejecutasql($sSQL);
+		while($fila=$objDB->sf($tabla)){
 			for ($k=1;$k<=$iTotal;$k++){
 				if ($aLista[$k]['cod']==$fila['aure01idsmtp']){
 					$aLista[$k]['uso']=$fila['Total'];
@@ -110,32 +117,33 @@ function AUREA_SmtpMejor($sTabla, $objdb, $bDebug=false){
 		}
 	return array($idSMTP, $sDebug);
 	}
-function AUREA_ConfirmarCorreoNotifica($idTercero, $objdb, $sFrase='', $bDebug=false){
+function AUREA_ConfirmarCorreoNotifica($idTercero, $objDB, $sFrase='', $bDebug=false){
 	$sError='';
+	$sDebug='';
 	$aure01codigo='';
 	require './app.php';
 	$sTabla='aure01login'.date('Ym');
-	$bexiste=$objdb->bexistetabla($sTabla);
-	if ($objdb->dbmodelo=='M'){
+	$bexiste=$objDB->bexistetabla($sTabla);
+	if ($objDB->dbmodelo=='M'){
 		if (!$bexiste){
-			$sql="CREATE TABLE ".$sTabla." (aure01idtercero int NOT NULL, aure01consec int NOT NULL, aure01id int NULL DEFAULT 0, aure01fecha int NULL DEFAULT 0, aure01min int NULL DEFAULT 0, aure01codigo varchar(20) NULL, aure01fechaaplica int NULL DEFAULT 0, aure01minaplica int NULL DEFAULT 0, aure01ip varchar(50) NULL, aure01punto varchar(100) NULL, aure01idsmtp int NULL DEFAULT 0)";
-			$result=$objdb->ejecutasql($sql);
+			$sSQL="CREATE TABLE ".$sTabla." (aure01idtercero int NOT NULL, aure01consec int NOT NULL, aure01id int NULL DEFAULT 0, aure01fecha int NULL DEFAULT 0, aure01min int NULL DEFAULT 0, aure01codigo varchar(20) NULL, aure01fechaaplica int NULL DEFAULT 0, aure01minaplica int NULL DEFAULT 0, aure01ip varchar(50) NULL, aure01punto varchar(100) NULL, aure01idsmtp int NULL DEFAULT 0)";
+			$result=$objDB->ejecutasql($sSQL);
 			if ($result==false){
 				$sError='No es posible iniciar el codigo de acceso para  '.date('Ym');
 				}else{
-				$sql="ALTER TABLE ".$sTabla." ADD PRIMARY KEY(aure01id)";
-				$result=$objdb->ejecutasql($sql);
-				$sql="ALTER TABLE ".$sTabla." ADD UNIQUE INDEX aure01solmodclave_id(aure01idtercero, aure01consec)";
-				$result=$objdb->ejecutasql($sql);
+				$sSQL="ALTER TABLE ".$sTabla." ADD PRIMARY KEY(aure01id)";
+				$result=$objDB->ejecutasql($sSQL);
+				$sSQL="ALTER TABLE ".$sTabla." ADD UNIQUE INDEX aure01solmodclave_id(aure01idtercero, aure01consec)";
+				$result=$objDB->ejecutasql($sSQL);
 				}
 			}
 		}
 	$sCorreoUsuario='';
 	if ($sError==''){
-		$sql='SELECT unad11correonotifica, unad11correoinstitucional, unad11fechaconfmail, unad11correonotificanuevo FROM unad11terceros WHERE unad11id='.$idTercero.'';
-		$tabla=$objdb->ejecutasql($sql);
-		if ($objdb->nf($tabla)>0){
-			$fila=$objdb->sf($tabla);
+		$sSQL='SELECT unad11correonotifica, unad11correoinstitucional, unad11fechaconfmail, unad11correonotificanuevo FROM unad11terceros WHERE unad11id='.$idTercero.'';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
 			$bHayCorreo=false;
 			if ($fila['unad11fechaconfmail']==0){
 				if (correo_VerificarDireccion($fila['unad11correonotifica'])){
@@ -154,7 +162,7 @@ function AUREA_ConfirmarCorreoNotifica($idTercero, $objdb, $sFrase='', $bDebug=f
 			}
 		}
 	if ($sError==''){
-		list($idSMTP, $sDebugS)=AUREA_SmtpMejor($sTabla, $objdb, $bDebug);
+		list($idSMTP, $sDebugS)=AUREA_SmtpMejor($sTabla, $objDB, $bDebug);
 		//Agregar el punto.
 		$sProtocolo='http';
 		if (isset($_SERVER['HTTPS'])!=0){
@@ -163,11 +171,11 @@ function AUREA_ConfirmarCorreoNotifica($idTercero, $objdb, $sFrase='', $bDebug=f
 		$aure01punto=$sProtocolo.'://'.$_SERVER['SERVER_NAME'].formato_UrlLimpia($_SERVER['REQUEST_URI']);
 		$aure01consec=0;
 		$bInserta=true;
-		$sql='SELECT aure01id FROM '.$sTabla.' WHERE aure01idtercero='.$idTercero.' AND aure01consec=0';
-		$tabla=$objdb->ejecutasql($sql);
-		if ($objdb->nf($tabla)>0){
+		$sSQL='SELECT aure01id FROM '.$sTabla.' WHERE aure01idtercero='.$idTercero.' AND aure01consec=0';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
 			$bInserta=false;
-			$fila=$objdb->sf($tabla);
+			$fila=$objDB->sf($tabla);
 			$aure01id=$fila['aure01id'];
 			}
 		$aure01fecha=fecha_DiaMod();
@@ -177,21 +185,21 @@ function AUREA_ConfirmarCorreoNotifica($idTercero, $objdb, $sFrase='', $bDebug=f
 		$aure01codigo=substr($aure01codigo, 0, 10);
 		$aure01ip=sys_traeripreal();
 		if ($bInserta){
-			$aure01id=tabla_consecutivo($sTabla, 'aure01id', '', $objdb);
+			$aure01id=tabla_consecutivo($sTabla, 'aure01id', '', $objDB);
 			$scampos='aure01idtercero, aure01consec, aure01id, aure01fecha, 
 aure01min, aure01codigo, aure01fechaaplica, aure01minaplica, aure01ip, aure01punto, aure01idsmtp';
 			$svalores=''.$idTercero.', '.$aure01consec.', '.$aure01id.', '.$aure01fecha.', 
 '.$aure01min.', "'.$aure01codigo.'", -1, 0, "'.$aure01ip.'", "'.$aure01punto.'", '.$idSMTP.'';
 			if ($APP->utf8==1){
-				$sql='INSERT INTO '.$sTabla.' ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+				$sSQL='INSERT INTO '.$sTabla.' ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
 				}else{
-				$sql='INSERT INTO '.$sTabla.' ('.$scampos.') VALUES ('.$svalores.');';
+				$sSQL='INSERT INTO '.$sTabla.' ('.$scampos.') VALUES ('.$svalores.');';
 				}
 			}else{
 			//actualizar el consecutivo 0
-			$sql='UPDATE '.$sTabla.' SET aure01fecha='.$aure01fecha.', aure01min='.$aure01min.', aure01codigo="'.$aure01codigo.'", aure01fechaaplica=-1, aure01minaplica=0, aure01ip="'.$aure01ip.'", aure01punto="'.$aure01punto.'", aure01idsmtp='.$idSMTP.' WHERE aure01id='.$aure01id.'';
+			$sSQL='UPDATE '.$sTabla.' SET aure01fecha='.$aure01fecha.', aure01min='.$aure01min.', aure01codigo="'.$aure01codigo.'", aure01fechaaplica=-1, aure01minaplica=0, aure01ip="'.$aure01ip.'", aure01punto="'.$aure01punto.'", aure01idsmtp='.$idSMTP.' WHERE aure01id='.$aure01id.'';
 			}
-		$result=$objdb->ejecutasql($sql);
+		$result=$objDB->ejecutasql($sSQL);
 		}
 	if ($sError==''){
 		//Ahora que se genero el codigo enviarlo al correo.
@@ -205,7 +213,7 @@ Su c&oacute;digo de confirmaci&oacute;n es:<br>
 <b>Comedidamente:</b><br>
 Equipo de Soporte T&eacute;cnico.';
 		//Enviar el mensaje.
-		$objMail=new clsMail_Unad($objdb);
+		$objMail=new clsMail_Unad($objDB);
 		$objMail->TraerSMTP($idSMTP);
 		$objMail->sAsunto=utf8_encode('Confirmación de correo electrónico en '.$sNomEntidad.' '.fecha_hoy().' '.html_TablaHoraMin(fecha_hora(), fecha_minuto()).'');
 		$objMail->addCorreo($sCorreoUsuario, $sCorreoUsuario);
@@ -218,17 +226,18 @@ Equipo de Soporte T&eacute;cnico.';
 			}
 		//Termina el envio del codigo...
 		}
-	return array($aure01codigo, $sError);
+	return array($aure01codigo, $sError, $sDebug);
 	}
-function AUREA_CorreoNotifica($idTercero, $objdb, $bDebug=false){
+function AUREA_CorreoNotifica($idTercero, $objDB, $bDebug=false){
 	$sError='';
 	$sCorreoUsuario='';
 	$sDebug='';
-	$sql='SELECT unad11correo, unad11aceptanotificacion, unad11correonotifica, unad11correoinstitucional, unad11fechaconfmail, unad11rolunad FROM unad11terceros WHERE unad11id='.$idTercero.'';
-	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta para el correo de notificaciones '.$sql.' <br>';}
-	$tabla=$objdb->ejecutasql($sql);
-	if ($objdb->nf($tabla)>0){
-		$fila=$objdb->sf($tabla);
+	$sSQL='SELECT unad11correo, unad11aceptanotificacion, unad11correonotifica, unad11correoinstitucional, unad11fechaconfmail, unad11rolunad, unad11correofuncionario 
+FROM unad11terceros WHERE unad11id='.$idTercero.'';
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta para el correo de notificaciones '.$sSQL.' <br>';}
+	$tabla=$objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla)>0){
+		$fila=$objDB->sf($tabla);
 		$bHayCorreo=false;
 		if ($fila['unad11fechaconfmail']!=0){
 			//Este proceso es independiente de que acepte notificaciones o no....
@@ -236,6 +245,13 @@ function AUREA_CorreoNotifica($idTercero, $objdb, $bDebug=false){
 				$bHayCorreo=true;
 				$sCorreoUsuario=trim($fila['unad11correonotifica']);
 				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Correo de notificaciones '.$sCorreoUsuario.' validado<br>';}
+				}
+			}
+		if (!$bHayCorreo){
+			if (correo_VerificarDireccion(trim($fila['unad11correofuncionario']))){
+				$bHayCorreo=true;
+				$sCorreoUsuario=trim($fila['unad11correofuncionario']);
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Correo de notificaciones '.$sCorreoUsuario.' {Correo del funcionario}<br>';}
 				}
 			}
 		if (!$bHayCorreo){
@@ -266,7 +282,130 @@ function AUREA_CorreoNotifica($idTercero, $objdb, $bDebug=false){
 		}
 	return array($sCorreoUsuario, $sError, $sDebug);
 	}
-function AUREA_IniciarLogin($idTercero, $objdb, $sFrase='', $iUso=0, $bDebug=false){
+function AUREA_CorreoPrimario($idTercero, $objDB, $bDebug=false){
+	$sError='';
+	$sCorreoUsuario='';
+	$sCorreoInstitucional='';
+	$sDebug='';
+	$sSQL='SELECT unad11correo, unad11aceptanotificacion, unad11correonotifica, unad11correoinstitucional, unad11fechaconfmail, unad11rolunad, unad11correofuncionario 
+FROM unad11terceros 
+WHERE unad11id='.$idTercero.'';
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta para los correos '.$sSQL.' <br>';}
+	$tabla=$objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla)>0){
+		$fila=$objDB->sf($tabla);
+		$bHayCorreo=false;
+		if (correo_VerificarDireccion(trim($fila['unad11correofuncionario']))){
+			$bHayCorreo=true;
+			$sCorreoUsuario=trim($fila['unad11correofuncionario']);
+			$sCorreoInstitucional=$sCorreoUsuario;
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Correo primario '.$sCorreoUsuario.' <br>';}
+			}
+		if (!$bHayCorreo){
+			if (correo_VerificarDireccion(trim($fila['unad11correoinstitucional']))){
+				$bHayCorreo=true;
+				$sCorreoUsuario=trim($fila['unad11correoinstitucional']);
+				$sCorreoInstitucional=$sCorreoUsuario;
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Correo primario '.$sCorreoUsuario.' <br>';}
+				}
+			}
+		if (!$bHayCorreo){
+			if ($fila['unad11fechaconfmail']!=0){
+				//Este proceso es independiente de que acepte notificaciones o no....
+				if (correo_VerificarDireccion(trim($fila['unad11correonotifica']))){
+					$bHayCorreo=true;
+					$sCorreoUsuario=trim($fila['unad11correonotifica']);
+					if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Correo de notificaciones '.$sCorreoUsuario.' validado<br>';}
+					}
+				}
+			}
+		if (!$bHayCorreo){
+			$sOpcion1=trim($fila['unad11correo']);
+			$sOpcion2=trim($fila['unad11correoinstitucional']);
+			if ($fila['unad11rolunad']>0){
+				//$sOpcion1=$fila['unad11correoinstitucional'];
+				//$sOpcion2=$fila['unad11correo'];
+				}
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Verificando correo '.$sOpcion1.' <br>';}
+			if (correo_VerificarDireccion($sOpcion1)){
+				$bHayCorreo=true;
+				$sCorreoUsuario=$sOpcion1;
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Opcion 1 '.$sOpcion1.' validada<br>';}
+				}
+			if (!$bHayCorreo){
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Verificando correo 2 '.$sOpcion2.' <br>';}
+				if (correo_VerificarDireccion($sOpcion2)){
+					$bHayCorreo=true;
+					$sCorreoUsuario=$sOpcion2;
+					if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Opcion 2 '.$sOpcion2.' validada<br>';}
+					}
+				}
+			}
+		}
+	if ($sCorreoUsuario==''){
+		$sError='No se ha establecido un correo electr&oacute;nico v&aacute;lido para el usuario.';
+		}
+	return array($sCorreoUsuario, $sError, $sDebug, $sCorreoInstitucional);
+	}
+function AUREA_CorreoRecupera($idTercero, $objDB, $bDebug=false){
+/**
+* @date miercoles, 22 de mayo de 2019
+* Esta funcion es similar a AUREA_CorreoNotifica solo que tiene reglas diferentes.
+*/
+	$sError='';
+	$sCorreoUsuario='';
+	$sDebug='';
+	$sSQL='SELECT unad11correo, unad11aceptanotificacion, unad11correonotifica, unad11correoinstitucional, unad11fechaconfmail, unad11rolunad, unad11correofuncionario 
+FROM unad11terceros WHERE unad11id='.$idTercero.'';
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta para el correo de notificaciones '.$sSQL.' <br>';}
+	$tabla=$objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla)>0){
+		$fila=$objDB->sf($tabla);
+		$bHayCorreo=false;
+		if ($fila['unad11fechaconfmail']!=0){
+			//Este proceso es independiente de que acepte notificaciones o no....
+			if (correo_VerificarDireccion(trim($fila['unad11correonotifica']))){
+				$bHayCorreo=true;
+				$sCorreoUsuario=trim($fila['unad11correonotifica']);
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Correo de notificaciones '.$sCorreoUsuario.' validado<br>';}
+				}
+			}
+		if (!$bHayCorreo){
+			if (correo_VerificarDireccion(trim($fila['unad11correofuncionario']))){
+				$bHayCorreo=true;
+				$sCorreoUsuario=trim($fila['unad11correofuncionario']);
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Correo de notificaciones '.$sCorreoUsuario.' {Correo del funcionario}<br>';}
+				}
+			}
+		if (!$bHayCorreo){
+			$sOpcion1=trim($fila['unad11correo']);
+			$sOpcion2=trim($fila['unad11correoinstitucional']);
+			if ($fila['unad11rolunad']>0){
+				//$sOpcion1=$fila['unad11correoinstitucional'];
+				//$sOpcion2=$fila['unad11correo'];
+				}
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Verificando correo '.$sOpcion1.' <br>';}
+			if (correo_VerificarDireccion($sOpcion1)){
+				$bHayCorreo=true;
+				$sCorreoUsuario=$sOpcion1;
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Opcion 1 '.$sOpcion1.' validada<br>';}
+				}
+			if (!$bHayCorreo){
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Verificando correo 2 '.$sOpcion2.' <br>';}
+				if (correo_VerificarDireccion($sOpcion2)){
+					$bHayCorreo=true;
+					$sCorreoUsuario=$sOpcion2;
+					if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Opcion 2 '.$sOpcion2.' validada<br>';}
+					}
+				}
+			}
+		}
+	if ($sCorreoUsuario==''){
+		$sError='No se ha establecido un correo electr&oacute;nico v&aacute;lido para el usuario.';
+		}
+	return array($sCorreoUsuario, $sError, $sDebug);
+	}
+function AUREA_IniciarLogin($idTercero, $objDB, $sFrase='', $iUso=0, $bDebug=false){
 	//El uso 0 es para iniciar sesion , el 1 es para recuperar contraseña. y 2 para recuperar contrase;a desde soporte.
 	$sError='';
 	$sDebug='';
@@ -279,18 +418,18 @@ function AUREA_IniciarLogin($idTercero, $objdb, $sFrase='', $iUso=0, $bDebug=fal
 	$sInfoRastro='Se inicia envio de codigo de acceso';
 	require './app.php';
 	$sTabla='aure01login'.date('Ym');
-	$bexiste=$objdb->bexistetabla($sTabla);
-	if ($objdb->dbmodelo=='M'){
+	$bexiste=$objDB->bexistetabla($sTabla);
+	if ($objDB->dbmodelo=='M'){
 		if (!$bexiste){
-			$sql="CREATE TABLE ".$sTabla." (aure01idtercero int NOT NULL, aure01consec int NOT NULL, aure01id int NULL DEFAULT 0, aure01fecha int NULL DEFAULT 0, aure01min int NULL DEFAULT 0, aure01codigo varchar(20) NULL, aure01fechaaplica int NULL DEFAULT 0, aure01minaplica int NULL DEFAULT 0, aure01ip varchar(50) NULL, aure01punto varchar(100) NULL, aure01idsmtp int NULL DEFAULT 0)";
-			$result=$objdb->ejecutasql($sql);
+			$sSQL="CREATE TABLE ".$sTabla." (aure01idtercero int NOT NULL, aure01consec int NOT NULL, aure01id int NULL DEFAULT 0, aure01fecha int NULL DEFAULT 0, aure01min int NULL DEFAULT 0, aure01codigo varchar(20) NULL, aure01fechaaplica int NULL DEFAULT 0, aure01minaplica int NULL DEFAULT 0, aure01ip varchar(50) NULL, aure01punto varchar(100) NULL, aure01idsmtp int NULL DEFAULT 0)";
+			$result=$objDB->ejecutasql($sSQL);
 			if ($result==false){
 				$sError='No es posible iniciar el codigo de acceso para  '.date('Ym').'';
 				}else{
-				$sql="ALTER TABLE ".$sTabla." ADD PRIMARY KEY(aure01id)";
-				$result=$objdb->ejecutasql($sql);
-				$sql="ALTER TABLE ".$sTabla." ADD UNIQUE INDEX aure01solmodclave_id(aure01idtercero, aure01consec)";
-				$result=$objdb->ejecutasql($sql);
+				$sSQL="ALTER TABLE ".$sTabla." ADD PRIMARY KEY(aure01id)";
+				$result=$objDB->ejecutasql($sSQL);
+				$sSQL="ALTER TABLE ".$sTabla." ADD UNIQUE INDEX aure01solmodclave_id(aure01idtercero, aure01consec)";
+				$result=$objDB->ejecutasql($sSQL);
 				}
 			}
 		}
@@ -298,11 +437,11 @@ function AUREA_IniciarLogin($idTercero, $objdb, $sFrase='', $iUso=0, $bDebug=fal
 	$sMailSeguridad='soporte.campus@unad.edu.co';
 	$iCodigoRastro=0;
 	if ($sError==''){
-		list($sCorreoUsuario, $sError, $sDebugM)=AUREA_CorreoNotifica($idTercero, $objdb, $bDebug);
+		list($sCorreoUsuario, $sError, $sDebugM)=AUREA_CorreoNotifica($idTercero, $objDB, $bDebug);
 		$sDebug=$sDebug.$sDebugM;
 		}
 	if ($sError==''){
-		list($idSMTP, $sDebugS)=AUREA_SmtpMejor($sTabla, $objdb, $bDebug);
+		list($idSMTP, $sDebugS)=AUREA_SmtpMejor($sTabla, $objDB, $bDebug);
 		$sDebug=$sDebug.$sDebugS;
 		//Agregar el punto.
 		$sProtocolo='http';
@@ -310,8 +449,8 @@ function AUREA_IniciarLogin($idTercero, $objdb, $sFrase='', $iUso=0, $bDebug=fal
 			if ($_SERVER['HTTPS']=='on'){$sProtocolo='https';}
 			}
 		$aure01punto=$sProtocolo.'://'.$_SERVER['SERVER_NAME'].formato_UrlLimpia($_SERVER['REQUEST_URI']);
-		$aure01consec=tabla_consecutivo($sTabla, 'aure01consec', 'aure01idtercero='.$idTercero.'', $objdb);
-		$aure01id=tabla_consecutivo($sTabla, 'aure01id', '', $objdb);
+		$aure01consec=tabla_consecutivo($sTabla, 'aure01consec', 'aure01idtercero='.$idTercero.'', $objDB);
+		$aure01id=tabla_consecutivo($sTabla, 'aure01id', '', $objDB);
 		$aure01fecha=fecha_DiaMod();
 		$aure01min=fecha_MinutoMod();
 		$aure01codigo=md5($aure01fecha.$aure01min.$idTercero.$sTabla);
@@ -323,11 +462,11 @@ aure01min, aure01codigo, aure01fechaaplica, aure01minaplica, aure01ip, aure01pun
 		$svalores=''.$idTercero.', '.$aure01consec.', '.$aure01id.', '.$aure01fecha.', 
 '.$aure01min.', "'.$aure01codigo.'", -1, 0, "'.$aure01ip.'", "'.$aure01punto.'", '.$idSMTP.'';
 		if ($APP->utf8==1){
-			$sql='INSERT INTO '.$sTabla.' ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+			$sSQL='INSERT INTO '.$sTabla.' ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
 			}else{
-			$sql='INSERT INTO '.$sTabla.' ('.$scampos.') VALUES ('.$svalores.');';
+			$sSQL='INSERT INTO '.$sTabla.' ('.$scampos.') VALUES ('.$svalores.');';
 			}
-		$result=$objdb->ejecutasql($sql);
+		$result=$objDB->ejecutasql($sSQL);
 		//Ahora que se genero el codigo enviarlo al correo.
 		if (!class_exists('clsMail_Unad')){
 			require $APP->rutacomun.'libmail.php';
@@ -385,7 +524,7 @@ box-shadow: -4px 16px 23px -13px rgba(0,0,0,0.75); font-size: 30px; border: #FFF
 Equipo de Soporte T&eacute;cnico.';
 			}
 		//Enviar el mensaje.
-		$objMail=new clsMail_Unad($objdb);
+		$objMail=new clsMail_Unad($objDB);
 		$objMail->TraerSMTP($idSMTP);
 		$objMail->sAsunto=$sTituloCorreo.' '.fecha_hoy().' '.html_TablaHoraMin(fecha_hora(), fecha_minuto()).'';
 		$objMail->addCorreo($sCorreoUsuario, $sCorreoUsuario);
@@ -393,9 +532,9 @@ Equipo de Soporte T&eacute;cnico.';
 			$objMail->sCuerpo=$sMsg;
 			$sError=$objMail->Enviar();
 			if ($bDesdeSoporte){
-				list($bRes, $sDebugR)=seg_rastro(17, $iCodigoRastro, 0, $_SESSION['unad_id_tercero'], $sInfoRastro, $objdb, $bDebug, $idTercero);
+				list($bRes, $sDebugR)=seg_rastro(17, $iCodigoRastro, 0, $_SESSION['unad_id_tercero'], $sInfoRastro, $objDB, $bDebug, $idTercero);
 				}else{
-				list($bRes, $sDebugR)=seg_rastro(17, $iCodigoRastro, 0, $idTercero, $sInfoRastro, $objdb, $bDebug, $idTercero);
+				list($bRes, $sDebugR)=seg_rastro(17, $iCodigoRastro, 0, $idTercero, $sInfoRastro, $objDB, $bDebug, $idTercero);
 				}
 			$sDebug=$sDebug.$sDebugR;
 			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Se envia correo a '.$sCorreoUsuario.'<br>';}
@@ -407,24 +546,24 @@ Equipo de Soporte T&eacute;cnico.';
 		}
 	return array($aure01codigo, $sError, $sDebug);
 	}
-function AUREA_RequiereDobleAutenticacion($idTercero, $objdb){
+function AUREA_RequiereDobleAutenticacion($idTercero, $objDB){
 	$bRes=false;
 	$bConAlumnos=false;
 	//Primero ver si esta habilitado el servicio.
-	$sql='SELECT unad88loginmail, unad88doblelogest FROM unad88opciones WHERE unad88id=1';
-	$tabla=$objdb->ejecutasql($sql);
-	if ($objdb->nf($tabla)>0){
-		$fila=$objdb->sf($tabla);
+	$sSQL='SELECT unad88loginmail, unad88doblelogest FROM unad88opciones WHERE unad88id=1';
+	$tabla=$objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla)>0){
+		$fila=$objDB->sf($tabla);
 		if ($fila['unad88loginmail']=='S'){
 			$bRes=true;
 			if ($fila['unad88doblelogest']=='S'){$bConAlumnos=true;}
 			}
 		}
 	if ($bRes){
-		$sql='SELECT unad11exluirdobleaut, unad11fechaconfmail FROM unad11terceros WHERE unad11id='.$idTercero.'';
-		$tabla=$objdb->ejecutasql($sql);
-		if ($objdb->nf($tabla)>0){
-			$fila=$objdb->sf($tabla);
+		$sSQL='SELECT unad11exluirdobleaut, unad11fechaconfmail FROM unad11terceros WHERE unad11id='.$idTercero.'';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
 			if ($fila['unad11exluirdobleaut']=='S'){$bRes=false;}
 			if ($fila['unad11fechaconfmail']==0){$bRes=false;}
 			}
@@ -432,17 +571,17 @@ function AUREA_RequiereDobleAutenticacion($idTercero, $objdb){
 	if ($bRes){
 		if (!$bConAlumnos){
 			//Saber si la persona tiene un rol diferente a alumno.
-			$sql='SELECT unad47peraca FROM unad47tablero WHERE unad47idtercero='.$idTercero.' AND unad47activo="S" AND unad47idrol<>5 LIMIT 0,1';
-			$tabla=$objdb->ejecutasql($sql);
-			if ($objdb->nf($tabla)==0){
+			$sSQL='SELECT unad47peraca FROM unad47tablero WHERE unad47idtercero='.$idTercero.' AND unad47activo="S" AND unad47idrol<>5 LIMIT 0,1';
+			$tabla=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla)==0){
 				//Es un alumno....
 				$bRes=false;
 				}
 			if (!$bRes){
 				//Puede ser usuario en alguna aplicacion....
-				$sql='SELECT unad07idperfil FROM unad07usuarios WHERE unad07idtercero='.$idTercero.' AND unad07vigente="S"';
-				$tabla=$objdb->ejecutasql($sql);
-				if ($objdb->nf($tabla)>0){
+				$sSQL='SELECT unad07idperfil FROM unad07usuarios WHERE unad07idtercero='.$idTercero.' AND unad07vigente="S"';
+				$tabla=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tabla)>0){
 					$bRes=true;
 					}
 				}
@@ -450,8 +589,13 @@ function AUREA_RequiereDobleAutenticacion($idTercero, $objdb){
 		}
 	return $bRes;
 	}
-function AUREA_ClaveValida($sValor, $objdb, $sPermitidos='*._-!'){
+function AUREA_ClaveValidaV2($sValor, $idTercero, $objDB, $sPermitidos='*._-!'){
+	list($sError, $sDebug)=AUREA_ClaveValidaV3($sValor, $idTercero, $objDB, $sPermitidos);
+	return $sError;
+	}
+function AUREA_ClaveValidaV3($sValor, $idTercero, $objDB, $sPermitidos='*._-!', $bDebug=false){
 	$sError='';
+	$sDebug='';
 	if (strlen($sValor)<6){$sError='La contrase&ntilde;a debe ser de m&iacute;nimo 6 caracteres.';}
 	if ($sError==''){
 		$sValidado=cadena_letrasynumeros($sValor, $sPermitidos);
@@ -478,6 +622,32 @@ function AUREA_ClaveValida($sValor, $objdb, $sPermitidos='*._-!'){
 		$sValidado=cadena_limpiar($sValor, $sPermitidos);
 		if ($sValidado==''){$sError='La contrase&ntilde;a ingresada no contiene caracteres especiales';}
 		}
-	return $sError;
+	if ($sError==''){
+		//Que no este poniendo la misma.
+		$sHash=password_hash($sValor, PASSWORD_DEFAULT);
+		$sSQL='SELECT unad11clave FROM unad11terceros WHERE unad11id='.$idTercero.'';
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Verificando la clave actual. '.$sSQL.'<br>';}
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
+			if (password_verify($sValor, $fila['unad11clave'])){
+				$sError='La contrase&ntilde;a ingresada es la misma que usa actualmente. Debe cambiarla.';
+				}
+			}
+		}
+	if ($sError==''){
+		//Ver que no se haya usado recientemente.
+		$sSQL='SELECT unae10hash, unae10fecha FROM unae10historialclave WHERE unae10idtercero='.$idTercero.' ORDER BY unae10fecha DESC LIMIT 0, 3';
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Historial de hash '.$sSQL.'<br>';}
+		$tabla=$objDB->ejecutasql($sSQL);
+		while($fila=$objDB->sf($tabla)){
+			//Revisar que las claves historicas no sean las mismas.
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Verficando hash del '.$fila['unae10fecha'].'<br>';}
+			if (password_verify($sValor, $fila['unae10hash'])){
+				$sError='La contrase&ntilde;a ingresada ha sido usada recientemente';
+				}
+			}
+		}
+	return array($sError, $sDebug);
 	}
 ?>

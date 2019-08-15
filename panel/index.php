@@ -1,9 +1,9 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2015 - 2017 ---
+--- ï¿½ Angel Mauro Avellaneda Barreto - UNAD - 2015 - 2017 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
---- Modelo Versión 2.9.3 domingo, 23 de agosto de 2015
---- Modelo Versión 2.17.0 sábado, 25 de marzo de 2017
+--- Modelo Versiï¿½n 2.9.3 domingo, 23 de agosto de 2015
+--- Modelo Versiï¿½n 2.17.0 sï¿½bado, 25 de marzo de 2017
 */
 if (file_exists('./err_control.php')){require './err_control.php';}
 $bDebug=false;
@@ -93,7 +93,7 @@ $xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
 $xajax->register(XAJAX_FUNCTION,'sesion_mantener');
 $xajax->processRequest();
 if ($bPeticionXAJAX){
-	die(); // Esto hace que las llamadas por xajax terminen aquí.
+	die(); // Esto hace que las llamadas por xajax terminen aquï¿½.
 	}
 $bcargo=false;
 $sError='';
@@ -102,7 +102,10 @@ $iTipoError=0;
 $bLimpiaHijos=false;
 $bMueveScroll=false;
 $iSector=1;
+$modNombre='Panel de AdministraciÃ³n';
+$modSigla='Panel';
 list($et_menu, $sDebugM)=html_menuV2($APP->idsistema, $objdb, $iPiel, $bDebug);
+$sDebug=
 $objdb->CerrarConexion();
 //FORMA
 require $APP->rutacomun.'unad_forma_v2.php';

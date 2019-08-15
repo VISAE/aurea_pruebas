@@ -83,6 +83,7 @@ $ETI['unad11presentacion']='Presentaci&oacute;n';
 $ETI['unad11fechaactualiza']='Fecha actualiza';
 $ETI['unad11fechaclave']='Fecha cambio de clave';
 $ETI['unad11fechaultingreso']='Fecha &uacute;ltimo ingreso';
+$ETI['unad11correofuncionario']='Correo funcionario';
 
 $ERR['unad11tipodoc']='Necesita el dato Tipodoc';
 $ERR['unad11doc']='Necesita el dato Doc';
@@ -150,6 +151,9 @@ $ERR['unad11presentacion']='Necesita el dato Presentacion';
 $ERR['unad11fechaactualiza']='Necesita el dato Fechaactualiza';
 $ERR['unad11fechaclave']='Necesita el dato Fechaclave';
 $ERR['unad11fechaultingreso']='Necesita el dato Fechaultingreso';
+$ERR['unad11correofuncionario']='Necesita el dato '.$ETI['unad11correofuncionario'];
+$aunad11rolunad=array('', '');
+$iunad11rolunad=0;
 
 $ETI['msg_bloqueado']='Bloqueado';
 $ETI['msg_nobloqueado']='&nbsp;';
