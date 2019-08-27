@@ -2,6 +2,8 @@
 /*
 --- © Angel Mauro Avellaneda Barreto - UNAD - 2019 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
+--- Saúl Alexánder Hernández 16-08-2019
+--- Omar Bautista 16-08-2019
 */
 /** Archivo cecarptestadistica.php.
 * Modulo 2408 ceca08estadisticacurso.
@@ -175,7 +177,6 @@ if (isset($_REQUEST['ceca08idzona'])==0){$_REQUEST['ceca08idzona']='';}
 if (isset($_REQUEST['ceca08idcentro'])==0){$_REQUEST['ceca08idcentro']='';}
 if (isset($_REQUEST['ceca08idescuela'])==0){$_REQUEST['ceca08idescuela']='';}
 if (isset($_REQUEST['ceca08idprograma'])==0){$_REQUEST['ceca08idprograma']='';}
-//if (isset($_REQUEST['ceca08sexo'])==0){$_REQUEST['ceca08sexo']='';}
 if (isset($_REQUEST['ceca08edad'])==0){$_REQUEST['ceca08edad']='';}
 if (isset($_REQUEST['ceca08id'])==0){$_REQUEST['ceca08id']='';}
 if (isset($_REQUEST['ceca08tiporegistro'])==0){$_REQUEST['ceca08tiporegistro']=1;}
@@ -194,7 +195,6 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['ceca08idcentro']='';
 	$_REQUEST['ceca08idescuela']='';
 	$_REQUEST['ceca08idprograma']='';
-	//$_REQUEST['ceca08sexo']='';
 	$_REQUEST['ceca08edad']='';
 	$_REQUEST['ceca08id']='';
 	$_REQUEST['paso']=0;
@@ -220,7 +220,6 @@ $html_ceca08idcentro=f2408_HTMLComboV2_ceca08idcentro($objDB, $objCombos, $_REQU
 $html_ceca08idescuela=f2408_HTMLComboV2_ceca08idescuela($objDB, $objCombos, $_REQUEST['ceca08idescuela']);
 $html_ceca08idprograma=f2408_HTMLComboV2_ceca08idprograma($objDB, $objCombos, $_REQUEST['ceca08idprograma'], $_REQUEST['ceca08idescuela']);
 $html_unae18rangoedad=f2408_HTMLComboV2_unae18rangoedad($objDB, $objCombos, $_REQUEST['unae18id']);
-//$html_ceca08sexo=html_combo('ceca08sexo', 'unad22codopcion', 'unad22nombre', 'unad22combos', 'unad22idmodulo=111 AND unad22consec=1 AND unad22activa="S"', 'unad22orden', $_REQUEST['ceca08sexo'], $objDB, 'paginarf2408()', true, '{'.$ETI['msg_na'].'}', '');
 $objCombos->nuevo('incluirceca08sexo', $_REQUEST['incluirceca08sexo'], false);
 $objCombos->sino();
 $objCombos->sAccion='paginarf2408()';
@@ -374,44 +373,6 @@ var sEncabeado='';
 	window.document.frmimpp.v10.value=window.document.frmedita.ceca08idprograma.value;
 	window.document.frmimpp.v11.value=window.document.frmedita.incluirceca08sexo.value;
 	window.document.frmimpp.v12.value=window.document.frmedita.unae18id.value;
-	if(window.document.frmedita.ceca08tiporegistro.value!=''){
-		sEncabeado=sEncabeado+'Tipo de estadistica '+window.document.frmedita.ceca08tiporegistro.options[window.document.frmedita.ceca08tiporegistro.selectedIndex].text +'  '+'\n';
-	}
-	if(window.document.frmedita.ceca08idperaca.value!=''){
-		sEncabeado=sEncabeado+'Peraca '+window.document.frmedita.ceca08idperaca.options[window.document.frmedita.ceca08idperaca.selectedIndex].text+'  '+'\n';
-	}
-	if(window.document.frmedita.ceca08idcurso.value!=''){
-		sEncabeado=sEncabeado+'Curso '+window.document.frmedita.ceca08idcurso.options[window.document.frmedita.ceca08idcurso.selectedIndex].text+'  '+'\n';
-	}
-	
-	if(window.document.frmedita.ceca08idtutor.value!=''){
-		sEncabeado=sEncabeado+'Tutor '+((window.document.frmedita.ceca08idtutor.options[window.document.frmedita.ceca08idtutor.selectedIndex].text))+'  '+'\n';
-	}
-	if(window.document.frmedita.ceca08idzona.value!=''){
-		sEncabeado=sEncabeado+'Zona '+window.document.frmedita.ceca08idzona.options[window.document.frmedita.ceca08idzona.selectedIndex].text+'  '+'\n';
-	}
-	
-	if(window.document.frmedita.ceca08idcentro.value!=''){
-		sEncabeado=sEncabeado+'Centro '+window.document.frmedita.ceca08idcentro.options[window.document.frmedita.ceca08idcentro.selectedIndex].text+'  '+'\n';
-	}
-	
-	if(window.document.frmedita.ceca08idescuela.value!=''){
-		sEncabeado=sEncabeado+'Escuela '+window.document.frmedita.ceca08idescuela.options[window.document.frmedita.ceca08idescuela.selectedIndex].text+'  '+'\n';
-	}
-	
-	if(window.document.frmedita.ceca08idprograma.value!=''){
-		sEncabeado=sEncabeado+'Programa '+window.document.frmedita.ceca08idprograma.options[window.document.frmedita.ceca08idprograma.selectedIndex].text+'  '+'\n';
-	}
-	
-	/*if(window.document.frmedita.incluirceca08sexo.value!=''){
-		sEncabeado=sEncabeado+'Sexo '+window.document.frmedita.incluirceca08sexo.options[window.document.frmedita.incluirceca08sexo.selectedIndex].text+'  '+'\n';
-	}
-	*/
-	if(window.document.frmedita.unae18id.value!=''){
-		sEncabeado=sEncabeado+'Rango de edad '+window.document.frmedita.unae18id.options[window.document.frmedita.unae18id.selectedIndex].text+'  '+'\n';
-	}
-	
-	window.document.frmimpp.vEncabezado.value=sEncabeado;
 	window.document.frmimpp.separa.value=window.document.frmedita.csv_separa.value.trim();
 	}
 function imprimeexcel(){
@@ -457,82 +418,36 @@ function carga_combo_ceca08idcurso(){
 	var params=new Array();
 	params[0]=window.document.frmedita.ceca08idperaca.value;
 	xajax_f2408_Comboceca08idcurso(params);
-	params[0]='';
-	xajax_f2408_Comboceca08idtutor(params);
-	params[0]='';
-	params[1]='';
-	xajax_f2408_Comboceca08idzona(params);
-	params[0]='';
-	params[1]='';
-	xajax_f2408_Comboceca08idcentro(params);
-	params[0]='';
-	xajax_f2408_Comboceca08idescuela(params);
-	params[0]='';
-	params[1]='';
-	xajax_f2408_Comboceca08idprograma(params);
 	}
 function carga_combo_ceca08idtutor(){
 	var params=new Array();
 	params[0]=window.document.frmedita.ceca08idcurso.value;
 	xajax_f2408_Comboceca08idtutor(params);
-	params[0]='';
-	params[1]=window.document.frmedita.ceca08idcurso.value;
-	xajax_f2408_Comboceca08idzona(params);
-	params[0]='';
-	xajax_f2408_Comboceca08idcentro(params);
-	//params[0]='';
-	//xajax_f2408_Comboceca08idescuela(params);
-	params[0]='';
-	params[1]='';
-	xajax_f2408_Comboceca08idprograma(params);
 	}
-	
 function carga_combo_ceca08idzona(){ // nosotros
 	var params=new Array();
 	params[0]=window.document.frmedita.ceca08idtutor.value;
 	params[1]=window.document.frmedita.ceca08idcurso.value;
-	//console.log('params[1] '+params[1]+ ' params[0] '+params[0] );
 	xajax_f2408_Comboceca08idzona(params);
-	//params[0]='';
-	//xajax_f2408_Comboceca08idcentro(params);
-	//params[0]='';
-	//xajax_f2408_Comboceca08idescuela(params);
-	//params[0]='';
-	//xajax_f2408_Comboceca08idprograma(params);
 	}
-	
-		
 function carga_combo_ceca08idcentro(){
 	var params=new Array();
 	params[0]=window.document.frmedita.ceca08idzona.value;
 	params[1]=window.document.frmedita.ceca08idtutor.value;
 	xajax_f2408_Comboceca08idcentro(params);
-	//params[0]='';
-	//xajax_f2408_Comboceca08idescuela(params);
-	//params[0]='';
-	//xajax_f2408_Comboceca08idprograma(params);
 	}
-
 function carga_combo_ceca08idescuela(){ // nosotros
 	var params=new Array();
 	params[0]=window.document.frmedita.ceca08idcurso.value;
 	params[1]=window.document.frmedita.ceca08idtutor.value;
 	xajax_f2408_Comboceca08idescuela(params);
-	
-	/*params[0]=window.document.frmedita.ceca08idescuela.value;
-	params[1]=window.document.frmedita.ceca08idtutor.value;
-	params[2]=window.document.frmedita.ceca08idcurso.value;
-	xajax_f2408_Comboceca08idprograma(params);
-	*/
 	}	
-
 function carga_combo_ceca08idprograma(){
 	var params=new Array();
 	params[0]=window.document.frmedita.ceca08idescuela.value;
-    params[1]=window.document.frmedita.ceca08idtutor.value;
+	params[1]=window.document.frmedita.ceca08idtutor.value;
 	params[2]=window.document.frmedita.ceca08idcurso.value;
 	xajax_f2408_Comboceca08idprograma(params);
-	
 	}
 function paginarf2408(){
 	var params=new Array();
@@ -549,7 +464,6 @@ function paginarf2408(){
 	params[110]=window.document.frmedita.ceca08idprograma.value;
 	params[111]=window.document.frmedita.incluirceca08sexo.value;
 	params[112]=window.document.frmedita.unae18id.value;
-	
 	//params[104]=window.document.frmedita.blistar.value;
 	document.getElementById('div_f2408detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere...</div></div><input id="paginaf2408" name="paginaf2408" type="hidden" value="'+params[101]+'" /><input id="lppf2408" name="lppf2408" type="hidden" value="'+params[102]+'" />';
 	xajax_f2408_HtmlTabla(params);
@@ -607,23 +521,18 @@ function cierraDiv96(ref){
 	MensajeAlarmaV2('', 0);
 	retornacontrol();
 	}
-	
 function cargar_zona_y_escuela(){
 	carga_combo_ceca08idzona();
 	carga_combo_ceca08idescuela();
 	}	
-	
 function cargar_tutor_escuela_zona(){
 	carga_combo_ceca08idzona();
 	carga_combo_ceca08idtutor();
 	carga_combo_ceca08idescuela();
-	
 	}		
-
 // -->
 </script>
 <?php
-//if ($_REQUEST['paso']!=0){
 ?>
 <form id="frmimpp" name="frmimpp" method="post" action="t2408.php" target="_blank">
 <input id="r" name="r" type="hidden" value="2408" />
@@ -645,7 +554,6 @@ function cargar_tutor_escuela_zona(){
 <input id="clave" name="clave" type="hidden" value="" />
 </form>
 <?php
-//	}
 ?>
 <form id="frmlista" name="frmlista" method="post" action="listados.php" target="_blank">
 <input id="titulos" name="titulos" type="hidden" value="" />
@@ -669,7 +577,6 @@ function cargar_tutor_escuela_zona(){
 <input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(<?php echo $APP->idsistema.', '.$iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>"/>
 <?php
 $bHayImprimir=false;
-//$sScript='imprimelista()';
 $sScript='imprimeexcel()';
 $sClaseBoton='btEnviarExcel';
 if ($seg_6==1){$bHayImprimir=true;}
@@ -848,7 +755,11 @@ echo $ETI['unae18id'];
 echo $html_unae18rangoedad;
 ?>
 </label>
-
+<?php
+echo ' '.$csv_separa;
+?>
+<div class="salto1px"></div>
+</div>
 
 <?php
 if (false){
@@ -859,19 +770,12 @@ if (false){
 if ($bconexpande){
 	//Este es el cierre del div_p2408
 ?>
-
+<div class="salto1px"></div>
+</div>
 <?php
 	}
 //Mostrar el contenido de la tabla
 ?>
-
-<?php
-echo ' '.$csv_separa;
-?>
-
-<div class="salto1px"></div>
-</div>
-</div>
 <div id="div_f2408detalle">
 <?php
 echo $sTabla2408;

@@ -2,6 +2,8 @@
 /*
 --- © Angel Mauro Avellaneda Barreto - UNAD - 2019 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
+--- Saúl Alexánder Hernández 16-08-2019
+--- Omar Bautista 16-08-2019
 --- Modelo Versión 2.23.3 sábado, 20 de julio de 2019
 --- 2408 ceca08estadisticacurso
 */
@@ -38,9 +40,9 @@ function f2408_HTMLComboV2_ceca08idcurso($objDB, $objCombos, $valor, $vrceca08id
 	$sCondi='unad40id IN ('.$sSQL1.')';
 	if ($sCondi!=''){$sCondi=' WHERE '.$sCondi;}
 	$objCombos->nuevo('ceca08idcurso', $valor, true, '{'.$ETI['msg_seleccione'].'}');
-//	$objCombos->sAccion='carga_combo_ceca08idtutor()';
 	$objCombos->sAccion='cargar_tutor_escuela_zona()';
-	$sSQL='SELECT unad40id AS id, unad40nombre AS nombre FROM unad40curso'.$sCondi;
+	//$sSQL='SELECT unad40id AS id, unad40nombre AS nombre FROM unad40curso'.$sCondi;
+	$sSQL='SELECT unad40id AS id, CONCAT (unad40titulo," - " ,unad40nombre) AS nombre FROM unad40curso'.$sCondi.'  ORDER BY id';
 	$res=$objCombos->html($sSQL, $objDB);
 	return $res;
 	}
@@ -49,13 +51,10 @@ function f2408_HTMLComboV2_ceca08idtutor($objDB, $objCombos, $valor, $vrceca08id
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	require $mensajes_todas;
-	//@@ Se debe arreglar la condicion..
 	$sSQL1='SELECT ceca08idtutor FROM ceca08estadisticacurso AS TB WHERE ceca08idcurso= '.$vrceca08idcurso .' GROUP BY ceca08idtutor';
 	$sCondi='unad11id IN ('.$sSQL1.')';
 	if ($sCondi!=''){$sCondi=' WHERE '.$sCondi;}
 	$objCombos->nuevo('ceca08idtutor', $valor, true, '{'.$ETI['msg_seleccione'].'}');
-	//$objCombos->sAccion='RevisaLlave();';
-	//$objCombos->sAccion='carga_combo_ceca08idzona()';
 	$objCombos->sAccion='cargar_zona_y_escuela()';
 	$sSQL='SELECT  unad11id AS id, unad11razonsocial AS nombre FROM unad11terceros'.$sCondi;
 	$res=$objCombos->html($sSQL, $objDB);
@@ -68,24 +67,18 @@ function f2408_HTMLComboV2_ceca08idzona($objDB, $objCombos, $valor, $vrceca08idt
 	require $mensajes_todas;
 	$sCondi='';
 	$sSQL1='';
-	//$vrceca08idcurso=122001 ;
 	if ($vrceca08idcurso!=''){
 	$sSQL1='SELECT ceca08idzona FROM ceca08estadisticacurso AS TB WHERE ceca08idcurso= '.$vrceca08idcurso.' GROUP BY ceca08idzona';
 	$sCondi=' AND unad23id IN ('.$sSQL1.')';
-	//echo 'vrceca08idcurso= '.$vrceca08idcurso.' $vrceca08idtutor = ' .$vrceca08idtutor;
 	}
 	if ($vrceca08idtutor!=''){
 	$sSQL1='SELECT ceca08idzona FROM ceca08estadisticacurso AS TB WHERE ceca08idcurso= '.$vrceca08idcurso.' AND ceca08idtutor='.$vrceca08idtutor.' GROUP BY ceca08idzona';
 	$sCondi=' AND unad23id IN ('.$sSQL1.')';
 	}
-	
 	$objCombos->nuevo('ceca08idzona', $valor, true, '{'.$ETI['msg_seleccione'].'}');
 	$objCombos->sAccion='carga_combo_ceca08idcentro()';
-	$sSQL='SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona WHERE unad23conestudiantes="S" ' .$sCondi.' ORDER BY unad23nombre';
+	$sSQL='SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona WHERE unad23conestudiantes="S" ORDER BY unad23nombre';
 	$res=$objCombos->html($sSQL, $objDB);
-	//echo '$sCondi= '.$sCondi.' $sSQL ='.$sSQL;
-	//console.log($sSQL);
-	//$res='$vrceca08idcurso='.$vrceca08idcurso.' $vrceca08idtutor='.$vrceca08idtutor;
 	return $res;
 	}
 function f2408_HTMLComboV2_ceca08idcentro($objDB, $objCombos, $valor, $vrceca08idzona,$vrceca08idtutor=''){
@@ -103,7 +96,6 @@ function f2408_HTMLComboV2_ceca08idcentro($objDB, $objCombos, $valor, $vrceca08i
 	$sSQL1='SELECT ceca08idcentro FROM ceca08estadisticacurso AS TB WHERE ceca08idtutor= '.$vrceca08idtutor.' GROUP BY ceca08idtutor';
 	$sCondi2=' AND unad24id IN ('.$sSQL1.')';
 	}
-		
 	$objCombos->nuevo('ceca08idcentro', $valor, true, '{'.$ETI['msg_seleccione'].'}');
 	$objCombos->sAccion='paginarf2408()';
 	$sSQL='SELECT unad24id AS id, unad24nombre AS nombre FROM unad24sede'.$sCondi.$sCondi2.' ORDER BY unad24nombre';
@@ -120,7 +112,6 @@ function f2408_HTMLComboV2_ceca08idescuela($objDB, $objCombos, $valor,$vrceca08i
 	$sSQL1='SELECT ceca08idescuela FROM ceca08estadisticacurso AS TB WHERE ceca08idcurso= '.$vrceca08idcurso.' GROUP BY ceca08idescuela';
 	$sCondi2=' AND core12id IN ('.$sSQL1.')';
 	}
-	
 	if ($vrceca08idtutor!=''){
 	$sSQL1='SELECT ceca08idescuela FROM ceca08estadisticacurso AS TB WHERE ceca08idcurso= '.$vrceca08idcurso.' AND ceca08idtutor= '.$vrceca08idtutor.' GROUP BY ceca08idescuela';
 	$sCondi2=' AND core12id IN ('.$sSQL1.')';
@@ -129,7 +120,6 @@ function f2408_HTMLComboV2_ceca08idescuela($objDB, $objCombos, $valor,$vrceca08i
 	$objCombos->sAccion='carga_combo_ceca08idprograma()';
 	$sSQL='SELECT core12id AS id, core12nombre AS nombre FROM core12escuela WHERE core12tieneestudiantes="S" '.$sCondi2;
 	$res=$objCombos->html($sSQL, $objDB);
-	//$res='  $sSQL='.$sSQL;
 	return $res;
 	}
 function f2408_HTMLComboV2_ceca08idprograma($objDB, $objCombos, $valor, $vrceca08idescuela,$vrceca08idtutor='',$vrceca08idcurso=''){
@@ -138,24 +128,18 @@ function f2408_HTMLComboV2_ceca08idprograma($objDB, $objCombos, $valor, $vrceca0
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	require $mensajes_todas;
 	$sCondi2='';
-	
-	
 	if ($vrceca08idcurso!=''){
-	$sSQL1='SELECT ceca08idprograma FROM ceca08estadisticacurso AS TB WHERE ceca08idcurso= '.$vrceca08idcurso.' AND core09idescuela='.$vrceca08idescuela.' GROUP BY ceca08idprograma';
-	$sCondi2=' AND core09id IN ('.$sSQL1.')';
-	}
-	
+		$sSQL1='SELECT ceca08idprograma FROM ceca08estadisticacurso AS TB WHERE ceca08idcurso= '.$vrceca08idcurso.' AND core09idescuela='.$vrceca08idescuela.' GROUP BY ceca08idprograma';
+		$sCondi2=' AND core09id IN ('.$sSQL1.')';
+		}
 	if ($vrceca08idtutor!=''){
-	$sSQL1='SELECT ceca08idprograma FROM ceca08estadisticacurso AS TB WHERE ceca08idcurso= '.$vrceca08idcurso.' AND core09idescuela='.$vrceca08idescuela.' AND ceca08idtutor= '.$vrceca08idtutor.' GROUP BY ceca08idprograma';
-	$sCondi2=' AND core09id IN ('.$sSQL1.')';
-	}
-	
-	//@@ Se debe arreglar la condicion..
-	$sCondi='core09idescuela="'.$vrceca08idescuela.'"';
-	if ($sCondi!=''){$sCondi=' WHERE '.$sCondi;}
+		$sSQL1='SELECT ceca08idprograma FROM ceca08estadisticacurso AS TB WHERE ceca08idcurso= '.$vrceca08idcurso.' AND core09idescuela='.$vrceca08idescuela.' AND ceca08idtutor= '.$vrceca08idtutor.' GROUP BY ceca08idprograma';
+		$sCondi2=' AND core09id IN ('.$sSQL1.')';
+		}
+	$sCondi=' WHERE core09idescuela="'.$vrceca08idescuela.'"';
 	$objCombos->nuevo('ceca08idprograma', $valor, true, '{'.$ETI['msg_seleccione'].'}');
 	$objCombos->sAccion='paginarf2408()';
-	$sSQL='SELECT core09id AS id, core09nombre AS nombre FROM core09programa '.$sCondi.$sCondi2;
+	$sSQL='SELECT core09id AS id, core09nombre AS nombre FROM core09programa '.$sCondi.$sCondi2.' ORDER BY core09nombre';
 	$res=$objCombos->html($sSQL, $objDB);
 	return $res;
 	}
@@ -168,11 +152,36 @@ function f2408_Comboceca08idcurso($aParametros){
 	$objDB->xajax();
 	$objCombos=new clsHtmlCombos('n');
 	$html_ceca08idcurso=f2408_HTMLComboV2_ceca08idcurso($objDB, $objCombos, '', $aParametros[0]);
+	$html_ceca08idtutor=f2408_HTMLComboV2_ceca08idtutor($objDB, $objCombos, '', '');
+	$html_ceca08idzona=f2408_HTMLComboV2_ceca08idzona($objDB, $objCombos, '', '', '');
+	$html_ceca08idcentro=f2408_HTMLComboV2_ceca08idcentro($objDB, $objCombos, '', '', '');
+	$html_ceca08idescuela=f2408_HTMLComboV2_ceca08idescuela($objDB, $objCombos, '', '', '');
+	$html_ceca08idprograma=f2408_HTMLComboV2_ceca08idprograma($objDB, $objCombos, '', '', '', '');
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_ceca08idcurso', 'innerHTML', $html_ceca08idcurso);
+	$objResponse->assign('div_ceca08idtutor', 'innerHTML', $html_ceca08idtutor);
+	$objResponse->assign('div_ceca08idzona', 'innerHTML', $html_ceca08idzona);
+	$objResponse->assign('div_ceca08idcentro', 'innerHTML', $html_ceca08idcentro);
+	$objResponse->assign('div_ceca08idescuela', 'innerHTML', $html_ceca08idescuela);
+	$objResponse->assign('div_ceca08idprograma', 'innerHTML', $html_ceca08idprograma);
 	$objResponse->call('paginarf2408');
 	return $objResponse;
+	/*
+	params[0]='';
+	xajax_f2408_Comboceca08idtutor(params);
+	params[0]='';
+	params[1]='';
+	xajax_f2408_Comboceca08idzona(params);
+	params[0]='';
+	params[1]='';
+	xajax_f2408_Comboceca08idcentro(params);
+	params[0]='';
+	xajax_f2408_Comboceca08idescuela(params);
+	params[0]='';
+	params[1]='';
+	xajax_f2408_Comboceca08idprograma(params);
+	*/
 	}
 function f2408_Comboceca08idtutor($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
@@ -183,14 +192,29 @@ function f2408_Comboceca08idtutor($aParametros){
 	$objDB->xajax();
 	$objCombos=new clsHtmlCombos('n');
 	$html_ceca08idtutor=f2408_HTMLComboV2_ceca08idtutor($objDB, $objCombos, '', $aParametros[0]);
-	//$html_ceca08idtutor= $aParametros[0]);
+	$html_ceca08idzona=f2408_HTMLComboV2_ceca08idzona($objDB, $objCombos, '', '', $aParametros[0]);
+	$html_ceca08idcentro=f2408_HTMLComboV2_ceca08idcentro($objDB, $objCombos, '', '', $aParametros[0]);
+	$html_ceca08idescuela=f2408_HTMLComboV2_ceca08idescuela($objDB, $objCombos, '', $aParametros[0], '');
+	$html_ceca08idprograma=f2408_HTMLComboV2_ceca08idprograma($objDB, $objCombos, '', '', $aParametros[0], '');
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_ceca08idtutor', 'innerHTML', $html_ceca08idtutor);
+	$objResponse->assign('div_ceca08idzona', 'innerHTML', $html_ceca08idzona);
+	$objResponse->assign('div_ceca08idcentro', 'innerHTML', $html_ceca08idcentro);
+	$objResponse->assign('div_ceca08idescuela', 'innerHTML', $html_ceca08idescuela);
+	$objResponse->assign('div_ceca08idprograma', 'innerHTML', $html_ceca08idprograma);
 	$objResponse->call('paginarf2408');
 	return $objResponse;
+	/*
+	params[0]='';
+	xajax_f2408_Comboceca08idzona(params);
+	params[0]='';
+	xajax_f2408_Comboceca08idcentro(params);
+	params[0]='';
+	params[1]='';
+	xajax_f2408_Comboceca08idprograma(params);
+	*/
 	}
-	
 function f2408_Comboceca08idzona($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
 	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
@@ -221,7 +245,6 @@ function f2408_Comboceca08idcentro($aParametros){
 	$objResponse->call('paginarf2408');
 	return $objResponse;
 	}
-
 function f2408_Comboceca08idescuela($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
 	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
@@ -230,7 +253,6 @@ function f2408_Comboceca08idescuela($aParametros){
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
 	$objCombos=new clsHtmlCombos('n');
-	//$aParametros[1]=204573;
 	$html_ceca08idescuela=f2408_HTMLComboV2_ceca08idescuela($objDB, $objCombos, '', $aParametros[0], $aParametros[1]);
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
@@ -238,7 +260,6 @@ function f2408_Comboceca08idescuela($aParametros){
 	$objResponse->call('paginarf2408');
 	return $objResponse;
 	}
-
 function f2408_Comboceca08idprograma($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
 	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
@@ -375,60 +396,38 @@ function f2408_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 		}
 	$sSQLadd='';
 	$sSQLadd1='';
-	//if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$aParametros[103];}
-	//if ($aParametros[103]!=''){$sSQLadd=$sSQLadd.' AND TB.campo2 LIKE "%'.$aParametros[103].'%"';}
-	/*
-	if ($aParametros[104]!=''){
-		$sBase=trim(strtoupper($aParametros[104]));
-		$aNoms=explode(' ', $sBase);
-		for ($k=1;$k<=count($aNoms);$k++){
-			$sCadena=$aNoms[$k-1];
-			if ($sCadena!=''){
-				$sSQLadd=$sSQLadd.' AND T6.unad11razonsocial LIKE "%'.$sCadena.'%"';
-				//$sSQLadd1=$sSQLadd1.'T1.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
-				}
-			}
-		}
-	*/
-	//$sOrderBy='';
 	$sGroupBy='';
 	$sGroupByTotal='';
 	$sSelect='';
+	$sSelectTotal='';
 	$sTablaEdad='';
+	$sOrderByUnion='';
 	if ($aParametros[105]!=''){
-	$sSQLadd=$sSQLadd.' AND TB.ceca08idcurso='.$idCurso;
-	}
-	
-	
+		$sSQLadd=$sSQLadd.' AND TB.ceca08idcurso='.$idCurso;
+		}
 	if ($aParametros[106]!=''){
-	$sSQLadd=$sSQLadd.' AND TB.ceca08idtutor='.$idTutor;
-	}
-	
-	if ($aParametros[107]!=''){
-	$sSQLadd=$sSQLadd.' AND TB.ceca08idzona='.$idzona;
-	}
-	
+		$sSQLadd=$sSQLadd.' AND TB.ceca08idtutor='.$idTutor;
+		}
 	if ($aParametros[108]!=''){
-	$sSQLadd=$sSQLadd.' AND TB.ceca08idcentro='.$idcentro;
-	}
-	
-	if ($aParametros[109]!=''){
-	$sSQLadd=$sSQLadd.' AND TB.ceca08idescuela='.$idescuela;
-	}
-	
+		$sSQLadd=$sSQLadd.' AND TB.ceca08idcentro='.$idcentro;
+		}else{
+		if ($aParametros[107]!=''){
+			$sSQLadd=$sSQLadd.' AND TB.ceca08idzona='.$idzona;
+			}
+		}
 	if ($aParametros[110]!=''){
-	$sSQLadd=$sSQLadd.' AND TB.ceca08idprograma='.$idprograma;
-	}
-	
+		$sSQLadd=$sSQLadd.' AND TB.ceca08idprograma='.$idprograma;
+		}else{
+		if ($aParametros[109]!=''){
+			$sSQLadd=$sSQLadd.' AND TB.ceca08idescuela='.$idescuela;
+			}
+		}
 	if ($aParametros[111]=='S'){
-	$sGroupBy=$sGroupBy.' ,TB.ceca08sexo ';
-	$sSelect=$sSelect.' ,TB.ceca08sexo ';
-	$sSelectTotal =', ceca08sexo';
-	$sGroupByTotal=$sGroupByTotal.'  GROUP BY TB.ceca08sexo ';
-	}
-	
-		//Rango de edad.
-		
+		$sGroupBy=$sGroupBy.' ,TB.ceca08sexo ';
+		$sSelect=$sSelect.' ,TB.ceca08sexo ';
+		$sSelectTotal =', ceca08sexo';
+		$sGroupByTotal=$sGroupByTotal.'  GROUP BY TB.ceca08sexo ';
+		}
 	if ($idRangoEdad!=''){
 		$sTablaEdad=', unae20rangosdist AS T20  ';
 		$sSQLadd=$sSQLadd.' AND TB.ceca08edad=T20.unae20edad  AND unae20idrangoedad='.$idRangoEdad;
@@ -436,15 +435,12 @@ function f2408_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 		$sOrderByUnion=' ,unae20idrango';
 		$sSelectTotal=$sSelectTotal.', "" AS unae20idrango';
 		$sSelect=$sSelect.',T20.unae20idrango ';
-	}
+		}
 	$sTitulos='Peraca, Curso, Tutor, Zona, Centro, Escuela, Programa, Sexo, Edad, Id, Tiporegistro, Fechareporta75, Fechareporta25, Numestudiantes, Numresagados, Numreprobados, Numinasistentes, Promedio75, Promedio25, Promediototal, Puntaje75, Puntaje25';
-	
 	$sConsultaUnion='';
 	$iTipoBusqueda='ceca08idtutor';
-
 	if ($iTipo==1){
-	$iTipoBusqueda='ceca08idtutor';
-
+		$iTipoBusqueda='ceca08idtutor';
 $sConsultaUnion=' UNION    
 SELECT "" AS ceca08idcurso, "" AS unad40titulo, "Todos los cursos" AS unad40nombre, "" AS ceca08idtutor, SUM(TB.ceca08numestudiantes) AS NumEst, SUM(TB.ceca08numreprobados) AS NumReprob, SUM(TB.ceca08numinasistentes) AS NumNoAsistentes, (SUM(TB.ceca08suma75)/SUM(TB.ceca08numestudiantes-TB.ceca08numinasistentes)) AS Prom75, (SUM(TB.ceca08suma25)/SUM(TB.ceca08numestudiantes-TB.ceca08numinasistentes)) AS Prom25 , 
 (SUM(TB.ceca08suma75+TB.ceca08suma25)/SUM(TB.ceca08numestudiantes-TB.ceca08numinasistentes)) AS PromGen'.$sSelectTotal.'     
@@ -452,10 +448,7 @@ FROM ceca08estadisticacurso AS TB'.$sTablaEdad.'
 WHERE TB.ceca08idperaca='.$idPeraca.' AND TB.ceca08tiporegistro=1 ' .$sSQLadd.$sGroupByTotal;
 
 
-		}		
-
-
-	
+		}
 	if ($iTipo==2){
 	$iTipoBusqueda='ceca08idtutor';
 		$sConsultaUnion=' UNION
@@ -464,8 +457,6 @@ FROM ceca08estadisticacurso AS TB'.$sTablaEdad.'
 WHERE TB.ceca08idperaca='.$idPeraca.' AND TB.ceca08tiporegistro=1 ' .$sSQLadd.
 ' GROUP BY TB.ceca08idcurso, TB.ceca08idtutor'.$sGroupBy;
 		}
-		
-	
 	if ($iTipo==3){
 	$iTipoBusqueda='ceca08idzona';
 
@@ -504,54 +495,37 @@ WHERE TB.ceca08idperaca='.$idPeraca.' AND TB.ceca08tiporegistro=1 ' .$sSQLadd.
 SELECT TB.ceca08idcurso, "" AS unad40titulo, "" AS unad40nombre, TB.ceca08idprograma, SUM(TB.ceca08numestudiantes) AS NumEst, SUM(TB.ceca08numreprobados) AS NumReprob, SUM(TB.ceca08numinasistentes) AS NumNoAsistentes, (SUM(TB.ceca08suma75)/SUM(TB.ceca08numestudiantes-TB.ceca08numinasistentes)) AS Prom75, (SUM(TB.ceca08suma25)/SUM(TB.ceca08numestudiantes-TB.ceca08numinasistentes)) AS Prom25 , (SUM(TB.ceca08suma75+TB.ceca08suma25)/SUM(TB.ceca08numestudiantes-TB.ceca08numinasistentes)) AS PromGen'.$sSelect.'  
 FROM ceca08estadisticacurso AS TB'.$sTablaEdad.'
 WHERE TB.ceca08idperaca='.$idPeraca.' AND TB.ceca08tiporegistro=1 ' .$sSQLadd.
-' GROUP BY TB.ceca08idcurso, TB.ceca08idprograma'.$sGroupBy;;
+' GROUP BY TB.ceca08idcurso, TB.ceca08idprograma'.$sGroupBy;
 		}		
-
-
 	$sSQL='SELECT TB.ceca08idcurso, T40.unad40titulo, T40.unad40nombre, -1 AS '.$iTipoBusqueda.', SUM(TB.ceca08numestudiantes) AS NumEst, SUM(TB.ceca08numreprobados) AS NumReprob, SUM(TB.ceca08numinasistentes) AS NumNoAsistentes, (SUM(TB.ceca08suma75)/SUM(TB.ceca08numestudiantes-TB.ceca08numinasistentes)) AS Prom75, (SUM(TB.ceca08suma25)/SUM(TB.ceca08numestudiantes-TB.ceca08numinasistentes)) AS Prom25 , (SUM(TB.ceca08suma75+TB.ceca08suma25)/SUM(TB.ceca08numestudiantes-TB.ceca08numinasistentes)) AS PromGen'.$sSelect.'   
 FROM ceca08estadisticacurso AS TB, unad40curso AS T40'.$sTablaEdad.'
 WHERE TB.ceca08idperaca='.$idPeraca.' AND TB.ceca08tiporegistro=1 AND TB.ceca08idcurso=T40.unad40id ' .$sSQLadd.
 ' GROUP BY TB.ceca08idcurso, T40.unad40titulo, T40.unad40nombre'.$sGroupBy.$sConsultaUnion.'
 ORDER BY ceca08idcurso ,'.$iTipoBusqueda.$sOrderByUnion;
-
-
-	
-	
-	$tabladetalle=$objDB->ejecutasql($sSQL);
-	$registros=$objDB->nf($tabladetalle);
-	if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
-	if ($registros>$lineastabla){
-		$rbase=($pagina-1)*$lineastabla;
-		$limite=' LIMIT '.$rbase.', '.$lineastabla;
-		}
 	$sSQLlista=str_replace("'","|",$sSQL);
 	$sSQLlista=str_replace('"',"|",$sSQLlista);
 	$sErrConsulta='<input id="consulta_2408" name="consulta_2408" type="hidden" value="'.$sSQLlista.'"/>
 <input id="titulos_2408" name="titulos_2408" type="hidden" value="'.$sTitulos.'"/>';
-	$tabladetalle=$objDB->ejecutasql($sSQL.$limite);
+	$tabladetalle=$objDB->ejecutasql($sSQL);
 	if ($tabladetalle==false){
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 2408: '.$sSQL.'<br>';}
 		$registros=0;
 		$sErrConsulta=$sErrConsulta.'..<input id="err" name="err" type="hidden" value="'.$sSQL.' '.$objDB->serror.'"/>';
-		
+		}else{
+		$registros=$objDB->nf($tabladetalle);
+		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
+		if ($registros>$lineastabla){
+			$rbase=($pagina-1)*$lineastabla;
+			$limite=' LIMIT '.$rbase.', '.$lineastabla;
+			$tabladetalle=$objDB->ejecutasql($sSQL.$limite);
+			}
 		}
-	/*<td><b>'.$ETI['ceca08idzona'].'</b></td>
-<td><b>'.$ETI['ceca08idcentro'].'</b></td>
-<td><b>'.$ETI['ceca08idescuela'].'</b></td>
-<td><b>'.$ETI['ceca08idprograma'].'</b></td>
-<td><b>'.$ETI['ceca08sexo'].'</b></td>
-<td><b>'.$ETI['ceca08edad'].'</b></td>
-<td><b>'.$ETI['ceca08numresagados'].'</b></td>
-*/
 	$sAddTitulo='';
 	if ($iTipo==2){
 		$sAddTitulo='
 <td><b>'.$ETI['ceca08idtutor'].'</b></td>';
 		}
-	
 	$res=$sErrConsulta.$sLeyenda.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-
-
 <tr class="fondoazul">
 <td colspan="2"><b>'.$ETI['ceca08idcurso'].'</b></td>'.$sAddTitulo.'
 <td align="center"><b>'.$ETI['ceca08numestudiantes'].' '.'</b></td>
@@ -585,9 +559,6 @@ $res=$res.'<td align="right">
 '.html_paginador('paginaf2408', $registros, $lineastabla, $pagina, 'paginarf2408()').'
 '.html_lpp('lppf2408', $lineastabla, 'paginarf2408()').'
 </td></tr>';
-
-//$res=$res.'<input id="paginaf2408" name="paginaf2408" type="hidden" value="'.$pagina.'"/><input id="lppf2408" name="lppf2408" type="hidden" value="'.$lineastabla.'"/></td>
-//</tr>';
 	$tlinea=1;
 	while($filadet=$objDB->sf($tabladetalle)){
 		$sPrefijo='';
@@ -612,7 +583,6 @@ $res=$res.'<td align="right">
 				$sSufijo='</b>';
 				}
 			}
-			
 		if ($iTipo==3){
 			if ($filadet['ceca08idzona']>0){
 				$sSQL='SELECT unad23nombre FROM unad23zona WHERE unad23id='.$filadet['ceca08idzona'].'';
@@ -627,8 +597,6 @@ $res=$res.'<td align="right">
 				$sSufijo='</b>';
 				}
 			}
-			
-			
 		if ($iTipo==4){
 			if ($filadet['ceca08idcentro']>0){
 				$sSQL='SELECT unad24nombre FROM unad24sede WHERE unad24id='.$filadet['ceca08idcentro'].'';
@@ -644,8 +612,6 @@ $res=$res.'<td align="right">
 				$sSufijo='</b>';
 				}
 			}
-			
-			
 		if ($iTipo==5){
 			if ($filadet['ceca08idescuela']>0){
 				$sSQL='SELECT core12nombre FROM core12escuela WHERE core12id='.$filadet['ceca08idescuela'].'';
@@ -661,7 +627,6 @@ $res=$res.'<td align="right">
 				$sSufijo='</b>';
 				}
 			}
-			
 		if ($iTipo==6){
 			if ($filadet['ceca08idprograma']>0){
 				$sSQL='SELECT core09nombre FROM core09programa WHERE core09id='.$filadet['ceca08idprograma'].'';
@@ -677,12 +642,11 @@ $res=$res.'<td align="right">
 				$sSufijo='</b>';
 				}
 			}
-			
 		$sReprobados='';
 		$sNoAsistentes='';
 		$sPorPerdida='';
 		if ($filadet['NumReprob']>0){
-			$sReprobados=$filadet['NumReprob'];
+			$sReprobados=formato_numero($filadet['NumReprob'], 0);
 			$iAprobados=($filadet['NumEst']-$filadet['NumNoAsistentes']);
 			if ($iAprobados>0){
 				$sPorPerdida=formato_numero((($filadet['NumReprob']-$filadet['NumNoAsistentes'])/$iAprobados*100), 2).' %';
@@ -690,7 +654,7 @@ $res=$res.'<td align="right">
 				$sPorPerdida='100 %';
 				}
 			}
-		if ($filadet['NumNoAsistentes']>0){$sNoAsistentes=$filadet['NumNoAsistentes'];}
+		if ($filadet['NumNoAsistentes']>0){$sNoAsistentes=formato_numero($filadet['NumNoAsistentes'], 0);}
 		$sNota25='';
 		if ($filadet['Prom25']>0){$sNota25=formato_numero($filadet['Prom25']/100, 2);}
 		$sInfoTutor='<td>'.$sPrefijo.$sNomCurso.$sSufijo.'</td>';
@@ -705,65 +669,56 @@ $res=$res.'<td align="right">
 		if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
 		$tlinea++;
 		if ($babierta){
-			//$sLink='<a href="javascript:cargaridf2408('.$filadet['ceca08id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
-			//NumEst 	NumReprob 	NumNoAsistentes 	Prom75 	Prom25 	PromGen
 			}
-			// Buscando el titulo de rango de edad
+		$sCampoSexo='';
+		$sCampoEdad='';
+		$sCampoZona='';
+		$sCampoCentro='';
+		$sCampoEscuela='';
+		$sCampoPrograma='';
+		if ($aParametros[111]=='S'){
+			$sCampoSexo='<td align="center">'.$sPrefijo.$filadet['ceca08sexo'].$sSufijo.'</td>';
+			}
+		if ($idRangoEdad!=''){
 			$i_unae20idrango=$filadet['unae20idrango'];
-		if (isset($aunae19titulo[$i_unae20idrango])==0){
-			$sSQL='SELECT unae19titulo FROM unae19rango WHERE unae19id='.$i_unae20idrango.'';
-			$tablae=$objDB->ejecutasql($sSQL);
-			if ($objDB->nf($tablae)>0){
-				$filae=$objDB->sf($tablae);
-				$aunae19titulo[$i_unae20idrango]=str_replace($cSepara, $cComplementa, $filae['unae19titulo']);
-				}else{
-				$aunae19titulo[$i_unae20idrango]='';
+			if (isset($aunae19titulo[$i_unae20idrango])==0){
+				$sSQL='SELECT unae19titulo FROM unae19rango WHERE unae19id='.$i_unae20idrango.'';
+				$tablae=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tablae)>0){
+					$filae=$objDB->sf($tablae);
+					$aunae19titulo[$i_unae20idrango]=cadena_notildes($filae['unae19titulo']);
+					}else{
+					$aunae19titulo[$i_unae20idrango]='';
+					}
 				}
+			$lin_unae19titulo=$aunae19titulo[$i_unae20idrango];
+			$sCampoEdad='<td align="center">'.$sPrefijo.$lin_unae19titulo.$sSufijo.'</td>';
 			}
-		$lin_unae19titulo=$cSepara.utf8_decode($aunae19titulo[$i_unae20idrango]);
+		if ($iTipo==3){
+			$sCampoZona='<td align="center">'.$sPrefijo.$sZona.$sSufijo.'</td>';
+			}
+		if ($iTipo==4){
+			$sCampoCentro='<td align="center">'.$sPrefijo.$sCentro.$sSufijo.'</td>';
+			}
+		if ($iTipo==5){
+			$sCampoEscuela='<td align="center">'.$sPrefijo.$sEscuela.$sSufijo.'</td>';
+			}
+		if ($iTipo==6){
+			$sCampoPrograma='<td align="center">'.$sPrefijo.$sPrograma.$sSufijo.'</td>';
+			}
 		$res=$res.'<tr'.$sClass.'>
 <td>'.$sPrefijo.$filadet['unad40titulo'].$sSufijo.'</td>
 '.$sInfoTutor.'
-<td align="center">'.$sPrefijo.$filadet['NumEst'].$sSufijo.'</td>
+<td align="center">'.$sPrefijo.formato_numero($filadet['NumEst'], 0).$sSufijo.'</td>
 <td align="center">'.$sPrefijo.$sReprobados.$sSufijo.'</td>
-<td align="center">'.$sPrefijo.$sNoAsistentes.$sSufijo.'</td>';
-if ($aParametros[111]=='S'){
-$res=$res.'<td align="center">'.$sPrefijo.$filadet['ceca08sexo'].$sSufijo.'</td>';
-}
-
-if ($idRangoEdad!=''){
-$res=$res.'<td align="center">'.$sPrefijo.$lin_unae19titulo.$sSufijo.'</td>';
-}
-
-$res=$res.'<td align="center">'.$sPrefijo.$sPorPerdida.$sSufijo.'</td>
+<td align="center">'.$sPrefijo.$sNoAsistentes.$sSufijo.'</td>
+'.$sCampoSexo.$sCampoEdad.'
+<td align="center">'.$sPrefijo.$sPorPerdida.$sSufijo.'</td>
 <td align="center">'.$sPrefijo.formato_numero($filadet['Prom75']/100, 2).$sSufijo.'</td>
 <td align="center">'.$sPrefijo.$sNota25.$sSufijo.'</td>
-<td align="center">'.$sPrefijo.formato_numero($filadet['PromGen']/100, 2).$sSufijo.'</td>';
-
-if ($iTipo==3){
-$res=$res.'<td align="center">'.$sPrefijo.$sZona.$sSufijo.'</td>';
-}
-
-if ($iTipo==4){
-$res=$res.'<td align="center">'.$sPrefijo.$sCentro.$sSufijo.'</td>';
-}
-
-if ($iTipo==5){
-$res=$res.'<td align="center">'.$sPrefijo.$sEscuela.$sSufijo.'</td>';
-}
-
-if ($iTipo==6){
-$res=$res.'<td align="center">'.$sPrefijo.$sPrograma.$sSufijo.'</td>';
-}
-//$res=$res.'<td align="center">'.$sPrefijo.$sZona.$sSufijo.'</td>
-/*
-$res=$res.'
-<td align="center">'.$sPrefijo.$sZona.$sSufijo.'</td>
-<td align="center">'.$sPrefijo.$sCentro.$sSufijo.'</td>
-<td align="center">'.$sPrefijo.$sEscuela.$sSufijo.'</td>
-<td align="center">'.$sPrefijo.$sPrograma.$sSufijo.'</td>';
-*/
-$res=$res.'</tr>';
+<td align="center">'.$sPrefijo.formato_numero($filadet['PromGen']/100, 2).$sSufijo.'</td>
+'.$sCampoZona.$sCampoCentro.$sCampoEscuela.$sCampoPrograma.'
+</tr>';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
@@ -815,8 +770,6 @@ function f2408_TablaDetalleBusquedas($aParametros, $objDB){}
 // -----------------------------------
 // ---- Funciones personalizadas  ----
 // -----------------------------------
-
-
 function f2408_HTMLComboV2_unae18rangoedad($objDB, $objCombos, $valor){
 	require './app.php';
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
