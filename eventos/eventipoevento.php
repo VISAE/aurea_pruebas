@@ -246,6 +246,7 @@ if ($bLimpiaHijos){
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
 //DATOS PARA COMPLETAR EL FORMULARIO
 //Crear los controles que requieran llamado a base de datos
+$objCombos=new clsHtmlCombos();
 if ((int)$_REQUEST['paso']==0){
 	}else{
 	$objCombos->nuevo('even41activo', $_REQUEST['even41activo'], false);

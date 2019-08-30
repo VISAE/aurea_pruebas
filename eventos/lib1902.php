@@ -413,15 +413,36 @@ function f1902_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 		}
 	*/
 	$sTitulos='Consec, Id, Tipo, Categoria, Estado, Publicado, Nombre, Zona, Cead, Peraca, Lugar, Inifecha, Inihora, Iniminuto, Finfecha, Finhora, Finminuto, Organizador, Contacto, Insfechaini, Insfechafin, Certificado, Rubrica, Detalle';
-	$sSQL='SELECT TB.even02consec, TB.even02id, T3.even01nombre, T4.even41titulo, T5.even14nombre, TB.even02publicado, TB.even02nombre, T8.unad23nombre, T9.unad24nombre, T10.exte02nombre, TB.even02lugar, TB.even02inifecha, TB.even02inihora, TB.even02iniminuto, TB.even02finfecha, TB.even02finhora, TB.even02finminuto, T18.unad11razonsocial AS C18_nombre, TB.even02contacto, TB.even02insfechaini, TB.even02insfechafin, T22.even06titulo, TB.even02idrubrica, TB.even02detalle, TB.even02tipo, TB.even02categoria, TB.even02estado, TB.even02idzona, TB.even02idcead, TB.even02peraca, TB.even02idorganizador, T18.unad11tipodoc AS C18_td, T18.unad11doc AS C18_doc, TB.even02idcertificado 
+	
+	/*$sSQL='SELECT TB.even02consec, TB.even02id, T3.even01nombre, T4.even41titulo, T5.even14nombre, TB.even02publicado, TB.even02nombre, T8.unad23nombre, T9.unad24nombre, T10.exte02nombre, TB.even02lugar, TB.even02inifecha, TB.even02inihora, TB.even02iniminuto, TB.even02finfecha, TB.even02finhora, TB.even02finminuto, T18.unad11razonsocial AS C18_nombre, TB.even02contacto, TB.even02insfechaini, TB.even02insfechafin, T22.even06titulo, TB.even02idrubrica, TB.even02detalle, TB.even02tipo, TB.even02categoria, TB.even02estado, TB.even02idzona, TB.even02idcead, TB.even02peraca, TB.even02idorganizador, T18.unad11tipodoc AS C18_td, T18.unad11doc AS C18_doc, TB.even02idcertificado 
 FROM even02evento AS TB, even01tipoevento AS T3, even41categoria AS T4, even14estadoevento AS T5, unad23zona AS T8, unad24sede AS T9, exte02per_aca AS T10, unad11terceros AS T18, even06certificados AS T22 
 WHERE '.$sSQLadd1.' TB.even02tipo=T3.even01id AND TB.even02categoria=T4.even41id AND TB.even02estado=T5.even14id AND TB.even02idzona=T8.unad23id AND TB.even02idcead=T9.unad24id AND TB.even02peraca=T10.exte02id AND TB.even02idorganizador=T18.unad11id AND TB.even02idcertificado=T22.even06id '.$sSQLadd.'
 ORDER BY TB.even02consec';
+	*/
+	$sSQL='SELECT TB.even02consec, TB.even02id, T3.even01nombre, T4.even41titulo, T5.even14nombre, TB.even02publicado, TB.even02nombre, 
+T8.unad23nombre, T9.unad24nombre, T10.exte02nombre, TB.even02lugar, TB.even02inifecha, TB.even02inihora, TB.even02iniminuto, 
+TB.even02finfecha, TB.even02finhora, TB.even02finminuto, T18.unad11razonsocial AS C18_nombre, TB.even02contacto, TB.even02insfechaini, 
+TB.even02insfechafin,
+-- , T22.even06titulo, 
+TB.even02idrubrica, TB.even02detalle, TB.even02tipo, TB.even02categoria, TB.even02estado, 
+TB.even02idzona, TB.even02idcead, TB.even02peraca, TB.even02idorganizador, T18.unad11tipodoc AS C18_td, T18.unad11doc AS C18_doc, 
+TB.even02idcertificado FROM even02evento AS TB, even01tipoevento AS T3, even41categoria AS T4, even14estadoevento AS T5, unad23zona AS T8, 
+unad24sede AS T9, exte02per_aca AS T10, unad11terceros AS T18
+-- , even06certificados AS T22 
+WHERE TB.even02tipo=T3.even01id 
+AND TB.even02categoria=T4.even41id AND TB.even02estado=T5.even14id AND TB.even02idzona=T8.unad23id AND TB.even02idcead=T9.unad24id 
+AND TB.even02peraca=T10.exte02id AND TB.even02idorganizador=T18.unad11id 
+-- AND TB.even02idcertificado=T22.even06id 
+ORDER BY TB.even02consec';
+	
+	
+	
 	$sSQLlista=str_replace("'","|",$sSQL);
 	$sSQLlista=str_replace('"',"|",$sSQLlista);
 	$sErrConsulta='<input id="consulta_1902" name="consulta_1902" type="hidden" value="'.$sSQLlista.'"/>
 <input id="titulos_1902" name="titulos_1902" type="hidden" value="'.$sTitulos.'"/>';
 	$tabladetalle=$objDB->ejecutasql($sSQL);
+	//$sErrConsulta=$sSQL;
 	if ($tabladetalle==false){
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 1902: '.$sSQL.'<br>';}
 		$registros=0;
@@ -456,13 +477,13 @@ ORDER BY TB.even02consec';
 <td><b>'.$ETI['even02finfecha'].'</b></td>
 <td><b>'.$ETI['even02finhora'].'</b></td>
 <td colspan="2"><b>'.$ETI['even02idorganizador'].'</b></td>
-<td><b>'.$ETI['even02contacto'].'</b></td>
-<td><b>'.$ETI['even02insfechaini'].'</b></td>
-<td><b>'.$ETI['even02insfechafin'].'</b></td>
-<td><b>'.$ETI['even02idcertificado'].'</b></td>
-<td><b>'.$ETI['even02idrubrica'].'</b></td>
-<td><b>'.$ETI['even02detalle'].'</b></td>
-<td align="right">
+<td><b>'.$ETI['even02contacto'].'</b></td>'.
+//<td><b>'.$ETI['even02insfechaini'].'</b></td>
+//<td><b>'.$ETI['even02insfechafin'].'</b></td>
+//<td><b>'.$ETI['even02idcertificado'].'</b></td>
+//<td><b>'.$ETI['even02idrubrica'].'</b></td>
+//<td><b>'.$ETI['even02detalle'].'</b></td>
+'<td align="right">
 '.html_paginador('paginaf1902', $registros, $lineastabla, $pagina, 'paginarf1902()').'
 '.html_lpp('lppf1902', $lineastabla, 'paginarf1902()').'
 </td>
@@ -511,13 +532,13 @@ ORDER BY TB.even02consec';
 <td>'.$sPrefijo.$et_even02finhora.$sSufijo.'</td>
 <td>'.$sPrefijo.$filadet['C18_td'].' '.$filadet['C18_doc'].$sSufijo.'</td>
 <td>'.$sPrefijo.cadena_notildes($filadet['C18_nombre']).$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['even02contacto']).$sSufijo.'</td>
-<td>'.$sPrefijo.$et_even02insfechaini.$sSufijo.'</td>
-<td>'.$sPrefijo.$et_even02insfechafin.$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['even06titulo']).$sSufijo.'</td>
-<td>'.$sPrefijo.$filadet['even02idrubrica'].$sSufijo.'</td>
-<td>'.$sPrefijo.$filadet['even02detalle'].$sSufijo.'</td>
-<td>'.$sLink.'</td>
+<td>'.$sPrefijo.cadena_notildes($filadet['even02contacto']).$sSufijo.'</td>'.
+//<td>'.$sPrefijo.$et_even02insfechaini.$sSufijo.'</td>
+//<td>'.$sPrefijo.$et_even02insfechafin.$sSufijo.'</td>
+//<td>'.$sPrefijo.cadena_notildes($filadet['even06titulo']).$sSufijo.'</td>
+//<td>'.$sPrefijo.$filadet['even02idrubrica'].$sSufijo.</td>
+//<td>'.$sPrefijo.$filadet['even02detalle'].$sSufijo.'</td>
+'<td>'.$sLink.'</td>
 </tr>';
 		}
 	$res=$res.'</table>';
@@ -685,8 +706,8 @@ function f1902_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	$sSepara=', ';
 	if (true){
 		//if ($DATA['even02detalle']==''){$sError=$ERR['even02detalle'].$sSepara.$sError;}
-		if ($DATA['even02idrubrica']==''){$sError=$ERR['even02idrubrica'].$sSepara.$sError;}
-		if ($DATA['even02idcertificado']==''){$sError=$ERR['even02idcertificado'].$sSepara.$sError;}
+		//if ($DATA['even02idrubrica']==''){$sError=$ERR['even02idrubrica'].$sSepara.$sError;}
+		//if ($DATA['even02idcertificado']==''){$sError=$ERR['even02idcertificado'].$sSepara.$sError;}
 		if (!fecha_esvalida($DATA['even02insfechafin'])){
 			//$DATA['even02insfechafin']='00/00/0000';
 			$sError=$ERR['even02insfechafin'].$sSepara.$sError;
@@ -728,7 +749,7 @@ function f1902_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$result=$objDB->ejecutasql($sSQL);
 			if ($objDB->nf($result)==0){$sError='El c&oacute;digo "'.$DATA['even02idrubrica_cod'].'" en '.$ETI['even02idrubrica'].' no existe';}
 			}else{
-			$sError=$ERR['even02idrubrica'];
+			//$sError=$ERR['even02idrubrica'];
 			}
 		}
 	if ($sError==''){
@@ -738,7 +759,7 @@ function f1902_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$result=$objDB->ejecutasql($sSQL);
 			if ($objDB->nf($result)==0){$sError='El c&oacute;digo "'.$DATA['even02idcertificado_cod'].'" en '.$ETI['even02idcertificado'].' no existe';}
 			}else{
-			$sError=$ERR['even02idcertificado'];
+			//$sError=$ERR['even02idcertificado'];
 			}
 		}
 	if ($DATA['even02idorganizador_doc']!=''){

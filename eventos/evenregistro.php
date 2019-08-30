@@ -467,7 +467,10 @@ $objCombos->nuevo('even02publicado', $_REQUEST['even02publicado'], false);
 $objCombos->sino();
 $html_even02publicado=$objCombos->html('', $objDB);
 $objCombos->nuevo('even02idzona', $_REQUEST['even02idzona'], true, '{'.$ETI['msg_seleccione'].'}');
+/*$sSQL='SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona ORDER BY unad23nombre';
+$html_even02idzona=$objCombos->html($sSQL, $objDB);*/
 $html_even02idzona=f1903_HTMLComboV2_even02idzona($objDB, $objCombos, $_REQUEST['even02idzona']);
+// $html_even02idcead=f1903_HTMLComboV2_even02idcead($objDB, $objCombos, $_REQUEST['even02idcead'], $_REQUEST['even02nombre']);
 $html_even02idcead=f1903_HTMLComboV2_even02idcead($objDB, $objCombos, $_REQUEST['even02idcead'], $_REQUEST['even02idzona']);
 $objCombos->nuevo('even02peraca', $_REQUEST['even02peraca'], true, '{'.$ETI['msg_seleccione'].'}');
 $sSQL='SELECT exte02id AS id, exte02nombre AS nombre FROM exte02per_aca ORDER BY exte02nombre';
@@ -889,6 +892,11 @@ function carga_combo_even02idzona(){
     params[0]=window.document.frmedita.even02idzona.value;
     xajax_f1903_Comboeven02idzona(params);
 }
+/*function carga_combo_even02idcead(){
+    var params=new Array();
+    params[0]=window.document.frmedita.even02idcead.value;
+    xajax_f1903_Comboeven02idcead(params);
+}*/
 // -->
 </script>
 <?php
@@ -1003,7 +1011,7 @@ if ($bconexpande){
 	}
 //Mostrar formulario para editar
 ?>
-<label class="Label90">
+<label class="Label130">
 <?php
 echo $ETI['even02consec'];
 ?>
@@ -1038,7 +1046,7 @@ echo $ETI['even02id'];
 	echo html_oculto('even02id', $_REQUEST['even02id']);
 ?>
 </label>
-<label class="Label130">
+<label class="Label60">
 <?php
 echo $ETI['even02tipo'];
 ?>
@@ -1060,6 +1068,7 @@ echo $html_even02categoria;
 ?>
 </div>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['even02estado'];
@@ -1111,6 +1120,7 @@ echo $html_even02idcead;
 ?>
 </div>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['even02peraca'];
@@ -1133,7 +1143,7 @@ echo $ETI['even02lugar'];
 echo $ETI['even02inifecha'];
 ?>
 </label>
-<div class="Campo220">
+<div class="Campo300">
 <?php
 echo html_fecha('even02inifecha', $_REQUEST['even02inifecha']);//$bvacio=false,$accion=",$iagnoini=0,$iagnofin=0
 ?>
@@ -1153,12 +1163,13 @@ echo $ETI['even02inihora'];
 echo html_HoraMin('even02inihora', $_REQUEST['even02inihora'], 'even02iniminuto', $_REQUEST['even02iniminuto']);
 ?>
 </div>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['even02finfecha'];
 ?>
 </label>
-<div class="Campo220">
+<div class="Campo300">
 <?php
 echo html_fecha('even02finfecha', $_REQUEST['even02finfecha']);//$bvacio=false,$accion=",$iagnoini=0,$iagnofin=0
 ?>
@@ -1204,12 +1215,12 @@ echo $ETI['even02contacto'];
 
 <input id="even02contacto" name="even02contacto" type="text" value="<?php echo $_REQUEST['even02contacto']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even02contacto']; ?>"/>
 </label>
-<label class="Label130">
+<label class="Label220">
 <?php
 echo $ETI['even02insfechaini'];
 ?>
 </label>
-<div class="Campo220">
+<div class="Campo300">
 <?php
 echo html_fecha('even02insfechaini', $_REQUEST['even02insfechaini']);//$bvacio=false,$accion=",$iagnoini=0,$iagnofin=0
 ?>
@@ -1219,12 +1230,12 @@ echo html_fecha('even02insfechaini', $_REQUEST['even02insfechaini']);//$bvacio=f
 <input id="beven02insfechaini_hoy" name="beven02insfechaini_hoy" type="button" value="Hoy" class="btMiniHoy" onclick="fecha_asignar('even02insfechaini','<?php echo fecha_hoy(); ?>')" title="<?php echo $ETI['bt_hoy']; ?>"/>
 </label>
 -->
-<label class="Label130">
+<label class="Label200">
 <?php
 echo $ETI['even02insfechafin'];
 ?>
 </label>
-<div class="Campo220">
+<div class="Campo300">
 <?php
 echo html_fecha('even02insfechafin', $_REQUEST['even02insfechafin']);//$bvacio=false,$accion=",$iagnoini=0,$iagnofin=0
 ?>
@@ -1234,9 +1245,13 @@ echo html_fecha('even02insfechafin', $_REQUEST['even02insfechafin']);//$bvacio=f
 <input id="beven02insfechafin_hoy" name="beven02insfechafin_hoy" type="button" value="Hoy" class="btMiniHoy" onclick="fecha_asignar('even02insfechafin','<?php echo fecha_hoy(); ?>')" title="<?php echo $ETI['bt_hoy']; ?>"/>
 </label>
 -->
+<?php
+if(false){
+?> 
 <div class="salto1px"></div>
 <div class="GrupoCampos450">
 <label class="TituloGrupo">
+
 <?php
 echo $ETI['even02idcertificado'];
 ?>
@@ -1272,6 +1287,10 @@ echo $ETI['even02idrubrica'];
 <div id="div_even02idrubrica" class="L"><?php echo $even02idrubrica_nombre; ?></div>
 <div class="salto1px"></div>
 </div>
+<?php
+}
+?> 
+
 <label class="txtAreaS">
 <?php
 echo $ETI['even02detalle'];
@@ -1281,6 +1300,11 @@ echo $ETI['even02detalle'];
 <?php
 // -- Inicia Grupo campos 1903 Cursos
 ?>
+
+<?php
+if(false){
+?> 
+
 <div class="salto1px"></div>
 <div class="GrupoCampos">
 <label class="TituloGrupo">
@@ -1371,6 +1395,10 @@ echo $ETI['even03vigente'];
 ?>
 <div class="salto1px"></div>
 </div>
+
+<?php
+}
+?> 
 <?php
 		//} //Termina el segundo bloque  condicional - bloque editar.
 ?>
@@ -1576,6 +1604,9 @@ echo $sTabla1904;
 <?php
 // -- Inicia Grupo campos 1905 Noticias
 ?>
+<?php
+if(false){
+?> 
 <div class="salto1px"></div>
 <div class="GrupoCampos">
 <label class="TituloGrupo">
@@ -1690,6 +1721,9 @@ echo $ETI['even05noticia'];
 ?>
 <div class="salto1px"></div>
 </div>
+<?php
+}
+?> 
 <?php
 		//} //Termina el segundo bloque  condicional - bloque editar.
 ?>
