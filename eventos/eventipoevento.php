@@ -173,6 +173,7 @@ if (isset($_REQUEST['lppf1941'])==0){$_REQUEST['lppf1941']=20;}
 if (isset($_REQUEST['boculta1941'])==0){$_REQUEST['boculta1941']=0;}
 // -- Inicializar variables de datos.
 if (isset($_REQUEST['even01consec'])==0){$_REQUEST['even01consec']='';}
+if (isset($_REQUEST['even01consec_nuevo'])==0){$_REQUEST['even01consec_nuevo']='';}
 if (isset($_REQUEST['even01id'])==0){$_REQUEST['even01id']='';}
 if (isset($_REQUEST['even01nombre'])==0){$_REQUEST['even01nombre']='';}
 if ((int)$_REQUEST['paso']>0){
@@ -193,7 +194,12 @@ if ((int)$_REQUEST['paso']>0){
 	}
 //Si Modifica o Elimina Cargar los campos
 if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
-	$sSQL='SELECT * FROM even01tipoevento WHERE even01consec='.$_REQUEST['even01consec'].'';
+	if ($_REQUEST['paso']==1){
+		$sSQLcondi='even01consec='.$_REQUEST['even01consec'].'';
+		}else{
+		$sSQLcondi='even01id='.$_REQUEST['even01id'].'';
+		}
+	$sSQL='SELECT * FROM even01tipoevento WHERE '.$sSQLcondi;
 	$tabla=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla)>0){
 		$fila=$objDB->sf($tabla);
@@ -218,10 +224,42 @@ if (($_REQUEST['paso']==10)||($_REQUEST['paso']==12)){
 		$iTipoError=1;
 		}
 	}
+// Cambio de consecutivo.
+if ($_REQUEST['paso']==93){
+	$_REQUEST['paso']=2;
+	$_REQUEST['even01consec_nuevo']=numeros_validar($_REQUEST['even01consec_nuevo']);
+	if ($_REQUEST['even01consec_nuevo']==''){$sError=$ERR['even01consec'];}
+	if ($sError==''){
+		if (!seg_revisa_permiso($iCodModulo, 8, $objDB)){
+			$sError=$ERR['8'];
+			}
+		}
+	if ($sError==''){
+		//Ver que el consecutivo no exista.
+		$sSQL='SELECT even01id FROM even01tipoevento WHERE even01consec='.$_REQUEST['even01consec_nuevo'].'';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$sError='El consecutivo '.$_REQUEST['even01consec_nuevo'].' ya existe';
+			}
+		}
+	if ($sError==''){
+		//Aplicar el cambio.
+		$sSQL='UPDATE even01tipoevento SET even01consec='.$_REQUEST['even01consec_nuevo'].' WHERE even01id='.$_REQUEST['even01id'].'';
+		$tabla=$objDB->ejecutasql($sSQL);
+		$sDetalle='Cambia el consecutivo de '.$_REQUEST['even01consec'].' a '.$_REQUEST['even01consec_nuevo'].'';
+		$_REQUEST['even01consec']=$_REQUEST['even01consec_nuevo'];
+		$_REQUEST['even01consec_nuevo']='';
+		seg_auditar($iCodModulo, $_SESSION['u_idtercero'], 8, $_REQUEST['even01id'], $sDetalle, $objDB);
+		$sError='<b>Se ha aplicado el cambio de consecutivo.</b>';
+		$iTipoError=1;
+		}else{
+		$iSector=93;
+		}
+	}
 //Eliminar un elemento
 if ($_REQUEST['paso']==13){
 	$_REQUEST['paso']=2;
-	list($sError, $iTipoError, $sDebugElimina)=f1901_db_Eliminar($_REQUEST[''], $objDB, $bDebug);
+	list($sError, $iTipoError, $sDebugElimina)=f1901_db_Eliminar($_REQUEST['even01id'], $objDB, $bDebug);
 	$sDebug=$sDebug.$sDebugElimina;
 	if ($sError==''){
 		$_REQUEST['paso']=-1;
@@ -232,6 +270,7 @@ if ($_REQUEST['paso']==13){
 //limpiar la pantalla
 if ($_REQUEST['paso']==-1){
 	$_REQUEST['even01consec']='';
+	$_REQUEST['even01consec_nuevo']='';
 	$_REQUEST['even01id']='';
 	$_REQUEST['even01nombre']='';
 	$_REQUEST['paso']=0;
@@ -246,6 +285,7 @@ if ($bLimpiaHijos){
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
 //DATOS PARA COMPLETAR EL FORMULARIO
 //Crear los controles que requieran llamado a base de datos
+$objCombos=new clsHtmlCombos();
 if ((int)$_REQUEST['paso']==0){
 	}else{
 	$objCombos->nuevo('even41activo', $_REQUEST['even41activo'], false);
@@ -266,6 +306,7 @@ $html_blistar1941=$objCombos->comboSistema(1941, 1, $objDB, 'paginarf1941()');
 //Permisos adicionales
 $seg_5=0;
 $seg_6=0;
+$seg_8=0;
 if (seg_revisa_permiso($iCodModulo, 6, $objDB)){$seg_6=1;}
 if ($seg_6==1){}
 if (false){
@@ -284,6 +325,7 @@ if ($_REQUEST['paso']>0){
 	if (seg_revisa_permiso($iCodModulo, 5, $objDB)){
 		$seg_5=1;
 		}
+	if (seg_revisa_permiso($iCodModulo, 8, $objDB)){$seg_8=1;}
 	}
 //Cargar las tablas de datos
 $aParametros[0]='';//$_REQUEST['p1_1901'];
@@ -373,6 +415,7 @@ function verboton(idboton,estado){
 function expandesector(codigo){
 	document.getElementById('div_sector1').style.display='none';
 	document.getElementById('div_sector2').style.display='none';
+	document.getElementById('div_sector93').style.display='none';
 	document.getElementById('div_sector95').style.display='none';
 	document.getElementById('div_sector96').style.display='none';
 	document.getElementById('div_sector98').style.display='none';
@@ -443,6 +486,11 @@ function cargadato(llave1){
 	window.document.frmedita.paso.value=1;
 	window.document.frmedita.submit();
 	}
+function cargaridf1901(llave1){
+	window.document.frmedita.even01id.value=String(llave1);
+	window.document.frmedita.paso.value=3;
+	window.document.frmedita.submit();
+	}
 function paginarf1901(){
 	var params=new Array();
 	params[99]=window.document.frmedita.debug.value;
@@ -489,6 +537,13 @@ function cierraDiv96(ref){
 	MensajeAlarmaV2('', 0);
 	retornacontrol();
 	}
+function mod_consec(){
+	if (confirm("Esta seguro de cambiar el consecutivo?")){
+		expandesector(98);
+		window.document.frmedita.paso.value=93;
+		window.document.frmedita.submit();
+		}
+	}
 // -->
 </script>
 <?php
@@ -503,6 +558,7 @@ if ($_REQUEST['paso']!=0){
 ?>
 <form id="frmimpp" name="frmimpp" method="post" action="p1901.php" target="_blank">
 <input id="r" name="r" type="hidden" value="1901" />
+<input id="id1901" name="id1901" type="hidden" value="<?php echo $_REQUEST['even01id']; ?>" />
 <input id="v3" name="v3" type="hidden" value="" />
 <input id="v4" name="v4" type="hidden" value="" />
 <input id="v5" name="v5" type="hidden" value="" />
@@ -616,13 +672,24 @@ if ($_REQUEST['paso']!=2){
 	}
 ?>
 </label>
-<label class="Label130">
+<?php
+/*
+if ($seg_8==1){
+	$objForma=new clsHtmlForma($iPiel);
+	echo $objForma->htmlBotonSolo('cmdCambiaConsec', 'btMiniActualizar', 'expandesector(93);', $ETI['bt_cambiar'], 30);
+	echo '<label class="Label30">&nbsp;</label>';
+	}
+*/
+?>
+<label class="Label60">
 <?php
 echo $ETI['even01id'];
 ?>
 </label>
 <label class="Label130">
-<input id="even01id" name="even01id" type="text" value="<?php echo $_REQUEST['even01id']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>"/>
+<?php
+	echo html_oculto('even01id', $_REQUEST['even01id']);
+?>
 </label>
 <label class="L">
 <?php
@@ -845,6 +912,43 @@ echo '<h2>'.$ETI['titulo_sector2'].'</h2>';
 </div><!-- /div_area -->
 </div><!-- /DIV_cargaForm -->
 </div><!-- /DIV_Sector2 -->
+
+
+<div id="div_sector93" style="display:none">
+<?php
+$objForma=new clsHtmlForma($iPiel);
+$objForma->addBoton('cmdAyuda93', 'btSupAyuda', 'muestraayuda('.$iCodModulo.');', $ETI['bt_ayuda']);
+$objForma->addBoton('cmdVolverSec93', 'btSupVolver', 'expandesector(1);', $ETI['bt_volver']);
+echo $objForma->htmlTitulo(''.$ETI['titulo_sector93'].'', $iCodModulo);
+echo $objForma->htmlInicioMarco();
+?>
+<label class="Label160">
+<?php
+echo $ETI['msg_even01consec'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo '<b>'.$_REQUEST['even01consec'].'</b>';
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label160">
+<?php
+echo $ETI['msg_even01consec_nuevo'];
+// onchange="RevisaConsec()"
+?>
+</label>
+<label class="Label90">
+<input id="even01consec_nuevo" name="even01consec_nuevo" type="text" value="<?php echo $_REQUEST['even01consec_nuevo']; ?>" class="cuatro"/>
+</label>
+<div class="salto1px"></div>
+<label class="Label160">&nbsp;</label>
+<?php
+echo $objForma->htmlBotonSolo('cmdCambiaConsecFinal', 'botonProceso', 'mod_consec();', $ETI['bt_cambiar'], 130);
+echo $objForma->htmlFinMarco();
+?>
+</div><!-- /DIV_Sector93 -->
 
 
 <div id="div_sector95" style="display:none">

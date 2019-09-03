@@ -29,7 +29,7 @@ CSS Document
 .areatitulo{
 	float:left;
 	display:block;
-	height:26px;
+	height:36px;
 	padding-left:8px;
 	background:url('../ulib/img/cabeFizq.gif') transparent 0 0 no-repeat;
 }
@@ -40,6 +40,7 @@ CSS Document
 	padding:4px 8px 4px 0;
 	color:#FFF;
 	background:url('../ulib/img/cabeFder.gif') transparent right top no-repeat;
+	background-color:#FE8506;
 }
 .alarma_azul{
     background: #1F487C;
@@ -117,7 +118,7 @@ CSS Document
 }
 .Campo220{
 	float:left;
-	width:230px;
+	width:240px;
 	height:auto; 
 	}
 .Campo300{
@@ -813,6 +814,10 @@ ul#navmenu-h ul ul li.iehover ul {
   display: block;
 }
 
+.naranja{
+	color:#FF9900;
+	font-weight:bold;
+	}
 .salto1px{
 	clear:both;
 	height:1px;

@@ -160,7 +160,6 @@ ORDER BY TB.even01consec';
 	$res=$sErrConsulta.$sLeyenda.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
 <tr class="fondoazul">
 <td><b>'.$ETI['even01consec'].'</b></td>
-<td><b>'.$ETI['even01id'].'</b></td>
 <td><b>'.$ETI['even01nombre'].'</b></td>
 <td align="right">
 '.html_paginador('paginaf1901', $registros, $lineastabla, $pagina, 'paginarf1901()').'
@@ -180,11 +179,10 @@ ORDER BY TB.even01consec';
 		if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
 		$tlinea++;
 		if ($babierta){
-			$sLink='<a href="javascript:cargadato('."'".$filadet['even01consec']."'".')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
+			$sLink='<a href="javascript:cargaridf1901('.$filadet['even01id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
 			}
 		$res=$res.'<tr'.$sClass.'>
 <td>'.$sPrefijo.$filadet['even01consec'].$sSufijo.'</td>
-<td>'.$sPrefijo.$filadet['even01id'].$sSufijo.'</td>
 <td>'.$sPrefijo.cadena_notildes($filadet['even01nombre']).$sSufijo.'</td>
 <td>'.$sLink.'</td>
 </tr>';
@@ -220,7 +218,12 @@ function f1901_db_CargarPadre($DATA, $objDB, $bDebug=false){
 	$iTipoError=0;
 	$sDebug='';
 	require './app.php';
-	$sSQL='SELECT * FROM even01tipoevento WHERE even01consec='.$DATA['even01consec'].'';
+	if ($DATA['paso']==1){
+		$sSQLcondi='even01consec='.$DATA['even01consec'].'';
+		}else{
+		$sSQLcondi='even01id='.$DATA['even01id'].'';
+		}
+	$sSQL='SELECT * FROM even01tipoevento WHERE '.$sSQLcondi;
 	$tabla=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla)>0){
 		$fila=$objDB->sf($tabla);
@@ -257,28 +260,35 @@ function f1901_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	if (isset($DATA['even01nombre'])==0){$DATA['even01nombre']='';}
 	*/
 	$DATA['even01consec']=numeros_validar($DATA['even01consec']);
-	$DATA['even01id']=numeros_validar($DATA['even01id']);
 	$DATA['even01nombre']=htmlspecialchars(trim($DATA['even01nombre']));
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
-	//if ($DATA['even01id']==''){$DATA['even01id']=0;}
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara=', ';
 	if (true){
 		if ($DATA['even01nombre']==''){$sError=$ERR['even01nombre'].$sSepara.$sError;}
-		if ($DATA['even01id']==''){$sError=$ERR['even01id'].$sSepara.$sError;}
 		//Fin de las valiaciones NO LLAVE.
 		}
 	//Valiaciones de campos obligatorios en todo guardar.
-	if ($DATA['even01consec']==''){$sError=$ERR['even01consec'];}
 	// -- Se verifican los valores de campos de otras tablas.
 	if ($sError==''){
 		if ($DATA['paso']==10){
-			$sSQL='SELECT even01consec FROM even01tipoevento WHERE even01consec='.$DATA['even01consec'].'';
-			$result=$objDB->ejecutasql($sSQL);
-			if ($objDB->nf($result)!=0){
-				$sError=$ERR['existe'];
+			if ($DATA['even01consec']==''){
+				$DATA['even01consec']=tabla_consecutivo('even01tipoevento', 'even01consec', '', $objDB);
+				if ($DATA['even01consec']==-1){$sError=$objDB->serror;}
 				}else{
-				if (!seg_revisa_permiso($iCodModulo, 2, $objDB)){$sError=$ERR['2'];}
+				if (!seg_revisa_permiso($iCodModulo, 8, $objDB)){
+					$sError=$ERR['8'];
+					$DATA['even01consec']='';
+					}
+				}
+			if ($sError==''){
+				$sSQL='SELECT even01consec FROM even01tipoevento WHERE even01consec='.$DATA['even01consec'].'';
+				$result=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($result)!=0){
+					$sError=$ERR['existe'];
+					}else{
+					if (!seg_revisa_permiso($iCodModulo, 2, $objDB)){$sError=$ERR['2'];}
+					}
 				}
 			}else{
 			if (!seg_revisa_permiso($iCodModulo, 3, $objDB)){$sError=$ERR['3'];}
@@ -287,6 +297,8 @@ function f1901_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	if ($sError==''){
 		if ($DATA['paso']==10){
 			//Preparar el Id, Si no lo hay se quita la comprobación.
+			$DATA['even01id']=tabla_consecutivo('even01tipoevento','even01id', '', $objDB);
+			if ($DATA['even01id']==-1){$sError=$objDB->serror;}
 			}
 		}
 	if ($sError==''){
@@ -304,12 +316,10 @@ function f1901_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$idaccion=2;
 			$bpasa=true;
 			}else{
-			$scampo[1]='even01id';
-			$scampo[2]='even01nombre';
-			$sdato[1]=$DATA['even01id'];
-			$sdato[2]=$DATA['even01nombre'];
-			$numcmod=2;
-			$sWhere='even01consec='.$DATA['even01consec'].'';
+			$scampo[1]='even01nombre';
+			$sdato[1]=$DATA['even01nombre'];
+			$numcmod=1;
+			$sWhere='even01id='.$DATA['even01id'].'';
 			$sSQL='SELECT * FROM even01tipoevento WHERE '.$sWhere;
 			$sdatos='';
 			$bPrimera=true;
@@ -348,10 +358,11 @@ function f1901_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$result=$objDB->ejecutasql($sSQL);
 			if ($result==false){
 				$sError=$ERR['falla_guardar'].' [1901] ..<!-- '.$sSQL.' -->';
+				if ($idaccion==2){$DATA['even01id']='';}
 				$DATA['paso']=$DATA['paso']-10;
 				}else{
 				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Guardar 1901 '.$sSQL.'<br>';}
-				if ($bAudita[$idaccion]){seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], $idaccion, 0, $sdetalle, $objDB);}
+				if ($bAudita[$idaccion]){seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], $idaccion, $DATA['even01id'], $sdetalle, $objDB);}
 				$DATA['paso']=2;
 				}
 			}else{
@@ -363,7 +374,7 @@ function f1901_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	//if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' InfoDepura<br>';}
 	return array($DATA, $sError, $iTipoError, $sDebug);
 	}
-function f1901_db_Eliminar($id1901, $objDB, $bDebug=false){
+function f1901_db_Eliminar($even01id, $objDB, $bDebug=false){
 	$iCodModulo=1901;
 	$bAudita[4]=true;
 	require './app.php';
@@ -376,14 +387,15 @@ function f1901_db_Eliminar($id1901, $objDB, $bDebug=false){
 	$sError='';
 	$iTipoError=0;
 	$sDebug='';
+	$even01id=numeros_validar($even01id);
 	// Traer los datos para hacer las validaciones.
 	if ($sError==''){
-		$sSQL='SELECT * FROM even01tipoevento WHERE id1901='.$id1901.'';
+		$sSQL='SELECT * FROM even01tipoevento WHERE even01id='.$even01id.'';
 		$tabla=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla)>0){
 			$filabase=$objDB->sf($tabla);
 			}else{
-			$sError='No se encuentra el registro solicitado {Ref: '.$id1901.'}';
+			$sError='No se encuentra el registro solicitado {Ref: '.$even01id.'}';
 			}
 		}
 	if ($sError==''){
@@ -398,25 +410,32 @@ function f1901_db_Eliminar($id1901, $objDB, $bDebug=false){
 			$sError=$ERR['4'];
 			}
 		}
-/*
 	if ($sError==''){
-		$sSQL='SELECT * FROM tablaexterna WHERE idexterno='.$_REQUEST['CampoRevisa'].' LIMIT 0, 1';
-		$tabla=$objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla)>0){
-			$sError=$ERR['p1'];//Incluya la explicacion al error en el archivo de idioma
+		$sSQL='SELECT unad70origennomtabla AS tabla, unad70origenidtabla AS campoid, unad70origencamporev AS camporev, unad70mensaje AS mensaje, unad70etiqueta AS etiqueta FROM unad70bloqueoelimina WHERE unad70idtabla=1901';
+		$tablaor=$objDB->ejecutasql($sSQL);
+		while ($filaor=$objDB->sf($tablaor)){
+			$sSQL='SELECT '.$filaor['campoid'].' FROM '.$filaor['tabla'].' WHERE '.$filaor['camporev'].'='.$_REQUEST['even01id'].' LIMIT 0, 1';
+			$tabla=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla)>0){
+				$sError=$filaor['mensaje'];
+				if ($filaor['etiqueta']!=''){
+					if (isset($ERR[$filaor['etiqueta']])!=0){$sError=$ERR[$filaor['etiqueta']];}
+					}
+				break;
+				}
 			}
 		}
-*/
 	if ($sError==''){
 		//$sSQL='DELETE FROM even41categoria WHERE even41idtipoevento='.$filabase['even01id'].'';
 		//$tabla=$objDB->ejecutasql($sSQL);
-		$sWhere='even01consec='.$filabase['even01consec'].'';
+		$sWhere='even01id='.$even01id.'';
+		//$sWhere='even01consec='.$filabase['even01consec'].'';
 		$sSQL='DELETE FROM even01tipoevento WHERE '.$sWhere.';';
 		$result=$objDB->ejecutasql($sSQL);
 		if ($result==false){
 			$sError=$ERR['falla_eliminar'].' .. <!-- '.$sSQL.' -->';
 			}else{
-			if ($bAudita[4]){seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 4, 0, $sWhere, $objDB);}
+			if ($bAudita[4]){seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 4, $even01id, $sWhere, $objDB);}
 			}
 		}
 	return array($sError, $iTipoError, $sDebug);
@@ -517,7 +536,6 @@ ORDER BY TB.even01consec';
 	$res=$sErrConsulta.$sLeyenda.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
 <tr class="fondoazul">
 <td><b>'.$ETI['even01consec'].'</b></td>
-<td><b>'.$ETI['even01id'].'</b></td>
 <td><b>'.$ETI['even01nombre'].'</b></td>
 <td align="right">
 '.html_paginador('paginabusqueda', $registros, $lineastabla, $pagina, 'paginarbusqueda()').'
@@ -526,12 +544,11 @@ ORDER BY TB.even01consec';
 </tr>';
 	$tlinea=1;
 	while($filadet=$objDB->sf($tabladetalle)){
-		$sPrefijo='<a href="javascript:Devuelve(\''.$filadet[''].'\');">';
+		$sPrefijo='<a href="javascript:Devuelve(\''.$filadet['even01id'].'\');">';
 		$sSufijo='</a>';
 		$tlinea++;
 		$res=$res.'<tr onmouseover="cambia_color_over(this);" onmouseout="cambia_color_out(this);">
 <td>'.$sPrefijo.$filadet['even01consec'].$sSufijo.'</td>
-<td>'.$sPrefijo.$filadet['even01id'].$sSufijo.'</td>
 <td>'.$sPrefijo.cadena_notildes($filadet['even01nombre']).$sSufijo.'</td>
 <td></td>
 </tr>';

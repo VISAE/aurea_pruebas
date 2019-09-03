@@ -467,7 +467,10 @@ $objCombos->nuevo('even02publicado', $_REQUEST['even02publicado'], false);
 $objCombos->sino();
 $html_even02publicado=$objCombos->html('', $objDB);
 $objCombos->nuevo('even02idzona', $_REQUEST['even02idzona'], true, '{'.$ETI['msg_seleccione'].'}');
+/*$sSQL='SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona ORDER BY unad23nombre';
+$html_even02idzona=$objCombos->html($sSQL, $objDB);*/
 $html_even02idzona=f1903_HTMLComboV2_even02idzona($objDB, $objCombos, $_REQUEST['even02idzona']);
+// $html_even02idcead=f1903_HTMLComboV2_even02idcead($objDB, $objCombos, $_REQUEST['even02idcead'], $_REQUEST['even02nombre']);
 $html_even02idcead=f1903_HTMLComboV2_even02idcead($objDB, $objCombos, $_REQUEST['even02idcead'], $_REQUEST['even02idzona']);
 $objCombos->nuevo('even02peraca', $_REQUEST['even02peraca'], true, '{'.$ETI['msg_seleccione'].'}');
 $sSQL='SELECT exte02id AS id, exte02nombre AS nombre FROM exte02per_aca ORDER BY exte02nombre';
@@ -677,6 +680,8 @@ function ter_muestra(idcampo, illave){
 		if (illave==1){params[4]='RevisaLlave';}
 		//if (illave==1){params[5]='FuncionCuandoNoEsta';}
 		xajax_unad11_Mostrar_v2(params);
+		//Buscar en core16actamatricula
+		
 		}else{
 		document.getElementById(idcampo).value=0;
 		document.getElementById('div_'+idcampo).innerHTML='&nbsp;';
@@ -889,6 +894,11 @@ function carga_combo_even02idzona(){
     params[0]=window.document.frmedita.even02idzona.value;
     xajax_f1903_Comboeven02idzona(params);
 }
+/*function carga_combo_even02idcead(){
+    var params=new Array();
+    params[0]=window.document.frmedita.even02idcead.value;
+    xajax_f1903_Comboeven02idcead(params);
+}*/
 // -->
 </script>
 <?php
@@ -1038,7 +1048,7 @@ echo $ETI['even02id'];
 	echo html_oculto('even02id', $_REQUEST['even02id']);
 ?>
 </label>
-<label class="Label130">
+<label class="Label90">
 <?php
 echo $ETI['even02tipo'];
 ?>
@@ -1060,6 +1070,7 @@ echo $html_even02categoria;
 ?>
 </div>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['even02estado'];
@@ -1089,6 +1100,7 @@ echo $ETI['even02nombre'];
 
 <input id="even02nombre" name="even02nombre" type="text" value="<?php echo $_REQUEST['even02nombre']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even02nombre']; ?>"/>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['even02idzona'];
@@ -1099,6 +1111,7 @@ echo $ETI['even02idzona'];
 echo $html_even02idzona;
 ?>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['even02idcead'];
@@ -1111,6 +1124,7 @@ echo $html_even02idcead;
 ?>
 </div>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['even02peraca'];
@@ -1121,13 +1135,28 @@ echo $ETI['even02peraca'];
 echo $html_even02peraca;
 ?>
 </label>
+<div class="salto1px"></div>
+<div class="GrupoCampos520">
 <label class="L">
 <?php
 echo $ETI['even02lugar'];
 ?>
-
 <input id="even02lugar" name="even02lugar" type="text" value="<?php echo $_REQUEST['even02lugar']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even02lugar']; ?>"/>
 </label>
+<label class="L">
+<?php
+echo $ETI['even02contacto'];
+?>
+<input id="even02contacto" name="even02contacto" type="text" value="<?php echo $_REQUEST['even02contacto']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even02contacto']; ?>"/>
+</label>
+</div>
+<div class="GrupoCampos520">
+<label class="TituloGrupo">
+<?php
+echo $ETI['even02fecha'];
+?>
+</label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['even02inifecha'];
@@ -1138,21 +1167,13 @@ echo $ETI['even02inifecha'];
 echo html_fecha('even02inifecha', $_REQUEST['even02inifecha']);//$bvacio=false,$accion=",$iagnoini=0,$iagnofin=0
 ?>
 </div>
-<!--
-<label class="Label30">
-<input id="beven02inifecha_hoy" name="beven02inifecha_hoy" type="button" value="Hoy" class="btMiniHoy" onclick="fecha_asignar('even02inifecha','<?php echo fecha_hoy(); ?>')" title="<?php echo $ETI['bt_hoy']; ?>"/>
-</label>
--->
-<label class="Label130">
-<?php
-echo $ETI['even02inihora'];
-?>
-</label>
+
 <div class="campo_HoraMin" id="div_even02inihora">
 <?php
 echo html_HoraMin('even02inihora', $_REQUEST['even02inihora'], 'even02iniminuto', $_REQUEST['even02iniminuto']);
 ?>
 </div>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['even02finfecha'];
@@ -1163,23 +1184,16 @@ echo $ETI['even02finfecha'];
 echo html_fecha('even02finfecha', $_REQUEST['even02finfecha']);//$bvacio=false,$accion=",$iagnoini=0,$iagnofin=0
 ?>
 </div>
-<!--
-<label class="Label30">
-<input id="beven02finfecha_hoy" name="beven02finfecha_hoy" type="button" value="Hoy" class="btMiniHoy" onclick="fecha_asignar('even02finfecha','<?php echo fecha_hoy(); ?>')" title="<?php echo $ETI['bt_hoy']; ?>"/>
-</label>
--->
-<label class="Label130">
-<?php
-echo $ETI['even02finhora'];
-?>
-</label>
+
+
 <div class="campo_HoraMin" id="div_even02finhora">
 <?php
 echo html_HoraMin('even02finhora', $_REQUEST['even02finhora'], 'even02finminuto', $_REQUEST['even02finminuto']);
 ?>
 </div>
+</div>
 <div class="salto1px"></div>
-<div class="GrupoCampos450">
+<div class="GrupoCampos520">
 <label class="TituloGrupo">
 <?php
 echo $ETI['even02idorganizador'];
@@ -1197,13 +1211,15 @@ echo html_DivTerceroV2('even02idorganizador', $_REQUEST['even02idorganizador_td'
 <div id="div_even02idorganizador" class="L"><?php echo $even02idorganizador_rs; ?></div>
 <div class="salto1px"></div>
 </div>
-<label class="L">
-<?php
-echo $ETI['even02contacto'];
-?>
 
-<input id="even02contacto" name="even02contacto" type="text" value="<?php echo $_REQUEST['even02contacto']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even02contacto']; ?>"/>
+<div class="GrupoCampos520">
+<label class="TituloGrupo">
+<?php
+echo $ETI['even02inscripcion'];
+?>
 </label>
+<div class="salto1px"></div>
+
 <label class="Label130">
 <?php
 echo $ETI['even02insfechaini'];
@@ -1214,11 +1230,7 @@ echo $ETI['even02insfechaini'];
 echo html_fecha('even02insfechaini', $_REQUEST['even02insfechaini']);//$bvacio=false,$accion=",$iagnoini=0,$iagnofin=0
 ?>
 </div>
-<!--
-<label class="Label30">
-<input id="beven02insfechaini_hoy" name="beven02insfechaini_hoy" type="button" value="Hoy" class="btMiniHoy" onclick="fecha_asignar('even02insfechaini','<?php echo fecha_hoy(); ?>')" title="<?php echo $ETI['bt_hoy']; ?>"/>
-</label>
--->
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['even02insfechafin'];
@@ -1229,11 +1241,10 @@ echo $ETI['even02insfechafin'];
 echo html_fecha('even02insfechafin', $_REQUEST['even02insfechafin']);//$bvacio=false,$accion=",$iagnoini=0,$iagnofin=0
 ?>
 </div>
-<!--
-<label class="Label30">
-<input id="beven02insfechafin_hoy" name="beven02insfechafin_hoy" type="button" value="Hoy" class="btMiniHoy" onclick="fecha_asignar('even02insfechafin','<?php echo fecha_hoy(); ?>')" title="<?php echo $ETI['bt_hoy']; ?>"/>
-</label>
--->
+</div>
+<?php
+if(false){
+?> 
 <div class="salto1px"></div>
 <div class="GrupoCampos450">
 <label class="TituloGrupo">
@@ -1272,7 +1283,18 @@ echo $ETI['even02idrubrica'];
 <div id="div_even02idrubrica" class="L"><?php echo $even02idrubrica_nombre; ?></div>
 <div class="salto1px"></div>
 </div>
+<?php
+}else{
+?>
+<input id="even02idcertificado" name="even02idcertificado" type="hidden" value="<?php echo $_REQUEST['even02idcertificado']; ?>"/>
+<input id="even02idcertificado_cod" name="even02idcertificado_cod" type="hidden" value="<?php echo $_REQUEST['even02idcertificado_cod']; ?>"/>
+<input id="even02idrubrica" name="even02idrubrica" type="hidden" value="<?php echo $_REQUEST['even02idrubrica']; ?>"/>
+<input id="even02idrubrica_cod" name="even02idrubrica_cod" type="hidden" value="<?php echo $_REQUEST['even02idrubrica_cod']; ?>"/>
+<?php
+}
+?> 
 <label class="txtAreaS">
+<div class="salto1px"></div>
 <?php
 echo $ETI['even02detalle'];
 ?>
@@ -1280,6 +1302,9 @@ echo $ETI['even02detalle'];
 </label>
 <?php
 // -- Inicia Grupo campos 1903 Cursos
+?>
+<?php
+if(false){
 ?>
 <div class="salto1px"></div>
 <div class="GrupoCampos">
@@ -1416,6 +1441,9 @@ echo $sTabla1903;
 // -- Termina Grupo campos 1903 Cursos
 ?>
 <?php
+};
+?>
+<?php
 // -- Inicia Grupo campos 1904 Participantes
 ?>
 <div class="salto1px"></div>
@@ -1443,8 +1471,13 @@ if ($_REQUEST['paso']==2){
 <input id="btrecoge1904" name="btrecoge1904" type="button" value="Recoger" class="btMiniRecoger" onclick="expandepanel(1904,'none',1);" title="<?php echo $ETI['bt_ocultar']; ?>" style="display:<?php if ($_REQUEST['boculta1904']==0){echo 'block'; }else{echo 'none';} ?>;"/>
 </label>
 </div>
+
+
 <div class="salto1px"></div>
 <div id="div_p1904" style="display:<?php if ($_REQUEST['boculta1904']==0){echo 'block'; }else{echo 'none';} ?>;">
+
+
+
 <div class="salto1px"></div>
 <div class="GrupoCampos450">
 <label class="TituloGrupo">
@@ -1574,8 +1607,13 @@ echo $sTabla1904;
 // -- Termina Grupo campos 1904 Participantes
 ?>
 <?php
+if (false){
+?>
+<?php
 // -- Inicia Grupo campos 1905 Noticias
 ?>
+
+
 <div class="salto1px"></div>
 <div class="GrupoCampos">
 <label class="TituloGrupo">
@@ -1733,6 +1771,9 @@ echo $sTabla1905;
 </div>
 <?php
 // -- Termina Grupo campos 1905 Noticias
+?>
+<?php
+	}
 ?>
 <?php
 if (false){
