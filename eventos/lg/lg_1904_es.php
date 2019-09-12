@@ -19,7 +19,8 @@ $ETI['even04institucion']='Institucion';
 $ETI['even04cargo']='Cargo';
 $ETI['even04correo']='Correo';
 $ETI['even04telefono']='Telefono';
-$ETI['even04estadoasistencia']='Estadoasistencia';
+$ETI['even04estadoasistencia']='Estado asistencia';
+$ETI['msg_infoplanoparticipante']='Para subir participantes masivamente ingrese los numeros de documento de los usuarios en la primer columna de un archivo MsExcel, seleccione el estado de asistencia que desea asignar y luego haga clic en el boton subir.';
 
 $ERR['even04idevento']='Necesita el dato '.$ETI['even04idevento'];
 $ERR['even04idparticipante']='Necesita el dato '.$ETI['even04idparticipante'];

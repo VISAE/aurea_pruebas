@@ -287,7 +287,7 @@ function f1902_Busquedas($aParametros){
 			$sTabla='<div class="MarquesinaMedia">No se ha definido la busqueda 140, por favor informe al administrador del sistema.</div>';
 			}
 		break;
-		case 'even04idparticipante':
+		case 'even04idparticipante':// aqui llega al buscar con la lupa
 		require $APP->rutacomun.'lib111.php';
 		$sTabla=f111_TablaDetalleBusquedas($aParametrosB, $objDB);
 		$sTitulo='Busqueda de terceros';
@@ -412,9 +412,8 @@ function f1902_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 			}
 		}
 	*/
-	$sTitulos='Consec, Id, Tipo, Categoria, Estado, Publicado, Nombre, Zona, Cead, Peraca, Lugar, Inifecha, Inihora, Iniminuto, Finfecha, Finhora, Finminuto, Organizador, Contacto, Insfechaini, Insfechafin, Certificado, Rubrica, Detalle';
-	
-	/*$sSQL='SELECT TB.even02consec, TB.even02id, T3.even01nombre, T4.even41titulo, T5.even14nombre, TB.even02publicado, TB.even02nombre, T8.unad23nombre, T9.unad24nombre, T10.exte02nombre, TB.even02lugar, TB.even02inifecha, TB.even02inihora, TB.even02iniminuto, TB.even02finfecha, TB.even02finhora, TB.even02finminuto, T18.unad11razonsocial AS C18_nombre, TB.even02contacto, TB.even02insfechaini, TB.even02insfechafin, T22.even06titulo, TB.even02idrubrica, TB.even02detalle, TB.even02tipo, TB.even02categoria, TB.even02estado, TB.even02idzona, TB.even02idcead, TB.even02peraca, TB.even02idorganizador, T18.unad11tipodoc AS C18_td, T18.unad11doc AS C18_doc, TB.even02idcertificado 
+	$sTitulos='Consec, Id, Tipo, Categoria, Estado, Publicado, Nombre, Zona, Cead, Peraca, Lugar, Inifecha, Inihora, Iniminuto, Finfecha, Finhora, Finminuto, Organizador, Contacto, Insfechaini, Insfechafin, Certificado, Rubrica, Detalle, Formainscripcion';
+/*	$sSQL='SELECT TB.even02consec, TB.even02id, T3.even01nombre, T4.even41titulo, T5.even14nombre, TB.even02publicado, TB.even02nombre, T8.unad23nombre, T9.unad24nombre, T10.exte02nombre, TB.even02lugar, TB.even02inifecha, TB.even02inihora, TB.even02iniminuto, TB.even02finfecha, TB.even02finhora, TB.even02finminuto, T18.unad11razonsocial AS C18_nombre, TB.even02contacto, TB.even02insfechaini, TB.even02insfechafin, T22.even06titulo, TB.even02idrubrica, TB.even02detalle, TB.even02formainscripcion, TB.even02tipo, TB.even02categoria, TB.even02estado, TB.even02idzona, TB.even02idcead, TB.even02peraca, TB.even02idorganizador, T18.unad11tipodoc AS C18_td, T18.unad11doc AS C18_doc, TB.even02idcertificado 
 FROM even02evento AS TB, even01tipoevento AS T3, even41categoria AS T4, even14estadoevento AS T5, unad23zona AS T8, unad24sede AS T9, exte02per_aca AS T10, unad11terceros AS T18, even06certificados AS T22 
 WHERE '.$sSQLadd1.' TB.even02tipo=T3.even01id AND TB.even02categoria=T4.even41id AND TB.even02estado=T5.even14id AND TB.even02idzona=T8.unad23id AND TB.even02idcead=T9.unad24id AND TB.even02peraca=T10.exte02id AND TB.even02idorganizador=T18.unad11id AND TB.even02idcertificado=T22.even06id '.$sSQLadd.'
 ORDER BY TB.even02consec';
@@ -424,7 +423,7 @@ T8.unad23nombre, T9.unad24nombre, T10.exte02nombre, TB.even02lugar, TB.even02ini
 TB.even02finfecha, TB.even02finhora, TB.even02finminuto, T18.unad11razonsocial AS C18_nombre, TB.even02contacto, TB.even02insfechaini, 
 TB.even02insfechafin,
 -- , T22.even06titulo, 
-TB.even02idrubrica, TB.even02detalle, TB.even02tipo, TB.even02categoria, TB.even02estado, 
+TB.even02idrubrica, TB.even02detalle,TB.even02formainscripcion, TB.even02tipo, TB.even02categoria, TB.even02estado, 
 TB.even02idzona, TB.even02idcead, TB.even02peraca, TB.even02idorganizador, T18.unad11tipodoc AS C18_td, T18.unad11doc AS C18_doc, 
 TB.even02idcertificado FROM even02evento AS TB, even01tipoevento AS T3, even41categoria AS T4, even14estadoevento AS T5, unad23zona AS T8, 
 unad24sede AS T9, exte02per_aca AS T10, unad11terceros AS T18
@@ -442,7 +441,6 @@ ORDER BY TB.even02consec';
 	$sErrConsulta='<input id="consulta_1902" name="consulta_1902" type="hidden" value="'.$sSQLlista.'"/>
 <input id="titulos_1902" name="titulos_1902" type="hidden" value="'.$sTitulos.'"/>';
 	$tabladetalle=$objDB->ejecutasql($sSQL);
-	//$sErrConsulta=$sSQL;
 	if ($tabladetalle==false){
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 1902: '.$sSQL.'<br>';}
 		$registros=0;
@@ -477,13 +475,14 @@ ORDER BY TB.even02consec';
 <td><b>'.$ETI['even02finfecha'].'</b></td>
 <td><b>'.$ETI['even02finhora'].'</b></td>
 <td colspan="2"><b>'.$ETI['even02idorganizador'].'</b></td>
-<td><b>'.$ETI['even02contacto'].'</b></td>'.
+<td><b>'.$ETI['even02contacto'].'</b></td>';
 //<td><b>'.$ETI['even02insfechaini'].'</b></td>
 //<td><b>'.$ETI['even02insfechafin'].'</b></td>
 //<td><b>'.$ETI['even02idcertificado'].'</b></td>
 //<td><b>'.$ETI['even02idrubrica'].'</b></td>
 //<td><b>'.$ETI['even02detalle'].'</b></td>
-'<td align="right">
+$res=$res.'<td><b>'.$ETI['even02formainscripcion'].'</b></td>
+<td align="right">
 '.html_paginador('paginaf1902', $registros, $lineastabla, $pagina, 'paginarf1902()').'
 '.html_lpp('lppf1902', $lineastabla, 'paginarf1902()').'
 </td>
@@ -532,13 +531,16 @@ ORDER BY TB.even02consec';
 <td>'.$sPrefijo.$et_even02finhora.$sSufijo.'</td>
 <td>'.$sPrefijo.$filadet['C18_td'].' '.$filadet['C18_doc'].$sSufijo.'</td>
 <td>'.$sPrefijo.cadena_notildes($filadet['C18_nombre']).$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['even02contacto']).$sSufijo.'</td>'.
+<td>'.$sPrefijo.cadena_notildes($filadet['even02contacto']).$sSufijo.'</td>';
+
 //<td>'.$sPrefijo.$et_even02insfechaini.$sSufijo.'</td>
 //<td>'.$sPrefijo.$et_even02insfechafin.$sSufijo.'</td>
 //<td>'.$sPrefijo.cadena_notildes($filadet['even06titulo']).$sSufijo.'</td>
-//<td>'.$sPrefijo.$filadet['even02idrubrica'].$sSufijo.</td>
+//<td>'.$sPrefijo.$filadet['even02idrubrica'].$sSufijo.'</td>
 //<td>'.$sPrefijo.$filadet['even02detalle'].$sSufijo.'</td>
-'<td>'.$sLink.'</td>
+
+$res=$res.'<td>'.$sPrefijo.$filadet['even02formainscripcion'].$sSufijo.'</td>
+<td>'.$sLink.'</td>
 </tr>';
 		}
 	$res=$res.'</table>';
@@ -609,6 +611,7 @@ function f1902_db_CargarPadre($DATA, $objDB, $bDebug=false){
 		$DATA['even02idcertificado']=$fila['even02idcertificado'];
 		$DATA['even02idrubrica']=$fila['even02idrubrica'];
 		$DATA['even02detalle']=$fila['even02detalle'];
+		$DATA['even02formainscripcion']=$fila['even02formainscripcion'];
 		$sSQL='SELECT even06consec, even06titulo FROM even06certificados WHERE even06id='.$DATA['even02idcertificado'];
 		$tabladet=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabladet)>0){
@@ -671,6 +674,7 @@ function f1902_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	if (isset($DATA['even02idcertificado'])==0){$DATA['even02idcertificado']='';}
 	if (isset($DATA['even02idrubrica'])==0){$DATA['even02idrubrica']='';}
 	if (isset($DATA['even02detalle'])==0){$DATA['even02detalle']='';}
+	if (isset($DATA['even02formainscripcion'])==0){$DATA['even02formainscripcion']='';}
 	*/
 	$DATA['even02consec']=numeros_validar($DATA['even02consec']);
 	$DATA['even02tipo']=numeros_validar($DATA['even02tipo']);
@@ -689,6 +693,7 @@ function f1902_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	$DATA['even02idcertificado']=numeros_validar($DATA['even02idcertificado']);
 	$DATA['even02idrubrica']=numeros_validar($DATA['even02idrubrica']);
 	$DATA['even02detalle']=htmlspecialchars(trim($DATA['even02detalle']));
+	$DATA['even02formainscripcion']=numeros_validar($DATA['even02formainscripcion']);
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
 	//if ($DATA['even02tipo']==''){$DATA['even02tipo']=0;}
 	//if ($DATA['even02categoria']==''){$DATA['even02categoria']=0;}
@@ -702,9 +707,11 @@ function f1902_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	//if ($DATA['even02finminuto']==''){$DATA['even02finminuto']=0;}
 	//if ($DATA['even02idcertificado']==''){$DATA['even02idcertificado']=0;}
 	//if ($DATA['even02idrubrica']==''){$DATA['even02idrubrica']=0;}
+	//if ($DATA['even02formainscripcion']==''){$DATA['even02formainscripcion']=0;}
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara=', ';
 	if (true){
+		if ($DATA['even02formainscripcion']==''){$sError=$ERR['even02formainscripcion'].$sSepara.$sError;}
 		//if ($DATA['even02detalle']==''){$sError=$ERR['even02detalle'].$sSepara.$sError;}
 		//if ($DATA['even02idrubrica']==''){$sError=$ERR['even02idrubrica'].$sSepara.$sError;}
 		//if ($DATA['even02idcertificado']==''){$sError=$ERR['even02idcertificado'].$sSepara.$sError;}
@@ -810,10 +817,10 @@ function f1902_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$DATA['even02estado']=0;
 			$sCampos1902='even02consec, even02id, even02tipo, even02categoria, even02estado, even02publicado, even02nombre, even02idzona, even02idcead, even02peraca, 
 even02lugar, even02inifecha, even02inihora, even02iniminuto, even02finfecha, even02finhora, even02finminuto, even02idorganizador, even02contacto, even02insfechaini, 
-even02insfechafin, even02idcertificado, even02idrubrica, even02detalle';
+even02insfechafin, even02idcertificado, even02idrubrica, even02detalle, even02formainscripcion';
 			$sValores1902=''.$DATA['even02consec'].', '.$DATA['even02id'].', '.$DATA['even02tipo'].', '.$DATA['even02categoria'].', '.$DATA['even02estado'].', "'.$DATA['even02publicado'].'", "'.$DATA['even02nombre'].'", '.$DATA['even02idzona'].', '.$DATA['even02idcead'].', '.$DATA['even02peraca'].', 
 "'.$DATA['even02lugar'].'", "'.$DATA['even02inifecha'].'", '.$DATA['even02inihora'].', '.$DATA['even02iniminuto'].', "'.$DATA['even02finfecha'].'", '.$DATA['even02finhora'].', '.$DATA['even02finminuto'].', '.$DATA['even02idorganizador'].', "'.$DATA['even02contacto'].'", "'.$DATA['even02insfechaini'].'", 
-"'.$DATA['even02insfechafin'].'", '.$DATA['even02idcertificado'].', '.$DATA['even02idrubrica'].', "'.$even02detalle.'"';
+"'.$DATA['even02insfechafin'].'", '.$DATA['even02idcertificado'].', '.$DATA['even02idrubrica'].', "'.$even02detalle.'", '.$DATA['even02formainscripcion'].'';
 			if ($APP->utf8==1){
 				$sSQL='INSERT INTO even02evento ('.$sCampos1902.') VALUES ('.utf8_encode($sValores1902).');';
 				$sdetalle=$sCampos1902.'['.utf8_encode($sValores1902).']';
@@ -844,6 +851,8 @@ even02insfechafin, even02idcertificado, even02idrubrica, even02detalle';
 			$scampo[18]='even02idcertificado';
 			$scampo[19]='even02idrubrica';
 			$scampo[20]='even02detalle';
+			$scampo[21]='even02formainscripcion';
+			$scampo[22]='even02estado';
 			$sdato[1]=$DATA['even02categoria'];
 			$sdato[2]=$DATA['even02publicado'];
 			$sdato[3]=$DATA['even02nombre'];
@@ -864,7 +873,9 @@ even02insfechafin, even02idcertificado, even02idrubrica, even02detalle';
 			$sdato[18]=$DATA['even02idcertificado'];
 			$sdato[19]=$DATA['even02idrubrica'];
 			$sdato[20]=$even02detalle;
-			$numcmod=20;
+			$sdato[21]=$DATA['even02formainscripcion'];
+			$sdato[22]=$DATA['even02estado'];
+			$numcmod=22;
 			$sWhere='even02id='.$DATA['even02id'].'';
 			$sSQL='SELECT * FROM even02evento WHERE '.$sWhere;
 			$sdatos='';
@@ -1071,8 +1082,8 @@ function f1902_TablaDetalleBusquedas($aParametros, $objDB){
 			}
 		}
 	*/
-	$sTitulos='Consec, Id, Tipo, Categoria, Estado, Publicado, Nombre, Zona, Cead, Peraca, Lugar, Inifecha, Inihora, Iniminuto, Finfecha, Finhora, Finminuto, Organizador, Contacto, Insfechaini, Insfechafin, Certificado, Rubrica, Detalle';
-	$sSQL='SELECT TB.even02consec, TB.even02id, T3.even01nombre, T4.even41titulo, T5.even14nombre, TB.even02publicado, TB.even02nombre, T8.unad23nombre, T9.unad24nombre, T10.exte02nombre, TB.even02lugar, TB.even02inifecha, TB.even02inihora, TB.even02iniminuto, TB.even02finfecha, TB.even02finhora, TB.even02finminuto, T18.unad11razonsocial AS C18_nombre, TB.even02contacto, TB.even02insfechaini, TB.even02insfechafin, T22.even06titulo, TB.even02idrubrica, TB.even02detalle, TB.even02tipo, TB.even02categoria, TB.even02estado, TB.even02idzona, TB.even02idcead, TB.even02peraca, TB.even02idorganizador, T18.unad11tipodoc AS C18_td, T18.unad11doc AS C18_doc, TB.even02idcertificado 
+	$sTitulos='Consec, Id, Tipo, Categoria, Estado, Publicado, Nombre, Zona, Cead, Peraca, Lugar, Inifecha, Inihora, Iniminuto, Finfecha, Finhora, Finminuto, Organizador, Contacto, Insfechaini, Insfechafin, Certificado, Rubrica, Detalle, Formainscripcion';
+	$sSQL='SELECT TB.even02consec, TB.even02id, T3.even01nombre, T4.even41titulo, T5.even14nombre, TB.even02publicado, TB.even02nombre, T8.unad23nombre, T9.unad24nombre, T10.exte02nombre, TB.even02lugar, TB.even02inifecha, TB.even02inihora, TB.even02iniminuto, TB.even02finfecha, TB.even02finhora, TB.even02finminuto, T18.unad11razonsocial AS C18_nombre, TB.even02contacto, TB.even02insfechaini, TB.even02insfechafin, T22.even06titulo, TB.even02idrubrica, TB.even02detalle, TB.even02formainscripcion, TB.even02tipo, TB.even02categoria, TB.even02estado, TB.even02idzona, TB.even02idcead, TB.even02peraca, TB.even02idorganizador, T18.unad11tipodoc AS C18_td, T18.unad11doc AS C18_doc, TB.even02idcertificado 
 FROM even02evento AS TB, even01tipoevento AS T3, even41categoria AS T4, even14estadoevento AS T5, unad23zona AS T8, unad24sede AS T9, exte02per_aca AS T10, unad11terceros AS T18, even06certificados AS T22 
 WHERE '.$sSQLadd1.' TB.even02tipo=T3.even01id AND TB.even02categoria=T4.even41id AND TB.even02estado=T5.even14id AND TB.even02idzona=T8.unad23id AND TB.even02idcead=T9.unad24id AND TB.even02peraca=T10.exte02id AND TB.even02idorganizador=T18.unad11id AND TB.even02idcertificado=T22.even06id '.$sSQLadd.'
 ORDER BY TB.even02consec';
@@ -1120,6 +1131,7 @@ ORDER BY TB.even02consec';
 <td><b>'.$ETI['even02idcertificado'].'</b></td>
 <td><b>'.$ETI['even02idrubrica'].'</b></td>
 <td><b>'.$ETI['even02detalle'].'</b></td>
+<td><b>'.$ETI['even02formainscripcion'].'</b></td>
 <td align="right">
 '.html_paginador('paginabusqueda', $registros, $lineastabla, $pagina, 'paginarbusqueda()').'
 '.html_lpp('lppfbusqueda', $lineastabla, 'paginarbusqueda()').'
@@ -1163,6 +1175,7 @@ ORDER BY TB.even02consec';
 <td>'.$sPrefijo.cadena_notildes($filadet['even06titulo']).$sSufijo.'</td>
 <td>'.$sPrefijo.$filadet['even02idrubrica'].$sSufijo.'</td>
 <td>'.$sPrefijo.$filadet['even02detalle'].$sSufijo.'</td>
+<td>'.$sPrefijo.$filadet['even02formainscripcion'].$sSufijo.'</td>
 <td></td>
 </tr>';
 		}
@@ -1173,4 +1186,568 @@ ORDER BY TB.even02consec';
 // -----------------------------------
 // ---- Funciones personalizadas  ----
 // -----------------------------------
+
+
+function f1902_Buscar_Participante($aDatos){
+$Docu=$aDatos[0];
+$Id=$aDatos[1];
+$sSQL='';
+$sSQL1='';
+$sSQLadd='';
+$even04institucion='';
+$even04cargo='';
+$even04correo='';
+$even04telefono='';
+$bDebug=true;
+$core16tercero='';
+	require './app.php';
+	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	$objDB->xajax();
+	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+	$mensajes_1902='lg/lg_1902_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_1902)){$mensajes_1902='lg/lg_1902_es.php';}
+	require $mensajes_todas;
+	require $mensajes_1902;
+	if ($Docu!=''){
+	$sSQLadd=' WHERE unad11terceros.unad11doc='.$Docu;// Buscando en matriculados
+	}
+	
+	if ($Id!=''){
+	$sSQLadd=' WHERE unad11terceros.unad11id='.$Id;// Buscando en matriculados
+	}
+		$sSQL='SELECT unad11id,unad11telefono,unad11correo,unad11rolunad FROM unad11terceros '.$sSQLadd;
+		$res=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($res)!=0){
+			$fila=$objDB->sf($res);
+			$Idtercero=$fila['unad11id'];
+		    $even04correo=$fila['unad11correo'];
+			$even04telefono= $fila['unad11telefono'];
+			$Idcargo= $fila['unad11rolunad'];
+			switch($Idcargo){
+			case '-1':
+			$even04cargo='Sin definir';
+			break;
+			case '0':
+			$even04cargo='Estudiante';
+			break;
+			case '1':
+			$even04cargo='Contratista';
+			break;
+			case '2':
+			$even04cargo='Personal de planta';
+			break;
+			case '3':
+			$even04cargo='Egresado';
+			break;
+			
+			}
+			
+		
+		$sSQL='SELECT core16idzona,core16idcead,core16idescuela,core16idprograma FROM core16actamatricula WHERE core16tercero='.$Idtercero; 
+		
+		$res=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($res)!=0){
+			$fila=$objDB->sf($res);
+			$Idzona=$fila['core16idzona'];
+			$Idcead=$fila['core16idcead'];
+			$Idescuela=$fila['core16idescuela'];
+			$Idprograma=$fila['core16idprograma'];
+			
+			if($Idzona!=0){
+				$sSQL='SELECT unad23nombre FROM unad23zona WHERE unad23id=' .$Idzona;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['unad23nombre'];
+				}			
+			}
+			
+			if($Idcead!=0){
+				$sSQL='SELECT unad24nombre FROM unad24sede WHERE unad24id=' .$Idcead;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['unad24nombre'];
+				}			
+			}
+			if($Idescuela!=0){
+				$sSQL='SELECT core12nombre FROM core12escuela WHERE core12id=' .$Idescuela;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['core12nombre'];
+				}			
+			}
+			
+			if($Idprograma!=0){
+				$sSQL='SELECT core09nombre FROM core09programa WHERE core09id=' .$Idprograma;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['core09nombre'];
+				}			
+			}
+			
+		$even04cargo='Estudiante';
+		
+		// TERMINA SI ES ESTUDIANTE MATRICULADO
+	}else{// buscar en graduados
+	$sSQL='SELECT core01idzona,core011idcead,core01idescuela,core01idprograma FROM core01estprograma WHERE core01idtercero='. $Idtercero .' AND core01gradoestado=21 ORDER BY core01gradofecha DESC LIMIT 1';
+		
+		$res=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($res)!=0){
+			$fila=$objDB->sf($res);
+			$Idzona=$fila['core01idzona'];
+			$Idcead=$fila['core011idcead'];
+			$Idescuela=$fila['core01idescuela'];
+			$Idprograma=$fila['core01idprograma'];
+			
+			if($Idzona!=0){
+				$sSQL='SELECT unad23nombre FROM unad23zona WHERE unad23id=' .$Idzona;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['unad23nombre'];
+				}			
+			}
+			
+			if($Idcead!=0){
+				$sSQL='SELECT unad24nombre FROM unad24sede WHERE unad24id=' .$Idcead;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['unad24nombre'];
+				}			
+			}
+			if($Idescuela!=0){
+				$sSQL='SELECT core12nombre FROM core12escuela WHERE core12id=' .$Idescuela;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['core12nombre'];
+				}			
+			}
+			
+			if($Idprograma!=0){
+				$sSQL='SELECT core09nombre FROM core09programa WHERE core09id=' .$Idprograma;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['core09nombre'];
+				}			
+			}
+			
+		$even04cargo='Graduado';
+		
+		// TERMINA SI ES GRADUADO
+	
+		}else{// Buscando en Usuarios
+	$sSQL='SELECT unad07idperfil FROM unad07usuarios WHERE unad07idtercero='. $Idtercero .' AND unad07usuarios.unad07vigente="S"   LIMIT 1';
+		
+		$res=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($res)!=0){
+			$fila=$objDB->sf($res);
+			$Idperfil=$fila['unad07idperfil'];
+			
+			
+			if($Idperfil!=0){
+				$sSQL='SELECT unad05nombre FROM unad05perfiles WHERE unad05id=' .$Idperfil;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04cargo='Funcionario '.$fila['unad05nombre'];
+				}			
+			}
+			
+		$even04institucion='UNAD';	
+		
+		
+	
+	
+	}	
+		
+		
+		
+	}	
+		
+		
+			
+	
+	}
+	}
+	$objResponse=new xajaxResponse();
+	$objResponse->assign('even04institucion','value', $even04institucion);
+	$objResponse->assign('even04cargo','value', $even04cargo);
+	$objResponse->assign('even04correo','value', $even04correo);
+	$objResponse->assign('even04telefono','value', $even04telefono);
+	return $objResponse;
+
+}
+
+
+
+function f1902_Cargar_Participante($aDatos){
+	$Docu=$aDatos[0];
+$Id=$aDatos[1];
+$sSQL='';
+$sSQL1='';
+$sSQLadd='';
+$even04institucion='';
+$even04cargo='';
+$even04correo='';
+$even04telefono='';
+$bDebug=true;
+$Idtercero='';
+$sTipoDoc='';
+$sDoc='';
+$unad11razonsocial='';
+$ArrayParticipantes= array();
+	require './app.php';
+	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	$objDB->xajax();
+	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+	$mensajes_1902='lg/lg_1902_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_1902)){$mensajes_1902='lg/lg_1902_es.php';}
+	require $mensajes_todas;
+	require $mensajes_1902;
+	if ($Docu!=''){
+	$sSQLadd=' WHERE unad11terceros.unad11doc='.$Docu;// Buscando en matriculados
+	}
+	
+	if ($Id!=''){
+	$sSQLadd=' WHERE unad11terceros.unad11id='.$Id;// Buscando en matriculados
+	}
+		$sSQL='SELECT unad11id,unad11telefono,unad11correo,unad11rolunad,unad11terceros.unad11tipodoc,unad11doc,unad11razonsocial,unad11id FROM unad11terceros '.$sSQLadd;
+		$res=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($res)!=0){
+			$fila=$objDB->sf($res);
+			$Idtercero=$fila['unad11id'];
+			$sTipoDoc=$fila['unad11tipodoc'];
+			$sDoc=$fila['unad11doc'];
+		    $even04correo=$fila['unad11correo'];
+			$even04telefono= $fila['unad11telefono'];
+			$Idcargo= $fila['unad11rolunad'];
+			switch($Idcargo){
+			case '-1':
+			$even04cargo='Sin definir';
+			break;
+			case '0':
+			$even04cargo='Estudiante';
+			break;
+			case '1':
+			$even04cargo='Contratista';
+			break;
+			case '2':
+			$even04cargo='Personal de planta';
+			break;
+			case '3':
+			$even04cargo='Egresado';
+			break;
+			
+			}
+			
+		
+		$sSQL='SELECT core16idzona,core16idcead,core16idescuela,core16idprograma FROM core16actamatricula WHERE core16tercero='.$Idtercero; 
+		
+		$res=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($res)!=0){
+			$fila=$objDB->sf($res);
+			$Idzona=$fila['core16idzona'];
+			$Idcead=$fila['core16idcead'];
+			$Idescuela=$fila['core16idescuela'];
+			$Idprograma=$fila['core16idprograma'];
+			
+			if($Idzona!=0){
+				$sSQL='SELECT unad23nombre FROM unad23zona WHERE unad23id=' .$Idzona;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['unad23nombre'];
+				}			
+			}
+			
+			if($Idcead!=0){
+				$sSQL='SELECT unad24nombre FROM unad24sede WHERE unad24id=' .$Idcead;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['unad24nombre'];
+				}			
+			}
+			if($Idescuela!=0){
+				$sSQL='SELECT core12nombre FROM core12escuela WHERE core12id=' .$Idescuela;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['core12nombre'];
+				}			
+			}
+			
+			if($Idprograma!=0){
+				$sSQL='SELECT core09nombre FROM core09programa WHERE core09id=' .$Idprograma;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['core09nombre'];
+				}			
+			}
+			
+		$even04cargo='Estudiante';
+		
+		// TERMINA SI ES ESTUDIANTE MATRICULADO
+	}else{// buscar en graduados
+	$sSQL='SELECT core01idzona,core011idcead,core01idescuela,core01idprograma FROM core01estprograma WHERE core01idtercero='. $Idtercero .' AND core01gradoestado=21 ORDER BY core01gradofecha DESC LIMIT 1';
+		
+		$res=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($res)!=0){
+			$fila=$objDB->sf($res);
+			$Idzona=$fila['core01idzona'];
+			$Idcead=$fila['core011idcead'];
+			$Idescuela=$fila['core01idescuela'];
+			$Idprograma=$fila['core01idprograma'];
+			
+			if($Idzona!=0){
+				$sSQL='SELECT unad23nombre FROM unad23zona WHERE unad23id=' .$Idzona;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['unad23nombre'];
+				}			
+			}
+			
+			if($Idcead!=0){
+				$sSQL='SELECT unad24nombre FROM unad24sede WHERE unad24id=' .$Idcead;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['unad24nombre'];
+				}			
+			}
+			if($Idescuela!=0){
+				$sSQL='SELECT core12nombre FROM core12escuela WHERE core12id=' .$Idescuela;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['core12nombre'];
+				}			
+			}
+			
+			if($Idprograma!=0){
+				$sSQL='SELECT core09nombre FROM core09programa WHERE core09id=' .$Idprograma;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04institucion=$even04institucion.' '.$fila['core09nombre'];
+				}			
+			}
+			
+		$even04cargo='Graduado';
+		
+		// TERMINA SI ES GRADUADO
+	
+		}else{// Buscando en Usuarios
+	$sSQL='SELECT unad07idperfil FROM unad07usuarios WHERE unad07idtercero='. $Idtercero .' AND unad07usuarios.unad07vigente="S"   LIMIT 1';
+		
+		$res=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($res)!=0){
+			$fila=$objDB->sf($res);
+			$Idperfil=$fila['unad07idperfil'];
+			
+			
+			if($Idperfil!=0){
+				$sSQL='SELECT unad05nombre FROM unad05perfiles WHERE unad05id=' .$Idperfil;
+				$res=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($res)!=0){
+				$fila=$objDB->sf($res);
+				$even04cargo='Funcionario '.$fila['unad05nombre'];
+				}			
+			}
+			
+		$even04institucion='UNAD';	
+		
+		
+	
+	
+	}	
+		
+		
+		
+	}	
+		
+		
+			
+	
+	}
+	}
+	
+	$ArrayParticipantes[0]=$Idtercero;
+	$ArrayParticipantes[1]=$sTipoDoc;
+	$ArrayParticipantes[2]=$sDoc;
+	$ArrayParticipantes[3]=$unad11razonsocial;
+	$ArrayParticipantes[4]=$even04institucion;
+	$ArrayParticipantes[5]=$even04cargo;
+	$ArrayParticipantes[6]=$even04correo;
+	$ArrayParticipantes[7]=$even04telefono;
+	
+		
+	return $ArrayParticipantes;
+	
+
+}
+
+
+function f1902_Cargar_Participanteok($aDatos){
+$DocuTercero=$aDatos[0];
+$IdTercero=$aDatos[1];
+$sSQL='';
+$sSQL1='';
+$sSQLadd='';
+$sTipoDoc='';
+$sDoc='';
+$unad11razonsocial='';
+$even04institucion='';
+$even04cargo='';
+$even04correo='';
+$even04telefono='';
+$bDebug=true;
+$ArrayParticipantes= array();
+	require './app.php';
+	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	$objDB->xajax();
+	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+	$mensajes_1902='lg/lg_1902_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_1902)){$mensajes_1902='lg/lg_1902_es.php';}
+	require $mensajes_todas;
+	require $mensajes_1902;
+	if ($DocuTercero!=''){
+	$sSQLadd=' WHERE unad11terceros.unad11doc='.$DocuTercero;// Buscando en matriculados
+	}
+	
+	if ($IdTercero!=''){
+	$sSQLadd=' WHERE unad11terceros.unad11id='.$IdTercero;// Buscando en matriculados
+	}
+		$sSQL='SELECT
+			unad23zona.unad23nombre
+			, unad24sede.unad24nombre
+			, core12escuela.core12nombre
+			, unad11terceros.unad11telefono
+			, unad11terceros.unad11correo
+			, core09programa.core09nombre,unad11terceros.unad11tipodoc,unad11terceros.unad11doc,unad11terceros.unad11razonsocial,unad11terceros.unad11id
+		  
+		  FROM
+			unadsys.core16actamatricula
+			INNER JOIN unadsys.unad11terceros 
+				ON (core16actamatricula.core16tercero = unad11terceros.unad11id)
+			INNER JOIN unadsys.unad23zona 
+				ON (core16actamatricula.core16idzona = unad23zona.unad23id)
+			INNER JOIN unadsys.unad24sede 
+				ON (core16actamatricula.core16idcead = unad24sede.unad24id)
+			INNER JOIN unadsys.core12escuela 
+				ON (core12escuela.core12id = core16actamatricula.core16idescuela)
+			INNER JOIN unadsys.core09programa 
+				ON (core16actamatricula.core16idprograma = core09programa.core09id)'.$sSQLadd;
+		 //if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta Busqueda: '.$sSQL.'<br>';}
+		 //echo'dddd';
+		$res=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($res)!=0){
+			$fila=$objDB->sf($res);
+			$IdTercero=$fila['unad11id'];
+			$sTipoDoc=$fila['unad11tipodoc'];
+			$sDoc=$fila['unad11doc'];
+			$unad11razonsocial=$fila['unad11razonsocial'];
+			$even04institucion=$fila['core12nombre'].' '.$fila['core09nombre'].' '.$fila['unad23nombre'].' '.$fila['unad24nombre'];
+			$even04cargo='Estudiante';
+			$even04correo=$fila['unad11correo'];
+			$even04telefono=$fila['unad11telefono'];
+			}else{ // Buscando en graduados
+			//$sSQLadd=' AND unad11terceros.unad11doc='.$Docu;
+			$sSQL='SELECT
+				unad11terceros.unad11telefono
+				, unad11terceros.unad11correo
+				, unad23zona.unad23nombre
+				, unad24sede.unad24nombre
+				, core12escuela.core12nombre
+				, core09programa.core09nombre,unad11terceros.unad11tipodoc,unad11terceros.unad11doc,unad11terceros.unad11razonsocial,unad11terceros.unad11id
+				
+			FROM
+				unadsys.core01estprograma
+				INNER JOIN unadsys.unad11terceros 
+					ON (core01estprograma.core01idtercero = unad11terceros.unad11id)
+				INNER JOIN unadsys.unad23zona 
+					ON (core01estprograma.core01idzona = unad23zona.unad23id)
+				INNER JOIN unadsys.unad24sede 
+					ON (core01estprograma.core011idcead = unad24sede.unad24id)
+				INNER JOIN unadsys.core12escuela 
+					ON (core01estprograma.core01idescuela = core12escuela.core12id)
+				INNER JOIN unadsys.core09programa 
+					ON (core01estprograma.core01idprograma = core09programa.core09id)
+		       WHERE core01gradoestado=21 '.$sSQLadd.'   ORDER BY core01gradofecha DESC LIMIT 1';
+			
+			$res=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($res)!=0){
+			$fila=$objDB->sf($res);
+			$IdTercero=$fila['unad11id'];
+			$sTipoDoc=$fila['unad11tipodoc'];
+			$sDoc=$fila['unad11doc'];
+			$unad11razonsocial=$fila['unad11razonsocial'];
+			$even04institucion=$fila['core12nombre'].' '.$fila['core09nombre'].' '.$fila['unad23nombre'].' '.$fila['unad24nombre'];
+			$even04cargo='Graduado';
+			$even04correo=$fila['unad11correo'];
+			$even04telefono=$fila['unad11telefono'];
+			
+			}else{ // Buscando en Usuarios
+					$sSQLadd1=' AND unad07usuarios.unad07vigente="S" ';
+					$sSQL1='SELECT
+						unad05perfiles.unad05nombre
+						, unad11terceros.unad11telefono
+						, unad11terceros.unad11correofuncionario
+						, unad07usuarios.unad07vigente,unad11terceros.unad11tipodoc,unad11terceros.unad11doc,unad11terceros.unad11razonsocial,unad11terceros.unad11id
+						
+					 FROM
+						unadsys.unad07usuarios
+						INNER JOIN unadsys.unad05perfiles 
+							ON (unad07usuarios.unad07idperfil = unad05perfiles.unad05id)
+						INNER JOIN unadsys.unad11terceros 
+							ON (unad11terceros.unad11id = unad07usuarios.unad07idtercero)'.$sSQLadd.$sSQLadd1.'  LIMIT 1';
+							
+					$res=$objDB->ejecutasql($sSQL1);
+					if ($objDB->nf($res)!=0){
+						$fila=$objDB->sf($res);
+						$IdTercero=$fila['unad11id'];
+						$sTipoDoc=$fila['unad11tipodoc'];
+						$sDoc=$fila['unad11doc'];	
+						$unad11razonsocial=$fila['unad11razonsocial'];
+						$even04institucion='UNAD';
+						$even04cargo='Funcionario '.$fila['unad05nombre'];
+						$even04correo=$fila['unad11correofuncionario'];
+						$even04telefono=$fila['unad11telefono'];
+					    }
+			
+			}
+	
+	}
+	
+	
+
+	
+	$ArrayParticipantes[0]=$IdTercero;
+	$ArrayParticipantes[1]=$sTipoDoc;
+	$ArrayParticipantes[2]=$sDoc;
+	$ArrayParticipantes[3]=$unad11razonsocial;
+	$ArrayParticipantes[4]=$even04institucion;
+	$ArrayParticipantes[5]=$even04cargo;
+	$ArrayParticipantes[6]=$even04correo;
+	$ArrayParticipantes[7]=$even04telefono;
+	
+		
+	return $ArrayParticipantes;
+	
+
+}
 ?>

@@ -241,7 +241,7 @@ function f1904_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	$sTitulos='Evento, Participante, Id, Institucion, Cargo, Correo, Telefono, Estadoasistencia';
 	$sSQL='SELECT TB.even04idevento, T2.unad11razonsocial AS C2_nombre, TB.even04id, TB.even04institucion, TB.even04cargo, TB.even04correo, TB.even04telefono, T8.even13nombre, TB.even04idparticipante, T2.unad11tipodoc AS C2_td, T2.unad11doc AS C2_doc, TB.even04estadoasistencia 
 FROM even04eventoparticipante AS TB, unad11terceros AS T2, even13estadoasistencia AS T8 
-WHERE '.$sSQLadd1.' TB.even04idevento='.$even02id.' AND TB.even04idparticipante=T2.unad11id AND TB.even04estadoasistencia=T8.even13id '.$sSQLadd.'
+WHERE  TB.even04idevento='.$even02id.' AND TB.even04idparticipante=T2.unad11id AND TB.even04estadoasistencia=T8.even13id 
 ORDER BY TB.even04idparticipante';
 	$sSQLlista=str_replace("'","|",$sSQL);
 	$sSQLlista=str_replace('"',"|",$sSQLlista);

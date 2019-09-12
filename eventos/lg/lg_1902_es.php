@@ -2,7 +2,7 @@
 /*
 --- © Angel Mauro Avellaneda Barreto - UNAD - 2019 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
---- Modelo Version 2.23.5 Tuesday, August 27, 2019
+--- Modelo Version 2.23.5 Friday, September 6, 2019
 */
 $ETI['app_nombre']='APP';
 $ETI['grupo_nombre']='Grupo';
@@ -42,6 +42,7 @@ $ETI['even02idrubrica']='Rubrica';
 $ETI['even02detalle']='Detalle';
 $ETI['even02fecha']='Duraci&oacute;n';
 $ETI['even02inscripcion']='Inscripci&oacute;n';
+$ETI['even02formainscripcion']='Forma de inscripci&oacute;n';
 
 $ERR['even02consec']='Necesita el dato '.$ETI['even02consec'];
 $ERR['even02id']='Necesita el dato '.$ETI['even02id'];
@@ -67,4 +68,7 @@ $ERR['even02insfechafin']='Necesita el dato '.$ETI['even02insfechafin'];
 $ERR['even02idcertificado']='Necesita el dato '.$ETI['even02idcertificado'];
 $ERR['even02idrubrica']='Necesita el dato '.$ETI['even02idrubrica'];
 $ERR['even02detalle']='Necesita el dato '.$ETI['even02detalle'];
+$ERR['even02formainscripcion']='Necesita el dato '.$ETI['even02formainscripcion'];
+$aeven02formainscripcion=array('', '');
+$ieven02formainscripcion=0;
 ?>

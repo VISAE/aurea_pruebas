@@ -7,7 +7,7 @@
 * Modulo 1902 even02evento.
 * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
 * @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
-* @date Tuesday, August 27, 2019
+* @date Friday, September 6, 2019
 */
 if (file_exists('./err_control.php')){require './err_control.php';}
 $bDebug=false;
@@ -58,6 +58,8 @@ require $APP->rutacomun.'unad_librerias.php';
 require $APP->rutacomun.'libhtml.php';
 require $APP->rutacomun.'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun.'unad_xajax.php';
+require $APP->rutacomun.'libdatos.php';
+require $APP->rutacomun.'libs/clsplanos.php';
 if (($bPeticionXAJAX)&&($_SESSION['unad_id_tercero']==0)){
 	// viene por xajax.
 	$xajax=new xajax();
@@ -183,6 +185,7 @@ $xajax->register(XAJAX_FUNCTION,'f1905_HtmlTabla');
 $xajax->register(XAJAX_FUNCTION,'f1905_PintarLlaves');
 $xajax->register(XAJAX_FUNCTION,'f1903_Comboeven02idzona');
 $xajax->register(XAJAX_FUNCTION,'f1903_Comboeven02idcead');
+$xajax->register(XAJAX_FUNCTION,'f1902_Buscar_Participante');
 $xajax->processRequest();
 if ($bPeticionXAJAX){
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -240,6 +243,7 @@ if (isset($_REQUEST['even02idrubrica'])==0){$_REQUEST['even02idrubrica']='';}
 if (isset($_REQUEST['even02idrubrica_cod'])==0){$_REQUEST['even02idrubrica_cod']='';}
 $even02idrubrica_nombre='';
 if (isset($_REQUEST['even02detalle'])==0){$_REQUEST['even02detalle']='';}
+if (isset($_REQUEST['even02formainscripcion'])==0){$_REQUEST['even02formainscripcion']='';}
 if ((int)$_REQUEST['paso']>0){
 	//Cursos
 	if (isset($_REQUEST['even03idcurso'])==0){$_REQUEST['even03idcurso']='';}
@@ -321,6 +325,7 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 		$_REQUEST['even02idcertificado']=$fila['even02idcertificado'];
 		$_REQUEST['even02idrubrica']=$fila['even02idrubrica'];
 		$_REQUEST['even02detalle']=$fila['even02detalle'];
+		$_REQUEST['even02formainscripcion']=$fila['even02formainscripcion'];
 		$sSQL='SELECT even06consec, even06titulo FROM even06certificados WHERE even06id='.$_REQUEST['even02idcertificado'];
 		$tabladet=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabladet)>0){
@@ -427,6 +432,7 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['even02idrubrica']=0;
 	$_REQUEST['even02idrubrica_cod']='';
 	$_REQUEST['even02detalle']='';
+	$_REQUEST['even02formainscripcion']='';
 	$_REQUEST['paso']=0;
 	}
 if ($bLimpiaHijos){
@@ -455,14 +461,113 @@ if ($bLimpiaHijos){
 	$_REQUEST['even05idtercero_doc']='';
 	$_REQUEST['even05noticia']='';
 	}
+// codigo
+
+//Subida masiva
+$sErrDatos='';
+if (($_REQUEST['paso']==50)||($_REQUEST['paso']==52)){
+	$_REQUEST['paso']=$_REQUEST['paso']-30;
+	if ($sError==''){
+		}
+	}
+$sInfoDegub='';
+$sInfoDegub2='';
+//Carga masiva de resposnables.
+$_FILES['archivodatos']['type']='application/xls';
+//$_FILES['archivodatos']['tmp_name']='1.cvs';
+//Carga masiva de participantes.
+if ($_REQUEST['paso']==60){
+	$_REQUEST['paso']=2;
+	if (!seg_revisa_permiso($iCodModulo, 3, $objDB)){
+		$sError=$ERR['3'];
+		}
+	if ($sError==''){
+		$bPasa=false;
+		if($_FILES['archivodatos']['type']=='text/plain'){$bPasa=true;}
+		if($_FILES['archivodatos']['type']=='application/xls'){$bPasa=true;}
+		if (!$bPasa){
+			$sError='Tipo de archivo no permitido {'.$_FILES['archivodatos']['type'].'}';
+			}
+		}
+	$totallin=0;
+	if ($sError==''){
+		$objplano=new clsplanos($_FILES['archivodatos']['tmp_name']);
+		$objplano->Leer();
+		$totallin=$objplano->iLineas;
+		if ($totallin<1){$sError='El archivo no contine datos';}
+		}
+		if ($sError==''){
+			if($_REQUEST['even04estadoasistencia']==''){
+			$sError='Debe seleccionar Estado asistencia';
+			}
+		}
+	if ($sError==''){
+		$aParam;
+		$sHoy=fecha_hoy();
+		$idEvento=$_REQUEST['even02id'];
+		$even04estadoasistencia=$_REQUEST['even04estadoasistencia'];
+		$iRegistrados=0;
+		$iActualizados=0;
+		$sNoEncontrados='';
+		for ($k=1;$k<=$totallin;$k++){
+		
+			$base=trim($objplano->aCuerpo[$k]);
+			$sData=explode($_REQUEST['csv_separa'],$base);
+			if ($sData[0]!=''){
+			
+				//Encontrar el Participante.
+				$aParam[0]=$sData[0];
+				$aParam[1]='';
+				
+					$respuesta=f1902_Cargar_Participante($aParam);
+					
+					if ($respuesta[0]!=0){ 
+					   	$even04id=tabla_consecutivo('even04eventoparticipante', 'even04id', '', $objDB);
+						//Busco si esta y si esta le actualizo el estado
+						//Buscar el tercero.
+					$sSQL='SELECT  even04estadoasistencia FROM even04eventoparticipante WHERE even04idparticipante='.$respuesta[0].' AND even04idevento='.$idEvento.'';
+					$tabla=$objDB->ejecutasql($sSQL);
+					if ($objDB->nf($tabla)>0){
+						//$iDatos++;
+						$fila=$objDB->sf($tabla);
+						if ($fila['even04estadoasistencia']!=$even04estadoasistencia){
+							$sSQL='UPDATE even04eventoparticipante SET even04estadoasistencia='.$even04estadoasistencia.' WHERE even04idparticipante='.$respuesta[0].' AND even04idevento='.$idEvento.'';
+							$tabla=$objDB->ejecutasql($sSQL);
+							$iActualizados++;}
+							}else{		
+									
+							$sSQL='INSERT INTO even04eventoparticipante(even04id,even04idevento,even04idparticipante,even04institucion,even04cargo,even04correo,even04telefono,even04estadoasistencia)
+VALUES('.$even04id.','.$idEvento.','.$respuesta[0].',"'.$respuesta[4].'","'.$respuesta[5].'","'.$respuesta[6].'","'.$respuesta[7].'",'.$even04estadoasistencia.')';
+							$result=$objDB->ejecutasql($sSQL);
+							$iRegistrados++;}
+						}else{
+						$sNoEncontrados=$sNoEncontrados.$sData[0].',';
+						if ($sInfoDegub!=''){$sInfoDegub=$sInfoDegub.'<br>';}
+						$sInfoDegub=$sInfoDegub.'No se  ha encontrado información para el documento '.$sData[0].'';
+						}
+					}
+				}
+				
+			$sInfoDegub='Participantes cargados: , Lineas procesadas: '.($totallin).', Actualizadas: '.$iRegistrados.'<br>'.$sInfoDegub;
+		//if ($sErrDatos!=''){$sErrDatos='<br>'.$sErrDatos;}
+		$sErrDatos='<b>Resultado de la importaci&oacute;n</b>: Lineas Totales: <b>'.$totallin.', Registrados: <b>'.$iRegistrados.'</b>'.$sErrDatos;
+		$sError=$sErrDatos.'Actualizados: <b>'.$iActualizados.'</b><br> No encontrados: '.$sNoEncontrados;
+		$iTipoError=1;
+	}
+	
+}
+
+// fin codigo
+
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
 //DATOS PARA COMPLETAR EL FORMULARIO
 //Crear los controles que requieran llamado a base de datos
 $objCombos=new clsHtmlCombos();
 $objTercero=new clsHtmlTercero();
 $html_even02categoria=f1902_HTMLComboV2_even02categoria($objDB, $objCombos, $_REQUEST['even02categoria'], $_REQUEST['even02tipo']);
-list($even02estado_nombre, $sErrorDet)=tabla_campoxid('even14estadoevento','even14nombre','even14id',$_REQUEST['even02estado'],'{'.$ETI['msg_sindato'].'}', $objDB);
-$html_even02estado=html_oculto('even02estado', $_REQUEST['even02estado'], $even02estado_nombre);
+$objCombos->nuevo('even02estado', $_REQUEST['even02estado'], true, '{'.$ETI['msg_seleccione'].'}');
+$sSQL='SELECT even14id AS id, even14nombre AS nombre FROM even14estadoevento ORDER BY even14nombre';
+$html_even02estado= $objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('even02publicado', $_REQUEST['even02publicado'], false);
 $objCombos->sino();
 $html_even02publicado=$objCombos->html('', $objDB);
@@ -473,13 +578,19 @@ $html_even02idzona=f1903_HTMLComboV2_even02idzona($objDB, $objCombos, $_REQUEST[
 // $html_even02idcead=f1903_HTMLComboV2_even02idcead($objDB, $objCombos, $_REQUEST['even02idcead'], $_REQUEST['even02nombre']);
 $html_even02idcead=f1903_HTMLComboV2_even02idcead($objDB, $objCombos, $_REQUEST['even02idcead'], $_REQUEST['even02idzona']);
 $objCombos->nuevo('even02peraca', $_REQUEST['even02peraca'], true, '{'.$ETI['msg_seleccione'].'}');
-$sSQL='SELECT exte02id AS id, exte02nombre AS nombre FROM exte02per_aca ORDER BY exte02nombre';
-$html_even02peraca=$objCombos->html($sSQL, $objDB);
+//$sSQL='SELECT exte02id AS id, exte02nombre AS nombre FROM exte02per_aca ORDER BY exte02nombre';
+$sSQL=f146_ConsultaCombo();
+$html_even02peraca= $objCombos->html($sSQL, $objDB);
 list($even02idorganizador_rs, $_REQUEST['even02idorganizador'], $_REQUEST['even02idorganizador_td'], $_REQUEST['even02idorganizador_doc'])=html_tercero($_REQUEST['even02idorganizador_td'], $_REQUEST['even02idorganizador_doc'], $_REQUEST['even02idorganizador'], 0, $objDB);
 list($_REQUEST['even02idcertificado'], $even02idcertificado_nombre, $sDebugBusca)=f1902_Busqueda_db_even02idcertificado($_REQUEST['even02idcertificado_cod'], $objDB, $bDebug);
 $sDebug=$sDebug.$sDebugBusca;
 list($_REQUEST['even02idrubrica'], $even02idrubrica_nombre, $sDebugBusca)=f1902_Busqueda_db_even02idrubrica($_REQUEST['even02idrubrica_cod'], $objDB, $bDebug);
 $sDebug=$sDebug.$sDebugBusca;
+$objCombos->nuevo('even02formainscripcion', $_REQUEST['even02formainscripcion'], false, '{'.$ETI['msg_seleccione'].'}');
+$objCombos->addItem(1,'Cerrada');
+$objCombos->addItem(0,'Abierta');
+//$objCombos->addArreglo($aeven02formainscripcion, $ieven02formainscripcion);
+$html_even02formainscripcion=$objCombos->html('', $objDB);
 if ((int)$_REQUEST['paso']==0){
 	$objCombos->nuevo('even02tipo', $_REQUEST['even02tipo'], true, '{'.$ETI['msg_seleccione'].'}');
 	$objCombos->sAccion='carga_combo_even02categoria();';
@@ -679,15 +790,21 @@ function ter_muestra(idcampo, illave){
 		params[3]='div_'+idcampo;
 		if (illave==1){params[4]='RevisaLlave';}
 		//if (illave==1){params[5]='FuncionCuandoNoEsta';}
-		xajax_unad11_Mostrar_v2(params);
-		//Buscar en core16actamatricula
-		
+		xajax_unad11_Mostrar_v2(params); // ulib/unad_xajax.php
+			 if (idcampo=='even04idparticipante'){
+				var vr_even04idparticipante_doc;
+				vr_even04idparticipante_doc=document.getElementById(idcampo+'_doc').value;
+				buscar_participante(vr_even04idparticipante_doc,'');
+			}	
 		}else{
 		document.getElementById(idcampo).value=0;
 		document.getElementById('div_'+idcampo).innerHTML='&nbsp;';
 		//FuncionCuandoNoHayNada
 		}
 	}
+
+
+
 function ter_traerxid(idcampo, vrcampo){
 	var params=new Array();
 	params[0]=vrcampo;
@@ -858,12 +975,15 @@ function Devuelve(sValor){
 		}
 	if (sCampo=='even04idparticipante'){
 		ter_traerxid('even04idparticipante', sValor);
+		buscar_participante('',sValor);
 		}
 	if (sCampo=='even05idtercero'){
 		ter_traerxid('even05idtercero', sValor);
 		}
 	retornacontrol();
 	}
+
+
 function mantener_sesion(){xajax_sesion_mantenerV4();}
 setInterval ('xajax_sesion_abandona_V2();', 60000);
 function AyudaLocal(sCampo){
@@ -894,6 +1014,49 @@ function carga_combo_even02idzona(){
     params[0]=window.document.frmedita.even02idzona.value;
     xajax_f1903_Comboeven02idzona(params);
 }
+
+function buscar_participante(sDocu,sId){
+    var datos=new Array();
+    datos[0]=sDocu;
+	datos[1]=sId;
+    xajax_f1902_Buscar_Participante(datos);
+}
+function descargarparticipantes(){
+	//window.document.frmplantillaparticipantes.separa.value=window.document.frmplantillaparticipantes.csv_separa.value;
+	window.document.frmplantillaparticipantes.submit();
+	}
+
+function masivo_cargarparticipantes(){
+	extensiones_permitidas = new Array(".csv", ".txt");
+	var sError='';
+	var archivo=window.document.frmedita.archivodatos.value;
+	if (!archivo) {
+		sError = "No has seleccionado ning\u00fan archivo";
+		}else{
+		//recupero la extensión de este nombre de archivo
+		extension = (archivo.substring(archivo.lastIndexOf("."))).toLowerCase();
+		//compruebo si la extensión está entre las permitidas
+		permitida = false;
+		for (var i = 0; i < extensiones_permitidas.length; i++) {
+			if (extensiones_permitidas[i] == extension) {
+				permitida = true;
+				break;
+				}
+			}
+	if (!permitida) {
+		sError = "Comprueba la extensi\u00f3n de los archivos a subir. \nS\u00f3lo se pueden subir archivos con extensiones: " + extensiones_permitidas.join();
+		}else{
+		expandesector(98);
+		window.document.frmedita.paso.value=60;
+		window.document.frmedita.submit();
+		return 1;
+		}
+	}
+	//si estoy aqui es que no se ha podido submitir
+	alert (sError);
+	return 0;
+	}
+
 /*function carga_combo_even02idcead(){
     var params=new Array();
     params[0]=window.document.frmedita.even02idcead.value;
@@ -927,13 +1090,18 @@ if ($_REQUEST['paso']!=0){
 <?php
 	}
 ?>
+<form id="frmplantillaparticipantes" name="frmplantillaparticipantes" action="t1904.php" method="post" target="_blank">
+<input id="idevento" name="idevento" type="hidden" value="<?php echo $_REQUEST['even02id']; ?>" />
+<input id="separa1904" name="separa1904" type="hidden" value=";" />
+</form>
+
 <form id="frmlista" name="frmlista" method="post" action="listados.php" target="_blank">
 <input id="titulos" name="titulos" type="hidden" value="" />
 <input id="consulta" name="consulta" type="hidden" value="" />
 <input id="nombrearchivo" name="nombrearchivo" type="hidden" value="" />
 </form>
 <div id="interna">
-<form id="frmedita" name="frmedita" method="post" action="" autocomplete="off">
+<form id="frmedita" name="frmedita" method="post" action="" autocomplete="off" enctype="multipart/form-data">
 <input id="bNoAutocompletar" name="bNoAutocompletar" type="password" value="" style="display:none;"/>
 <input id="paso" name="paso" type="hidden" value="<?php echo $_REQUEST['paso']; ?>" />
 <input id="shoy" name="shoy" type="hidden" value="<?php echo fecha_hoy(); ?>" />
@@ -953,7 +1121,7 @@ if ($_REQUEST['paso']==2){
 <input id="cmdEliminar" name="cmdEliminar" type="button" class="btUpEliminar" onclick="eliminadato();" title="<?php echo $ETI['bt_eliminar']; ?>" value="<?php echo $ETI['bt_eliminar']; ?>"/>
 <?php
 	}
-$bHayImprimir=false;
+$bHayImprimir=true;
 $sScript='imprimelista()';
 $sClaseBoton='btEnviarExcel';
 if ($seg_6==1){$bHayImprimir=true;}
@@ -1219,6 +1387,17 @@ echo $ETI['even02inscripcion'];
 ?>
 </label>
 <div class="salto1px"></div>
+<label class="Label200">
+<?php
+echo $ETI['even02formainscripcion'];
+?>
+</label>
+<label class="Label30">
+<?php
+echo $html_even02formainscripcion;
+?>
+</label>
+<div class="salto1px"></div>
 
 <label class="Label130">
 <?php
@@ -1300,6 +1479,7 @@ echo $ETI['even02detalle'];
 ?>
 <textarea id="even02detalle" name="even02detalle" placeholder="<?php echo $ETI['ing_campo'].$ETI['even02detalle']; ?>"><?php echo $_REQUEST['even02detalle']; ?></textarea>
 </label>
+
 <?php
 // -- Inicia Grupo campos 1903 Cursos
 ?>
@@ -1471,13 +1651,8 @@ if ($_REQUEST['paso']==2){
 <input id="btrecoge1904" name="btrecoge1904" type="button" value="Recoger" class="btMiniRecoger" onclick="expandepanel(1904,'none',1);" title="<?php echo $ETI['bt_ocultar']; ?>" style="display:<?php if ($_REQUEST['boculta1904']==0){echo 'block'; }else{echo 'none';} ?>;"/>
 </label>
 </div>
-
-
 <div class="salto1px"></div>
 <div id="div_p1904" style="display:<?php if ($_REQUEST['boculta1904']==0){echo 'block'; }else{echo 'none';} ?>;">
-
-
-
 <div class="salto1px"></div>
 <div class="GrupoCampos450">
 <label class="TituloGrupo">
@@ -1491,13 +1666,12 @@ echo $ETI['even04idparticipante'];
 <?php
 $bOculto=true;
 if ((int)$_REQUEST['even04id']==0){$bOculto=false;}
-echo html_DivTerceroV2('even04idparticipante', $_REQUEST['even04idparticipante_td'], $_REQUEST['even04idparticipante_doc'], $bOculto, 1, $ETI['ing_doc']);
+echo html_DivTerceroV2('even04idparticipante', $_REQUEST['even04idparticipante_td'], $_REQUEST['even04idparticipante_doc'], $bOculto, 0, $ETI['ing_doc']);
 ?>
 </div>
 <div class="salto1px"></div>
 <div id="div_even04idparticipante" class="L"><?php echo $even04idparticipante_rs; ?></div>
 <div class="salto1px"></div>
-</div>
 <label class="Label60">
 <?php
 echo $ETI['even04id'];
@@ -1505,9 +1679,46 @@ echo $ETI['even04id'];
 </label>
 <label class="Label60"><div id="div_even04id">
 <?php
-	echo html_oculto('even04id', $_REQUEST['even04id']);
+echo html_oculto('even04id', $_REQUEST['even04id']);
 ?>
 </div></label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['even04estadoasistencia'];
+?>
+</label>
+<label>
+<?php
+echo $html_even04estadoasistencia;
+?>
+</label>
+
+
+<label class="TituloGrupo">
+<?php
+//echo $ETI['titulo_responsables'];
+?>
+</label>
+<label class="Label30">
+<input id="cmdDescargaParticipantes" name="cmdDescargaParticipantes" type="button" value="" class="btMiniExcel" onclick="descargarparticipantes()" title="Descargar Plantilla de Responsables" />
+</label>
+<div class="salto1px"></div>
+<div id="div_p1791" style="display:<?php if ($_REQUEST['boculta1791']==0){echo 'block'; }else{echo 'none';} ?>;">
+<div class="salto1px"></div>
+<input id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" type="hidden" value="100000" />
+<label class="Label450">
+<input id="archivodatos" name="archivodatos" type="file" />
+</label>
+<label class="Label130">
+<input id="cmdanexar" name="cmdanexar" type="button" class="btSoloAnexar" value="<?php echo $ETI['msg_subir']; ?>" onclick="masivo_cargarparticipantes()"/>
+</label>
+
+</div>
+</div>
+
+
+<div class="GrupoCampos520">
 <label class="L">
 <?php
 echo $ETI['even04institucion'];
@@ -1536,16 +1747,6 @@ echo $ETI['even04telefono'];
 
 <input id="even04telefono" name="even04telefono" type="text" value="<?php echo $_REQUEST['even04telefono']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even04telefono']; ?>"/>
 </label>
-<label class="Label130">
-<?php
-echo $ETI['even04estadoasistencia'];
-?>
-</label>
-<label>
-<?php
-echo $html_even04estadoasistencia;
-?>
-</label>
 <div class="salto1px"></div>
 <label class="Label130">&nbsp;</label>
 <label class="Label30">
@@ -1557,9 +1758,18 @@ echo $html_even04estadoasistencia;
 <label class="Label30">
 <input id="belimina1904" name="belimina1904" type="button" value="Eliminar" class="btMiniEliminar" onclick="eliminaf1904()" title="<?php echo $ETI['bt_mini_eliminar_1904']; ?>" style="display:<?php if ((int)$_REQUEST['even04id']!=0){echo 'block';}else{echo 'none';} ?>;"/>
 </label>
+</div>
 <?php
 //Este es el cierre del div_p1904
 ?>
+<div class="salto1px"></div>
+<div class="salto1px"></div>
+<div class="GrupoCamposAyuda">
+<?php
+echo $ETI['msg_infoplanoparticipante'];
+?>
+<div class="salto1px"></div>
+</div>
 <div class="salto1px"></div>
 </div>
 <?php
@@ -1593,7 +1803,7 @@ echo $html_blistar1904;
 <?php
 	}
 ?>
-<div id="div_f1904detalle">
+<!--<div id="div_f1904detalle">-->
 <?php
 echo $sTabla1904;
 ?>
