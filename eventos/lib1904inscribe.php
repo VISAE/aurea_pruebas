@@ -84,9 +84,12 @@ function f1904_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	require './app.php';
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+    $mensajes_1902='lg/lg_1902_'.$_SESSION['unad_idioma'].'.php';
+    if (!file_exists($mensajes_1902)){$mensajes_1902='lg/lg_1902_es.php';}
 	$mensajes_1904='lg/lg_1904_'.$_SESSION['unad_idioma'].'.php';
 	if (!file_exists($mensajes_1904)){$mensajes_1904='lg/lg_1904_es.php';}
 	require $mensajes_todas;
+    require $mensajes_1902;
 	require $mensajes_1904;
 	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
 	if (isset($aParametros[101])==0){$aParametros[101]=1;}
@@ -115,7 +118,7 @@ function f1904_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 		}
 	$sSQLadd='';
 	$sSQLadd1='';
-	//if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$aParametros[103];}
+	if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND T2.even04idparticipante='.$aParametros[103];}
 	//if ($aParametros[103]!=''){$sSQLadd=$sSQLadd.' AND TB.campo2 LIKE "%'.$aParametros[103].'%"';}
 	/*
 	if ($aParametros[104]!=''){
@@ -130,11 +133,13 @@ function f1904_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 			}
 		}
 	*/
-	$sTitulos='Evento, Participante, Id, Institucion, Cargo, Correo, Telefono, Estadoasistencia';
-	$sSQL='SELECT T1.even02nombre, T2.unad11razonsocial AS C2_nombre, TB.even04id, TB.even04institucion, TB.even04cargo, TB.even04correo, TB.even04telefono, T8.even13nombre, TB.even04idevento, TB.even04idparticipante, T2.unad11tipodoc AS C2_td, T2.unad11doc AS C2_doc, TB.even04estadoasistencia 
-FROM even04eventoparticipante AS TB, even02evento AS T1, unad11terceros AS T2, even13estadoasistencia AS T8 
-WHERE '.$sSQLadd1.' TB.even04idevento=T1.even02id AND TB.even04idparticipante=T2.unad11id AND TB.even04estadoasistencia=T8.even13id '.$sSQLadd.'
-ORDER BY TB.even04idevento, TB.even04idparticipante';
+	$sTitulos='Evento, Tipo, Categoria, Lugar, Fecha Inicial, Hora Inicial, Fecha Final, Hora Final, Estado, Estado Asistencia';
+	$sSQL='SELECT T2.even04id, T3.even01nombre, T4.even41titulo, T5.even14nombre, TB.even02nombre, 
+TB.even02lugar, TB.even02inifecha, TB.even02inihora, TB.even02iniminuto, 
+TB.even02finfecha, TB.even02finhora, TB.even02finminuto, T6.even13nombre
+FROM even02evento AS TB, even04eventoparticipante AS T2, even01tipoevento AS T3, even41categoria AS T4, even14estadoevento AS T5, even13estadoasistencia AS T6
+WHERE TB.even02id=T2.even04idevento AND TB.even02tipo=T3.even01id AND TB.even02categoria=T4.even41id AND TB.even02estado=T5.even14id AND T2.even04estadoasistencia=T6.even13id  '.$sSQLadd.'
+ORDER BY TB.even02consec';
 	$sSQLlista=str_replace("'","|",$sSQL);
 	$sSQLlista=str_replace('"',"|",$sSQLlista);
 	$sErrConsulta='<input id="consulta_1904" name="consulta_1904" type="hidden" value="'.$sSQLlista.'"/>
@@ -160,11 +165,14 @@ ORDER BY TB.even04idevento, TB.even04idparticipante';
 	$res=$sErrConsulta.$sLeyenda.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
 <tr class="fondoazul">
 <td><b>'.$ETI['even04idevento'].'</b></td>
-<td colspan="2"><b>'.$ETI['even04idparticipante'].'</b></td>
-<td><b>'.$ETI['even04institucion'].'</b></td>
-<td><b>'.$ETI['even04cargo'].'</b></td>
-<td><b>'.$ETI['even04correo'].'</b></td>
-<td><b>'.$ETI['even04telefono'].'</b></td>
+<td><b>'.$ETI['even02tipo'].'</b></td>
+<td><b>'.$ETI['even02categoria'].'</b></td>
+<td><b>'.$ETI['even02lugar'].'</b></td>
+<td><b>'.$ETI['even02inifecha'].'</b></td>
+<td><b>'.$ETI['even02inihora'].'</b></td>
+<td><b>'.$ETI['even02finfecha'].'</b></td>
+<td><b>'.$ETI['even02finhora'].'</b></td>
+<td><b>'.$ETI['even02estado'].'</b></td>
 <td><b>'.$ETI['even04estadoasistencia'].'</b></td>
 <td align="right">
 '.html_paginador('paginaf1904', $registros, $lineastabla, $pagina, 'paginarf1904()').'
@@ -183,17 +191,25 @@ ORDER BY TB.even04idevento, TB.even04idparticipante';
 			}
 		if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
 		$tlinea++;
+        $et_even02inifecha='';
+        if ($filadet['even02inifecha']!='00/00/0000'){$et_even02inifecha=$filadet['even02inifecha'];}
+        $et_even02inihora=html_TablaHoraMin($filadet['even02inihora'], $filadet['even02iniminuto']);
+        $et_even02finfecha='';
+        if ($filadet['even02finfecha']!='00/00/0000'){$et_even02finfecha=$filadet['even02finfecha'];}
+        $et_even02finhora=html_TablaHoraMin($filadet['even02finhora'], $filadet['even02finminuto']);
 		if ($babierta){
 			$sLink='<a href="javascript:cargaridf1904('.$filadet['even04id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
 			}
 		$res=$res.'<tr'.$sClass.'>
 <td>'.$sPrefijo.cadena_notildes($filadet['even02nombre']).$sSufijo.'</td>
-<td>'.$sPrefijo.$filadet['C2_td'].' '.$filadet['C2_doc'].$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['C2_nombre']).$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['even04institucion']).$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['even04cargo']).$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['even04correo']).$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['even04telefono']).$sSufijo.'</td>
+<td>'.$sPrefijo.cadena_notildes($filadet['even01nombre']).$sSufijo.'</td>
+<td>'.$sPrefijo.cadena_notildes($filadet['even41titulo']).$sSufijo.'</td>
+<td>'.$sPrefijo.cadena_notildes($filadet['even02lugar']).$sSufijo.'</td>
+<td>'.$sPrefijo.$et_even02inifecha.$sSufijo.'</td>
+<td>'.$sPrefijo.$et_even02inihora.$sSufijo.'</td>
+<td>'.$sPrefijo.$et_even02finfecha.$sSufijo.'</td>
+<td>'.$sPrefijo.$et_even02finhora.$sSufijo.'</td>
+<td>'.$sPrefijo.cadena_notildes($filadet['even14nombre']).$sSufijo.'</td>
 <td>'.$sPrefijo.cadena_notildes($filadet['even13nombre']).$sSufijo.'</td>
 <td>'.$sLink.'</td>
 </tr>';

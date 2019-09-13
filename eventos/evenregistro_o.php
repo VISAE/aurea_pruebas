@@ -525,7 +525,7 @@ if ($_REQUEST['paso']==60){
 					   	$even04id=tabla_consecutivo('even04eventoparticipante', 'even04id', '', $objDB);
 						//Busco si esta y si esta le actualizo el estado
 						//Buscar el tercero.
-					$sSQL='SELECT  even04estadoasistencia FROM even04eventoparticipante WHERE even04idparticipante='.$respuesta[0].' AND even04idevento='.$idEvento.'';
+					$sSQL='SELECT  even04estadoasistencia FROM even04eventoparticipante WHERE even04idparticipante="'.$respuesta[0].'" AND even04idevento='.$idEvento.'';
 					$tabla=$objDB->ejecutasql($sSQL);
 					if ($objDB->nf($tabla)>0){
 						//$iDatos++;
@@ -1485,7 +1485,7 @@ echo $ETI['even02detalle'];
 ?>
 <?php
 if(false){
-?><!-- </div> ERROR, este DIV estaba de más-->
+?>
 <div class="salto1px"></div>
 <div class="GrupoCampos">
 <label class="TituloGrupo">
@@ -1621,7 +1621,7 @@ echo $sTabla1903;
 // -- Termina Grupo campos 1903 Cursos
 ?>
 <?php
-}
+};
 ?>
 <?php
 // -- Inicia Grupo campos 1904 Participantes
@@ -1803,7 +1803,7 @@ echo $html_blistar1904;
 <?php
 	}
 ?>
-<div id="div_f1904detalle">
+<!--<div id="div_f1904detalle">-->
 <?php
 echo $sTabla1904;
 ?>
@@ -1822,7 +1822,6 @@ if (false){
 <?php
 // -- Inicia Grupo campos 1905 Noticias
 ?>
-<!-- </div> -->
 
 
 <div class="salto1px"></div>

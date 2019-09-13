@@ -1428,6 +1428,7 @@ $ArrayParticipantes= array();
 			$Idtercero=$fila['unad11id'];
 			$sTipoDoc=$fila['unad11tipodoc'];
 			$sDoc=$fila['unad11doc'];
+            $unad11razonsocial=$fila['unad11razonsocial'];
 		    $even04correo=$fila['unad11correo'];
 			$even04telefono= $fila['unad11telefono'];
 			$Idcargo= $fila['unad11rolunad'];
