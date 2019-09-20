@@ -94,7 +94,8 @@ function f1904_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
 	if (isset($aParametros[101])==0){$aParametros[101]=1;}
 	if (isset($aParametros[102])==0){$aParametros[102]=20;}
-	//if (isset($aParametros[103])==0){$aParametros[103]='';}
+	if (isset($aParametros[103])==0){$aParametros[103]='';}
+    if (isset($aParametros[104])==0){$aParametros[104]='';}
 	//$aParametros[103]=numeros_validar($aParametros[103]);
 	$sDebug='';
 	$pagina=$aParametros[101];
@@ -116,30 +117,54 @@ function f1904_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 		return array($sLeyenda.'<input id="paginaf1904" name="paginaf1904" type="hidden" value="'.$pagina.'"/><input id="lppf1904" name="lppf1904" type="hidden" value="'.$lineastabla.'"/>', $sDebug);
 		die();
 		}
+    $sSQL='';
 	$sSQLadd='';
-	$sSQLadd1='';
-	if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND T2.even04idparticipante='.$aParametros[103];}
-	//if ($aParametros[103]!=''){$sSQLadd=$sSQLadd.' AND TB.campo2 LIKE "%'.$aParametros[103].'%"';}
-	/*
+    $sSQLadd1='';
+	$etiLnk='';
+    $estadoAsistencia = '';
+	if ($aParametros[103]!=''){$sSQLadd=$sSQLadd.' AND T2.even04idparticipante='.$aParametros[103].'';}
 	if ($aParametros[104]!=''){
-		$sBase=trim(strtoupper($aParametros[104]));
-		$aNoms=explode(' ', $sBase);
-		for ($k=1;$k<=count($aNoms);$k++){
-			$sCadena=$aNoms[$k-1];
-			if ($sCadena!=''){
-				$sSQLadd=$sSQLadd.' AND T6.unad11razonsocial LIKE "%'.$sCadena.'%"';
-				//$sSQLadd1=$sSQLadd1.'T1.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
-				}
-			}
-		}
-	*/
-	$sTitulos='Evento, Tipo, Categoria, Lugar, Fecha Inicial, Hora Inicial, Fecha Final, Hora Final, Estado, Estado Asistencia';
-	$sSQL='SELECT T2.even04id, T3.even01nombre, T4.even41titulo, T5.even14nombre, TB.even02nombre, 
+        $sSQLadd1='even04id';
+        $etiLnk=$etiLnk.'lnk_'.$aParametros[104].'';
+	    switch ($aParametros[104]) {
+            case 'futuro':
+                $operadorFecha = '>';
+                $estadoAsistencia = '1';
+                break;
+            case 'presente':
+                $operadorFecha = '=';
+                $estadoAsistencia = '1,7';
+                break;
+            case 'pasado':
+                $operadorFecha = '<';
+                $estadoAsistencia = '3';
+                $babierta=false;
+                $etiLnk='';
+                break;
+            case 'bfuturo':
+                $operadorFecha = '>';
+                $estadoAsistencia = '0';
+                $sSQLadd1='even02id';
+                $sSQL=$sSQL.'SELECT '.$sSQLadd1.',T3.even01nombre, T4.even41titulo, T5.even14nombre, TB.even02nombre, 
 TB.even02lugar, TB.even02inifecha, TB.even02inihora, TB.even02iniminuto, 
-TB.even02finfecha, TB.even02finhora, TB.even02finminuto, T6.even13nombre
+TB.even02finfecha, TB.even02finhora, TB.even02finminuto, "" AS even13nombre, TB.even02idcertificado
+FROM even02evento AS TB, even01tipoevento AS T3, even41categoria AS T4, even14estadoevento AS T5 
+WHERE TB.even02tipo=T3.even01id AND TB.even02categoria=T4.even41id AND TB.even02estado=T5.even14id AND TB.even02formainscripcion=0 
+AND STR_TO_DATE(TB.even02inifecha,"%d/%m/%Y") '.$operadorFecha.' DATE(NOW())  
+AND TB.even02id NOT IN (SELECT T2.even04idevento FROM even04eventoparticipante AS T2 WHERE TRUE '.$sSQLadd.') 
+UNION ';
+                $sSQLadd=$sSQLadd.' AND TB.even02formainscripcion=1 ';
+                break;
+            }
+        $sSQLadd=$sSQLadd.' AND T2.even04estadoasistencia IN ('.$estadoAsistencia.')  
+AND STR_TO_DATE(TB.even02inifecha,"%d/%m/%Y") '.$operadorFecha.' DATE(NOW()) ';
+	}
+	$sTitulos='Evento, Tipo, Categoria, Lugar, Fecha Inicial, Hora Inicial, Fecha Final, Hora Final';
+	$sSQL=$sSQL.'SELECT '.$sSQLadd1.', T3.even01nombre, T4.even41titulo, T5.even14nombre, TB.even02nombre, 
+TB.even02lugar, TB.even02inifecha, TB.even02inihora, TB.even02iniminuto, 
+TB.even02finfecha, TB.even02finhora, TB.even02finminuto, T6.even13nombre, TB.even02idcertificado
 FROM even02evento AS TB, even04eventoparticipante AS T2, even01tipoevento AS T3, even41categoria AS T4, even14estadoevento AS T5, even13estadoasistencia AS T6
-WHERE TB.even02id=T2.even04idevento AND TB.even02tipo=T3.even01id AND TB.even02categoria=T4.even41id AND TB.even02estado=T5.even14id AND T2.even04estadoasistencia=T6.even13id  '.$sSQLadd.'
-ORDER BY TB.even02consec';
+WHERE TB.even02id=T2.even04idevento AND TB.even02tipo=T3.even01id AND TB.even02categoria=T4.even41id AND TB.even02estado=T5.even14id AND T2.even04estadoasistencia=T6.even13id '.$sSQLadd.'';
 	$sSQLlista=str_replace("'","|",$sSQL);
 	$sSQLlista=str_replace('"',"|",$sSQLlista);
 	$sErrConsulta='<input id="consulta_1904" name="consulta_1904" type="hidden" value="'.$sSQLlista.'"/>
@@ -172,8 +197,6 @@ ORDER BY TB.even02consec';
 <td><b>'.$ETI['even02inihora'].'</b></td>
 <td><b>'.$ETI['even02finfecha'].'</b></td>
 <td><b>'.$ETI['even02finhora'].'</b></td>
-<td><b>'.$ETI['even02estado'].'</b></td>
-<td><b>'.$ETI['even04estadoasistencia'].'</b></td>
 <td align="right">
 '.html_paginador('paginaf1904', $registros, $lineastabla, $pagina, 'paginarf1904()').'
 '.html_lpp('lppf1904', $lineastabla, 'paginarf1904()').'
@@ -197,8 +220,12 @@ ORDER BY TB.even02consec';
         $et_even02finfecha='';
         if ($filadet['even02finfecha']!='00/00/0000'){$et_even02finfecha=$filadet['even02finfecha'];}
         $et_even02finhora=html_TablaHoraMin($filadet['even02finhora'], $filadet['even02finminuto']);
+        if($filadet['even02idcertificado']!=0){
+            $babierta=true;
+            $etiLnk=$etiLnk.'lnk_'.$aParametros[104].'';
+            }
 		if ($babierta){
-			$sLink='<a href="javascript:cargaridf1904('.$filadet['even04id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
+			$sLink='<a href="javascript:cambiaEstadoEventoId('.$filadet[$sSQLadd1].',\''.$aParametros[104].'\')" class="lnkresalte">'.$ETI[$etiLnk].'</a>';
 			}
 		$res=$res.'<tr'.$sClass.'>
 <td>'.$sPrefijo.cadena_notildes($filadet['even02nombre']).$sSufijo.'</td>
@@ -209,13 +236,12 @@ ORDER BY TB.even02consec';
 <td>'.$sPrefijo.$et_even02inihora.$sSufijo.'</td>
 <td>'.$sPrefijo.$et_even02finfecha.$sSufijo.'</td>
 <td>'.$sPrefijo.$et_even02finhora.$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['even14nombre']).$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['even13nombre']).$sSufijo.'</td>
 <td>'.$sLink.'</td>
 </tr>';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
+	if($tlinea == 1){$res = '';}
 	return array(utf8_encode($res), $sDebug);
 	}
 function f1904_HtmlTabla($aParametros){
@@ -240,4 +266,17 @@ function f1904_HtmlTabla($aParametros){
 		}
 	return $objResponse;
 	}
+function f1904_CambiarEstado($aParametros){
+    switch ($aParametros[106]) {
+        case 'futuro':
+
+            break;
+        case 'presente':
+            break;
+        case 'pasado':
+            break;
+        case 'bfuturo':
+            break;
+        }
+    }
 ?>

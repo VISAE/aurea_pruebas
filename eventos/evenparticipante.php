@@ -101,8 +101,8 @@ if (!$objDB->Conectar()){
 $idTercero=$_SESSION['unad_id_tercero'];
 $bOtroUsuario=false;
 if (isset($_REQUEST['deb_doc'])!=0){
-    if (seg_revisa_permiso($iCodModulo, 1707, $objDB)){
-        $sSQL='SELECT unad11id, unad11razonsocial FROM unad11terceros WHERE unad11doc="'.$_REQUEST['deb_doc'].'"';
+	if (seg_revisa_permiso($iCodModulo, 1707, $objDB)){
+		$sSQL='SELECT unad11id, unad11razonsocial FROM unad11terceros WHERE unad11doc="'.$_REQUEST['deb_doc'].'"';
 		$tabla=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla)>0){
 			$fila=$objDB->sf($tabla);
@@ -147,6 +147,7 @@ $xajax->register(XAJAX_FUNCTION,'unad11_TraerXid');
 $xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
 $xajax->register(XAJAX_FUNCTION,'sesion_mantenerV4');
 $xajax->register(XAJAX_FUNCTION,'f1904_HtmlTabla');
+$xajax->register(XAJAX_FUNCTION,'f1904_CambiarEstado');
 $xajax->processRequest();
 if ($bPeticionXAJAX){
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -164,36 +165,15 @@ if (isset($_REQUEST['paginaf1904'])==0){$_REQUEST['paginaf1904']=1;}
 if (isset($_REQUEST['lppf1904'])==0){$_REQUEST['lppf1904']=20;}
 if (isset($_REQUEST['boculta1904'])==0){$_REQUEST['boculta1904']=0;}
 // -- Inicializar variables de datos.
-if (isset($_REQUEST['even04idevento'])==0){$_REQUEST['even04idevento']='';}
-if (isset($_REQUEST['even04idparticipante'])==0){$_REQUEST['even04idparticipante']=0;}// {$_SESSION['unad_id_tercero'];}
-if (isset($_REQUEST['even04idparticipante_td'])==0){$_REQUEST['even04idparticipante_td']=$APP->tipo_doc;}
-if (isset($_REQUEST['even04idparticipante_doc'])==0){$_REQUEST['even04idparticipante_doc']='';}
-if (isset($_REQUEST['even04id'])==0){$_REQUEST['even04id']='';}
-if (isset($_REQUEST['even04institucion'])==0){$_REQUEST['even04institucion']='';}
-if (isset($_REQUEST['even04cargo'])==0){$_REQUEST['even04cargo']='';}
-if (isset($_REQUEST['even04correo'])==0){$_REQUEST['even04correo']='';}
-if (isset($_REQUEST['even04telefono'])==0){$_REQUEST['even04telefono']='';}
-if (isset($_REQUEST['even04estadoasistencia'])==0){$_REQUEST['even04estadoasistencia']='';}
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=',';}
 if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
 //if (isset($_REQUEST['blistar'])==0){$_REQUEST['blistar']='';}
-if (isset($_REQUEST['even04idparticipante_rs'])==0){$_REQUEST['even04idparticipante_rs']='';}
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
 //DATOS PARA COMPLETAR EL FORMULARIO
 //Crear los controles que requieran llamado a base de datos
 $objCombos=new clsHtmlCombos();
 $objTercero=new clsHtmlTercero();
-list($even04idparticipante_rs, $_REQUEST['even04idparticipante'], $_REQUEST['even04idparticipante_td'], $_REQUEST['even04idparticipante_doc'])=html_tercero($_REQUEST['even04idparticipante_td'], $_REQUEST['even04idparticipante_doc'], $_REQUEST['even04idparticipante'], 0, $objDB);
-$objCombos->nuevo('even04estadoasistencia', $_REQUEST['even04estadoasistencia'], true, '{'.$ETI['msg_seleccione'].'}');
-$sSQL='SELECT even13id AS id, even13nombre AS nombre FROM even13estadoasistencia ORDER BY even13nombre';
-$html_even04estadoasistencia=$objCombos->html($sSQL, $objDB);
-if ((int)$_REQUEST['paso']==0){
-	$html_even04idevento=f1904_HTMLComboV2_even04idevento($objDB, $objCombos, $_REQUEST['even04idevento']);
-	}else{
-	list($even04idevento_nombre, $sErrorDet)=tabla_campoxid('even02evento','even02nombre','even02id',$_REQUEST['even04idevento'],'{'.$ETI['msg_sindato'].'}', $objDB);
-	$html_even04idevento=html_oculto('even04idevento', $_REQUEST['even04idevento'], $even04idevento_nombre);
-	}
 //Alistar datos adicionales
 $id_rpt=0;
 //$id_rpt=reportes_id(_Identificador_Tipo_Reporte_, $objDB);
@@ -228,24 +208,23 @@ $aParametros[0]='';//$_REQUEST['p1_1904'];
 $aParametros[101]=$_REQUEST['paginaf1904'];
 $aParametros[102]=$_REQUEST['lppf1904'];
 if($sError=='') {
-    $aParam[0]=$_REQUEST['deb_doc'];
-    $aParam[1]='';
-    $respuesta=f1902_Cargar_Participante($aParam);
-    $_REQUEST['even04idparticipante'] = $respuesta[0];
-    $_REQUEST['even04idparticipante_td'] = $respuesta[1];
-    $_REQUEST['even04idparticipante_doc'] = $respuesta[2];
-    $_REQUEST['even04idparticipante_rs'] = $respuesta[3];
-    $_REQUEST['even04institucion'] = $respuesta[4];
-    $_REQUEST['even04cargo'] = $respuesta[5];
-    $_REQUEST['even04correo'] = $respuesta[6];
-    $_REQUEST['even04telefono'] = $respuesta[7];
-    $aParametros[103] = $_REQUEST['even04idparticipante'];
-    list($sTabla1904, $sDebugTabla)=f1904_TablaDetalleV2($aParametros, $objDB, $bDebug);
+    $aParametros[103] = $idTercero;
+    $aParametros[104] = 'futuro';
+    list($sTabla1904Futuros, $sDebugTabla)=f1904_TablaDetalleV2($aParametros, $objDB, $bDebug);
+    $sDebug=$sDebug.$sDebugTabla;
+    $aParametros[104] = 'presente';
+    list($sTabla1904Presentes, $sDebugTabla)=f1904_TablaDetalleV2($aParametros, $objDB, $bDebug);
+    $sDebug=$sDebug.$sDebugTabla;
+    $aParametros[104] = 'pasado';
+    list($sTabla1904Pasados, $sDebugTabla)=f1904_TablaDetalleV2($aParametros, $objDB, $bDebug);
+    $sDebug=$sDebug.$sDebugTabla;
+    $aParametros[104] = 'bfuturo';
+    list($sTabla1904BFuturos, $sDebugTabla)=f1904_TablaDetalleV2($aParametros, $objDB, $bDebug);
     $sDebug=$sDebug.$sDebugTabla;
     } else {
     $aParametros[103] = '';
+    $aParametros[104] = '';
     }
-//$aParametros[104]=$_REQUEST['blistar'];
 list($et_menu, $sDebugM)=html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebug, $idTercero);
 $sDebug=$sDebug.$sDebugM;
 $objDB->CerrarConexion();
@@ -466,6 +445,13 @@ function cierraDiv96(ref){
 	retornacontrol();
 	}
 // -->
+function cambiaEstadoEventoId(llave1, llave2){
+    var params=new Array();
+    params[0]=2;
+    params[103]=llave1;
+    params[106]=llave2;
+    xajax_f1904_CambiarEstado(params);
+    }
 </script>
 <form id="frmimpp" name="frmimpp" method="post" action="p1904.php" target="_blank">
 <input id="r" name="r" type="hidden" value="1904" />
@@ -545,224 +531,66 @@ if ($bconexpande){
 </div>
 <div id="div_p1904" style="display:<?php if ($_REQUEST['boculta1904']==0){echo 'block'; }else{echo 'none';} ?>;">
 <?php
-}
+	}
 //Mostrar formulario para editar
 ?>
+<div class="salto1px"></div>
+<div class="GrupoCampos">
 <?php
-if ($sError==''){
-?>
-<label class="Label90">
-<?php
-echo 'Documento';
-?>
-</label>
-<label class="Label90">
-<?php
-echo html_oculto('even04idparticipante_td', $_REQUEST['even04idparticipante_td']);
-?>
-</label>
-<label class="Label220">
-<?php
-echo html_oculto('even04idparticipante_doc', $_REQUEST['even04idparticipante_doc']);
-?>
-</label>
-<label class="Label90">
-<?php
-echo 'Nombre';
-?>
-</label>
-<label class="Label350">
-<?php
-echo html_oculto('even04idparticipante_rs', $_REQUEST['even04idparticipante_rs']);
-?>
-</label>
-<label class="L">
-<?php
-echo $ETI['even04institucion'];
+echo '<label class="TituloGrupo">'.$ETI['bloque_mis_eventos_futuros'].'</label>';
 ?>
 <div class="salto1px"></div>
-<?php
-echo html_oculto('even04institucion', $_REQUEST['even04institucion']);
-?>
-</label>
-<label class="L">
-<?php
-echo $ETI['even04cargo'];
-?>
-<div class="salto1px"></div>
-<?php
-echo html_oculto('even04cargo', $_REQUEST['even04cargo']);
-?>
-</label>
-<label class="L">
-<?php
-echo $ETI['even04correo'];
-?>
-<div class="salto1px"></div>
-<?php
-echo html_oculto('even04correo', $_REQUEST['even04correo']);
-?>
-</label>
-<label class="L">
-<?php
-echo $ETI['even04telefono'];
-?>
-<div class="salto1px"></div>
-<?php
-echo html_oculto('even04telefono', $_REQUEST['even04telefono']);
-?>
-</label>
-<?php
-}
-?>
-
-<?php
-if (false){
-//Ejemplo de boton de ayuda
-//echo html_BotonAyuda('NombreCampo');
-//echo html_DivAyudaLocal('NombreCampo');
-}
-if ($bconexpande){
-//Este es el cierre del div_p1904
-?>
-<div class="salto1px"></div>
-</div>
-<?php
-}
-//Mostrar el contenido de la tabla
-?>
-<?php
-if (false){
-?>
-<div class="ir_derecha">
-<label class="Label90">
-<?php
-echo $ETI['msg_bnombre'];
-?>
-</label>
-<label>
-<input id="bnombre" name="bnombre" type="text" value="<?php echo $_REQUEST['bnombre']; ?>" onchange="paginarf1904()" autocomplete="off"/>
-</label>
-<label class="Label90">
-<?php
-echo $ETI['msg_blistar'];
-?>
-</label>
-<label class="Label130">
-<?php
-echo $html_blistar;
-?>
-</label>
-</div>
-<div class="salto1px"></div>
-<?php
-}
-?>
 <?php
 echo ' '.$csv_separa;
 // aqui ojo
 ?>
 
-<div id="div_f1904detalle">
+<div id="div_f1904detalle_futuro">
 <?php
-//echo $sTabla1904;
+if(isset($sTabla1904Futuros)) {
+    echo $sTabla1904Futuros;
+    }
 ?>
 </div>
-</div><!-- /div_areatrabajo -->
-</div><!-- /DIV_areaform -->
-<div class="areaform">
-<div class="areatitulo">
-<?php
-echo '<h3>'.$ETI['bloque_mis_eventos'].'</h3>';
-?>
 </div>
-<div class="areatrabajo">
+<div class="salto5px"></div>
+<div class="GrupoCampos">
 <?php
-//Div para ocultar
-$bconexpande=true;
-if ($bconexpande){
+echo '<label class="TituloGrupo">'.$ETI['bloque_mis_eventos_actuales'].'</label>';
 ?>
-<div class="ir_derecha" style="width:62px;">
-<input id="boculta1904" name="boculta1904" type="hidden" value="<?php echo $_REQUEST['boculta1904']; ?>" />
-<label class="Label30">
-<input id="btexpande1904" name="btexpande1904" type="button" value="Mostrar" class="btMiniExpandir" onclick="expandepanel(1904,'block',0);" title="<?php echo $ETI['bt_mostrar']; ?>" style="display:<?php if ($_REQUEST['boculta1904']==0){echo 'none'; }else{echo 'block';} ?>;"/>
-</label>
-<label class="Label30">
-<input id="btrecoge1904" name="btrecoge1904" type="button" value="Ocultar" class="btMiniRecoger" onclick="expandepanel(1904,'none',1);" title="<?php echo $ETI['bt_ocultar']; ?>" style="display:<?php if ($_REQUEST['boculta1904']==0){echo 'block'; }else{echo 'none';} ?>;"/>
-</label>
-</div>
-<div id="div_p1904" style="display:<?php if ($_REQUEST['boculta1904']==0){echo 'block'; }else{echo 'none';} ?>;">
-<?php
-	}
-//Mostrar formulario para editar
-?>
-<label class="Label130">
-<?php
-echo $ETI['even04idevento'];
-?>
-</label>
-<label>
-<?php
-echo $html_even04idevento;
-?>
-</label>
 <div class="salto1px"></div>
 <?php
-if (false){
-?>
-<label class="Label60">
-<?php
-echo $ETI['even04id'];
-?>
-</label>
-<label class="Label60">
-<?php
-	echo html_oculto('even04id', $_REQUEST['even04id']);
-?>
-</label>
-<label class="L">
-<?php
-echo $ETI['even04institucion'];
+echo ' '.$csv_separa;
+// aqui ojo
 ?>
 
-<input id="even04institucion" name="even04institucion" type="text" value="<?php echo $_REQUEST['even04institucion']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even04institucion']; ?>"/>
-</label>
-<label class="L">
+<div id="div_f1904detalle_presente">
 <?php
-echo $ETI['even04cargo'];
+if(isset($sTabla1904Presentes)) {
+    echo $sTabla1904Presentes;
+    }
+?>
+</div>
+</div>
+<div class="salto5px"></div>
+<div class="GrupoCampos">
+<?php
+echo '<label class="TituloGrupo">'.$ETI['bloque_mis_eventos_pasados'].'</label>';
+?>
+<div class="salto1px"></div>
+<?php
+echo ' '.$csv_separa;
+// aqui ojo
 ?>
 
-<input id="even04cargo" name="even04cargo" type="text" value="<?php echo $_REQUEST['even04cargo']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even04cargo']; ?>"/>
-</label>
-<label class="L">
+<div id="div_f1904detalle_pasado">
 <?php
-echo $ETI['even04correo'];
+if(isset($sTabla1904Pasados)) {
+    echo $sTabla1904Pasados;
+    }
 ?>
-
-<input id="even04correo" name="even04correo" type="text" value="<?php echo $_REQUEST['even04correo']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even04correo']; ?>"/>
-</label>
-<label class="L">
-<?php
-echo $ETI['even04telefono'];
-?>
-
-<input id="even04telefono" name="even04telefono" type="text" value="<?php echo $_REQUEST['even04telefono']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even04telefono']; ?>"/>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['even04estadoasistencia'];
-?>
-</label>
-<label>
-<?php
-echo $html_even04estadoasistencia;
-?>
-</label>
-
-<?php
-}
-?>
-
+</div>
+</div>
 <?php
 if (false){
 	//Ejemplo de boton de ayuda
@@ -778,53 +606,9 @@ if ($bconexpande){
 	}
 //Mostrar el contenido de la tabla
 ?>
-<?php
-if (false){
-?>
-<div class="ir_derecha">
-<label class="Label90">
-<?php
-echo $ETI['msg_bnombre'];
-?>
-</label>
-<label>
-<input id="bnombre" name="bnombre" type="text" value="<?php echo $_REQUEST['bnombre']; ?>" onchange="paginarf1904()" autocomplete="off"/>
-</label>
-<label class="Label90">
-<?php
-echo $ETI['msg_blistar'];
-?>
-</label>
-<label class="Label130">
-<?php
-echo $html_blistar;
-?>
-</label>
-</div>
-<div class="salto1px"></div>
-<?php
-	}
-?>
-<?php
-echo ' '.$csv_separa;
-// aqui ojo
-?>
-
-<div id="div_f1904detalle">
-<?php
-if(isset($sTabla1904)) {
-    echo $sTabla1904;
-    }
-?>
-</div>
 </div><!-- /div_areatrabajo -->
 </div><!-- /DIV_areaform -->
 <div class="areaform">
-<div class="areatitulo">
-<?php
-echo '<h3>'.$ETI['bloque_eventos_futuros'].'</h3>';
-?>
-</div>
 <div class="areatrabajo">
 <?php
 //Div para ocultar
@@ -845,73 +629,25 @@ if ($bconexpande){
 }
 //Mostrar formulario para editar
 ?>
-<label class="Label130">
+<div class="salto1px"></div>
+<div class="GrupoCampos">
 <?php
-echo $ETI['even04idevento'];
+echo '<label class="TituloGrupo">'.$ETI['bloque_eventos_futuros'].'</label>';
 ?>
-</label>
-<label>
-<?php
-echo $html_even04idevento;
-?>
-</label>
 <div class="salto1px"></div>
 <?php
-if (false){
-?>
-<label class="Label60">
-<?php
-echo $ETI['even04id'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo html_oculto('even04id', $_REQUEST['even04id']);
-?>
-</label>
-<label class="L">
-<?php
-echo $ETI['even04institucion'];
+echo ' '.$csv_separa;
+// aqui ojo
 ?>
 
-<input id="even04institucion" name="even04institucion" type="text" value="<?php echo $_REQUEST['even04institucion']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even04institucion']; ?>"/>
-</label>
-<label class="L">
+<div id="div_f1904detalle_bfuturo">
 <?php
-echo $ETI['even04cargo'];
+if(isset($sTabla1904BFuturos)) {
+    echo $sTabla1904BFuturos;
+    }
 ?>
-
-<input id="even04cargo" name="even04cargo" type="text" value="<?php echo $_REQUEST['even04cargo']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even04cargo']; ?>"/>
-</label>
-<label class="L">
-<?php
-echo $ETI['even04correo'];
-?>
-
-<input id="even04correo" name="even04correo" type="text" value="<?php echo $_REQUEST['even04correo']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even04correo']; ?>"/>
-</label>
-<label class="L">
-<?php
-echo $ETI['even04telefono'];
-?>
-
-<input id="even04telefono" name="even04telefono" type="text" value="<?php echo $_REQUEST['even04telefono']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even04telefono']; ?>"/>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['even04estadoasistencia'];
-?>
-</label>
-<label>
-<?php
-echo $html_even04estadoasistencia;
-?>
-</label>
-
-<?php
-}
-?>
-
+</div>
+</div>
 <?php
 if (false){
 //Ejemplo de boton de ayuda
@@ -927,43 +663,6 @@ if ($bconexpande){
 }
 //Mostrar el contenido de la tabla
 ?>
-<?php
-if (false){
-?>
-<div class="ir_derecha">
-<label class="Label90">
-<?php
-echo $ETI['msg_bnombre'];
-?>
-</label>
-<label>
-<input id="bnombre" name="bnombre" type="text" value="<?php echo $_REQUEST['bnombre']; ?>" onchange="paginarf1904()" autocomplete="off"/>
-</label>
-<label class="Label90">
-<?php
-echo $ETI['msg_blistar'];
-?>
-</label>
-<label class="Label130">
-<?php
-echo $html_blistar;
-?>
-</label>
-</div>
-<div class="salto1px"></div>
-<?php
-}
-?>
-<?php
-echo ' '.$csv_separa;
-// aqui ojo
-?>
-
-<div id="div_f1904detalle">
-<?php
-//echo $sTabla1904;
-?>
-</div>
 </div><!-- /div_areatrabajo -->
 </div><!-- /DIV_areaform -->
 </div><!-- /DIV_Sector1 -->

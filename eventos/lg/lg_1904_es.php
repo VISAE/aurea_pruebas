@@ -22,7 +22,14 @@ $ETI['even04telefono']='Telefono';
 $ETI['even04estadoasistencia']='Estado asistencia';
 $ETI['msg_infoplanoparticipante']='Para subir participantes masivamente ingrese los numeros de documento de los usuarios en la primer columna de un archivo MsExcel, seleccione el estado de asistencia que desea asignar y luego haga clic en el boton subir.';
 $ETI['bloque_mis_eventos']='Mis Eventos';
-$ETI['bloque_eventos_futuros']='Eventos Futuros';
+$ETI['bloque_mis_eventos_futuros']='Eventos a los que asistir&eacute;';
+$ETI['bloque_mis_eventos_actuales']='Eventos para el d&iacute;a de hoy';
+$ETI['bloque_mis_eventos_pasados']='Eventos en los que particip&eacute;';
+$ETI['bloque_eventos_futuros']='Eventos a los que puedo asistir';
+$ETI['lnk_futuro']='No Asistir&eacute;';
+$ETI['lnk_presente']='Confirmar';
+$ETI['lnk_pasado']='Certificado';
+$ETI['lnk_bfuturo']='Inscribirme';
 
 $ERR['even04idevento']='Necesita el dato '.$ETI['even04idevento'];
 $ERR['even04idparticipante']='Necesita el dato '.$ETI['even04idparticipante'];
