@@ -685,8 +685,6 @@ function f1902_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	$DATA['even02idcead']=numeros_validar($DATA['even02idcead']);
 	$DATA['even02peraca']=numeros_validar($DATA['even02peraca']);
 	$DATA['even02lugar']=htmlspecialchars(trim($DATA['even02lugar']));
-    $DATA['even02url']=htmlspecialchars(trim($DATA['even02url']));
-    $DATA['even02modalidad']=htmlspecialchars(trim($DATA['even02modalidad']));
 	$DATA['even02inihora']=numeros_validar($DATA['even02inihora']);
 	$DATA['even02iniminuto']=numeros_validar($DATA['even02iniminuto']);
 	$DATA['even02finhora']=numeros_validar($DATA['even02finhora']);
@@ -740,8 +738,6 @@ function f1902_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$sError=$ERR['even02inifecha'].$sSepara.$sError;
 			}
 		if ($DATA['even02lugar']==''){$sError=$ERR['even02lugar'].$sSepara.$sError;}
-        //if ($DATA['even02url']==''){$sError=$ERR['even02url'].$sSepara.$sError;}
-        if ($DATA['even02modalidad']==''){$sError=$ERR['even02modalidad'].$sSepara.$sError;}
 		if ($DATA['even02peraca']==''){$sError=$ERR['even02peraca'].$sSepara.$sError;}
 		if ($DATA['even02idcead']==''){$sError=$ERR['even02idcead'].$sSepara.$sError;}
 		if ($DATA['even02idzona']==''){$sError=$ERR['even02idzona'].$sSepara.$sError;}
@@ -821,10 +817,10 @@ function f1902_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$DATA['even02estado']=0;
 			$sCampos1902='even02consec, even02id, even02tipo, even02categoria, even02estado, even02publicado, even02nombre, even02idzona, even02idcead, even02peraca, 
 even02lugar, even02inifecha, even02inihora, even02iniminuto, even02finfecha, even02finhora, even02finminuto, even02idorganizador, even02contacto, even02insfechaini, 
-even02insfechafin, even02idcertificado, even02idrubrica, even02detalle, even02formainscripcion, even02url, even02modalidad';
+even02insfechafin, even02idcertificado, even02idrubrica, even02detalle, even02formainscripcion';
 			$sValores1902=''.$DATA['even02consec'].', '.$DATA['even02id'].', '.$DATA['even02tipo'].', '.$DATA['even02categoria'].', '.$DATA['even02estado'].', "'.$DATA['even02publicado'].'", "'.$DATA['even02nombre'].'", '.$DATA['even02idzona'].', '.$DATA['even02idcead'].', '.$DATA['even02peraca'].', 
 "'.$DATA['even02lugar'].'", "'.$DATA['even02inifecha'].'", '.$DATA['even02inihora'].', '.$DATA['even02iniminuto'].', "'.$DATA['even02finfecha'].'", '.$DATA['even02finhora'].', '.$DATA['even02finminuto'].', '.$DATA['even02idorganizador'].', "'.$DATA['even02contacto'].'", "'.$DATA['even02insfechaini'].'", 
-"'.$DATA['even02insfechafin'].'", '.$DATA['even02idcertificado'].', '.$DATA['even02idrubrica'].', "'.$even02detalle.'", '.$DATA['even02formainscripcion'].', "'.$DATA['even02url'].'", '.$DATA['even02formainscripcion'].'';
+"'.$DATA['even02insfechafin'].'", '.$DATA['even02idcertificado'].', '.$DATA['even02idrubrica'].', "'.$even02detalle.'", '.$DATA['even02formainscripcion'].'';
 			if ($APP->utf8==1){
 				$sSQL='INSERT INTO even02evento ('.$sCampos1902.') VALUES ('.utf8_encode($sValores1902).');';
 				$sdetalle=$sCampos1902.'['.utf8_encode($sValores1902).']';
@@ -857,8 +853,6 @@ even02insfechafin, even02idcertificado, even02idrubrica, even02detalle, even02fo
 			$scampo[20]='even02detalle';
 			$scampo[21]='even02formainscripcion';
 			$scampo[22]='even02estado';
-            $scampo[23]='even02url';
-            $scampo[24]='even02modalidad';
 			$sdato[1]=$DATA['even02categoria'];
 			$sdato[2]=$DATA['even02publicado'];
 			$sdato[3]=$DATA['even02nombre'];
@@ -881,9 +875,7 @@ even02insfechafin, even02idcertificado, even02idrubrica, even02detalle, even02fo
 			$sdato[20]=$even02detalle;
 			$sdato[21]=$DATA['even02formainscripcion'];
 			$sdato[22]=$DATA['even02estado'];
-            $sdato[23]=$DATA['even02url'];
-            $sdato[24]=$DATA['even02modalidad'];
-			$numcmod=24;
+			$numcmod=22;
 			$sWhere='even02id='.$DATA['even02id'].'';
 			$sSQL='SELECT * FROM even02evento WHERE '.$sWhere;
 			$sdatos='';

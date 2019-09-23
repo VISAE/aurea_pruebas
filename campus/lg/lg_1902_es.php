@@ -43,8 +43,6 @@ $ETI['even02detalle']='Detalle';
 $ETI['even02fecha']='Duraci&oacute;n';
 $ETI['even02inscripcion']='Inscripci&oacute;n';
 $ETI['even02formainscripcion']='Forma de inscripci&oacute;n';
-$ETI['even02url']='URL';
-$ETI['even02modalidad']='Modalidad';
 
 $ERR['even02consec']='Necesita el dato '.$ETI['even02consec'];
 $ERR['even02id']='Necesita el dato '.$ETI['even02id'];
@@ -71,7 +69,6 @@ $ERR['even02idcertificado']='Necesita el dato '.$ETI['even02idcertificado'];
 $ERR['even02idrubrica']='Necesita el dato '.$ETI['even02idrubrica'];
 $ERR['even02detalle']='Necesita el dato '.$ETI['even02detalle'];
 $ERR['even02formainscripcion']='Necesita el dato '.$ETI['even02formainscripcion'];
-$ERR['even02modalidad']='Necesita el dato '.$ETI['even02modalidad'];
 $aeven02formainscripcion=array('', '');
 $ieven02formainscripcion=0;
 ?>

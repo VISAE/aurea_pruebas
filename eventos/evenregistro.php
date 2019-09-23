@@ -224,6 +224,7 @@ if (isset($_REQUEST['even02idzona'])==0){$_REQUEST['even02idzona']='';}
 if (isset($_REQUEST['even02idcead'])==0){$_REQUEST['even02idcead']='';}
 if (isset($_REQUEST['even02peraca'])==0){$_REQUEST['even02peraca']='';}
 if (isset($_REQUEST['even02lugar'])==0){$_REQUEST['even02lugar']='';}
+if (isset($_REQUEST['even02url'])==0){$_REQUEST['even02url']='';}
 if (isset($_REQUEST['even02inifecha'])==0){$_REQUEST['even02inifecha']='';}//{fecha_hoy();}
 if (isset($_REQUEST['even02inihora'])==0){$_REQUEST['even02inihora']=fecha_hora();}
 if (isset($_REQUEST['even02iniminuto'])==0){$_REQUEST['even02iniminuto']=fecha_minuto();}
@@ -244,6 +245,7 @@ if (isset($_REQUEST['even02idrubrica_cod'])==0){$_REQUEST['even02idrubrica_cod']
 $even02idrubrica_nombre='';
 if (isset($_REQUEST['even02detalle'])==0){$_REQUEST['even02detalle']='';}
 if (isset($_REQUEST['even02formainscripcion'])==0){$_REQUEST['even02formainscripcion']='';}
+if (isset($_REQUEST['even02modalidad'])==0){$_REQUEST['even02modalidad']='';}
 if ((int)$_REQUEST['paso']>0){
 	//Cursos
 	if (isset($_REQUEST['even03idcurso'])==0){$_REQUEST['even03idcurso']='';}
@@ -312,6 +314,7 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 		$_REQUEST['even02idcead']=$fila['even02idcead'];
 		$_REQUEST['even02peraca']=$fila['even02peraca'];
 		$_REQUEST['even02lugar']=$fila['even02lugar'];
+        $_REQUEST['even02url']=$fila['even02url'];
 		$_REQUEST['even02inifecha']=$fila['even02inifecha'];
 		$_REQUEST['even02inihora']=$fila['even02inihora'];
 		$_REQUEST['even02iniminuto']=$fila['even02iniminuto'];
@@ -326,6 +329,7 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 		$_REQUEST['even02idrubrica']=$fila['even02idrubrica'];
 		$_REQUEST['even02detalle']=$fila['even02detalle'];
 		$_REQUEST['even02formainscripcion']=$fila['even02formainscripcion'];
+        $_REQUEST['even02modalidad']=$fila['even02modalidad'];
 		$sSQL='SELECT even06consec, even06titulo FROM even06certificados WHERE even06id='.$_REQUEST['even02idcertificado'];
 		$tabladet=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabladet)>0){
@@ -415,6 +419,7 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['even02idcead']='';
 	$_REQUEST['even02peraca']='';
 	$_REQUEST['even02lugar']='';
+    $_REQUEST['even02url']='';
 	$_REQUEST['even02inifecha']='';//fecha_hoy();
 	$_REQUEST['even02inihora']=fecha_hora();
 	$_REQUEST['even02iniminuto']=fecha_minuto();
@@ -433,6 +438,7 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['even02idrubrica_cod']='';
 	$_REQUEST['even02detalle']='';
 	$_REQUEST['even02formainscripcion']='';
+    $_REQUEST['even02modalidad']='';
 	$_REQUEST['paso']=0;
 	}
 if ($bLimpiaHijos){
@@ -571,6 +577,11 @@ $html_even02estado= $objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('even02publicado', $_REQUEST['even02publicado'], false);
 $objCombos->sino();
 $html_even02publicado=$objCombos->html('', $objDB);
+$objCombos->nuevo('even02modalidad', $_REQUEST['even02modalidad'], false);
+$objCombos->addItem(0,'Presencial');
+$objCombos->addItem(1,'Virtual');
+$objCombos->addItem(2,'Presencial y Virtual');
+$html_even02modalidad=$objCombos->html('', $objDB);
 $objCombos->nuevo('even02idzona', $_REQUEST['even02idzona'], true, '{'.$ETI['msg_seleccione'].'}');
 /*$sSQL='SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona ORDER BY unad23nombre';
 $html_even02idzona=$objCombos->html($sSQL, $objDB);*/
@@ -1313,6 +1324,12 @@ echo $ETI['even02lugar'];
 </label>
 <label class="L">
 <?php
+echo $ETI['even02url'];
+?>
+<input id="even02url" name="even02url" type="text" value="<?php echo $_REQUEST['even02url']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even02url']; ?>"/>
+</label>
+<label class="L">
+<?php
 echo $ETI['even02contacto'];
 ?>
 <input id="even02contacto" name="even02contacto" type="text" value="<?php echo $_REQUEST['even02contacto']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even02contacto']; ?>"/>
@@ -1395,6 +1412,17 @@ echo $ETI['even02formainscripcion'];
 <label class="Label30">
 <?php
 echo $html_even02formainscripcion;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label200">
+<?php
+echo $ETI['even02modalidad'];
+?>
+</label>
+<label class="Label30">
+<?php
+echo $html_even02modalidad;
 ?>
 </label>
 <div class="salto1px"></div>

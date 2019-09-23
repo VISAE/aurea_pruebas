@@ -38,7 +38,6 @@ $ETI['even02insfechafin']='Insfechafin';
 $ETI['even02idcertificado']='Certificado';
 $ETI['even02idrubrica']='Rubrica';
 $ETI['even02detalle']='Detalle';
-$ETI['even02url']='URL';
 
 $ERR['even02consec']='Is necessary the data '.$ETI['even02consec'];
 $ERR['even02id']='Is necessary the data '.$ETI['even02id'];
