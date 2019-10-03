@@ -186,6 +186,7 @@ $xajax->register(XAJAX_FUNCTION,'f1905_PintarLlaves');
 $xajax->register(XAJAX_FUNCTION,'f1903_Comboeven02idzona');
 $xajax->register(XAJAX_FUNCTION,'f1903_Comboeven02idcead');
 $xajax->register(XAJAX_FUNCTION,'f1902_Buscar_Participante');
+$xajax->register(XAJAX_FUNCTION,'f1902_Combobcead');
 $xajax->processRequest();
 if ($bPeticionXAJAX){
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -224,6 +225,8 @@ if (isset($_REQUEST['even02idzona'])==0){$_REQUEST['even02idzona']='';}
 if (isset($_REQUEST['even02idcead'])==0){$_REQUEST['even02idcead']='';}
 if (isset($_REQUEST['even02peraca'])==0){$_REQUEST['even02peraca']='';}
 if (isset($_REQUEST['even02lugar'])==0){$_REQUEST['even02lugar']='';}
+if (isset($_REQUEST['even02url'])==0){$_REQUEST['even02url']='';}
+if (isset($_REQUEST['even02urlinfo'])==0){$_REQUEST['even02urlinfo']='';}
 if (isset($_REQUEST['even02inifecha'])==0){$_REQUEST['even02inifecha']='';}//{fecha_hoy();}
 if (isset($_REQUEST['even02inihora'])==0){$_REQUEST['even02inihora']=fecha_hora();}
 if (isset($_REQUEST['even02iniminuto'])==0){$_REQUEST['even02iniminuto']=fecha_minuto();}
@@ -244,6 +247,7 @@ if (isset($_REQUEST['even02idrubrica_cod'])==0){$_REQUEST['even02idrubrica_cod']
 $even02idrubrica_nombre='';
 if (isset($_REQUEST['even02detalle'])==0){$_REQUEST['even02detalle']='';}
 if (isset($_REQUEST['even02formainscripcion'])==0){$_REQUEST['even02formainscripcion']='';}
+if (isset($_REQUEST['even02modalidad'])==0){$_REQUEST['even02modalidad']='';}
 if ((int)$_REQUEST['paso']>0){
 	//Cursos
 	if (isset($_REQUEST['even03idcurso'])==0){$_REQUEST['even03idcurso']='';}
@@ -286,6 +290,14 @@ if ((int)$_REQUEST['paso']>0){
 	if (isset($_REQUEST['bnombre1905'])==0){$_REQUEST['bnombre1905']='';}
 	//if (isset($_REQUEST['blistar1905'])==0){$_REQUEST['blistar1905']='';}
 	}
+if (isset($_REQUEST['bzona'])==0){$_REQUEST['bzona']='';}
+if (isset($_REQUEST['bcead'])==0){$_REQUEST['bcead']='';}
+if (isset($_REQUEST['bdesde'])==0){$_REQUEST['bdesde']='0';}
+if (isset($_REQUEST['bhasta'])==0){$_REQUEST['bhasta']='0';}
+if (isset($_REQUEST['bperiodo'])==0){$_REQUEST['bperiodo']='';}
+
+
+
 //Si Modifica o Elimina Cargar los campos
 if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 	$_REQUEST['even02idorganizador_td']=$APP->tipo_doc;
@@ -312,6 +324,8 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 		$_REQUEST['even02idcead']=$fila['even02idcead'];
 		$_REQUEST['even02peraca']=$fila['even02peraca'];
 		$_REQUEST['even02lugar']=$fila['even02lugar'];
+        $_REQUEST['even02url']=$fila['even02url'];
+		$_REQUEST['even02urlinfo']=$fila['even02urlinfo'];
 		$_REQUEST['even02inifecha']=$fila['even02inifecha'];
 		$_REQUEST['even02inihora']=$fila['even02inihora'];
 		$_REQUEST['even02iniminuto']=$fila['even02iniminuto'];
@@ -326,6 +340,7 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 		$_REQUEST['even02idrubrica']=$fila['even02idrubrica'];
 		$_REQUEST['even02detalle']=$fila['even02detalle'];
 		$_REQUEST['even02formainscripcion']=$fila['even02formainscripcion'];
+        $_REQUEST['even02modalidad']=$fila['even02modalidad'];
 		$sSQL='SELECT even06consec, even06titulo FROM even06certificados WHERE even06id='.$_REQUEST['even02idcertificado'];
 		$tabladet=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabladet)>0){
@@ -415,6 +430,8 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['even02idcead']='';
 	$_REQUEST['even02peraca']='';
 	$_REQUEST['even02lugar']='';
+    $_REQUEST['even02url']='';
+	$_REQUEST['even02urlinfo']='';
 	$_REQUEST['even02inifecha']='';//fecha_hoy();
 	$_REQUEST['even02inihora']=fecha_hora();
 	$_REQUEST['even02iniminuto']=fecha_minuto();
@@ -433,6 +450,7 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['even02idrubrica_cod']='';
 	$_REQUEST['even02detalle']='';
 	$_REQUEST['even02formainscripcion']='';
+    $_REQUEST['even02modalidad']='';
 	$_REQUEST['paso']=0;
 	}
 if ($bLimpiaHijos){
@@ -525,7 +543,7 @@ if ($_REQUEST['paso']==60){
 					   	$even04id=tabla_consecutivo('even04eventoparticipante', 'even04id', '', $objDB);
 						//Busco si esta y si esta le actualizo el estado
 						//Buscar el tercero.
-					$sSQL='SELECT  even04estadoasistencia FROM even04eventoparticipante WHERE even04idparticipante="'.$respuesta[0].'" AND even04idevento='.$idEvento.'';
+					$sSQL='SELECT  even04estadoasistencia FROM even04eventoparticipante WHERE even04idparticipante='.$respuesta[0].' AND even04idevento='.$idEvento.'';
 					$tabla=$objDB->ejecutasql($sSQL);
 					if ($objDB->nf($tabla)>0){
 						//$iDatos++;
@@ -571,6 +589,11 @@ $html_even02estado= $objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('even02publicado', $_REQUEST['even02publicado'], false);
 $objCombos->sino();
 $html_even02publicado=$objCombos->html('', $objDB);
+$objCombos->nuevo('even02modalidad', $_REQUEST['even02modalidad'], false);
+$objCombos->addItem(0,'Presencial');
+$objCombos->addItem(1,'Virtual');
+$objCombos->addItem(2,'Presencial y Virtual');
+$html_even02modalidad=$objCombos->html('', $objDB);
 $objCombos->nuevo('even02idzona', $_REQUEST['even02idzona'], true, '{'.$ETI['msg_seleccione'].'}');
 /*$sSQL='SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona ORDER BY unad23nombre';
 $html_even02idzona=$objCombos->html($sSQL, $objDB);*/
@@ -603,7 +626,7 @@ if ((int)$_REQUEST['paso']==0){
 	$sDebug=$sDebug.$sDebugBusca;
 	list($even04idparticipante_rs, $_REQUEST['even04idparticipante'], $_REQUEST['even04idparticipante_td'], $_REQUEST['even04idparticipante_doc'])=html_tercero($_REQUEST['even04idparticipante_td'], $_REQUEST['even04idparticipante_doc'], $_REQUEST['even04idparticipante'], 0, $objDB);
 	$objCombos->nuevo('even04estadoasistencia', $_REQUEST['even04estadoasistencia'], true, '{'.$ETI['msg_seleccione'].'}');
-	$sSQL='SELECT even13id AS id, even13nombre AS nombre FROM even13estadoasistencia ORDER BY even13nombre';
+	$sSQL='SELECT even13id AS id, even13nombre AS nombre FROM even13estadoasistencia WHERE even13id IN (0,7,8,9) ORDER BY even13nombre';
 	$html_even04estadoasistencia=$objCombos->html($sSQL, $objDB);
 	$objCombos->nuevo('even05publicar', $_REQUEST['even05publicar'], false);
 	$objCombos->sino();
@@ -625,13 +648,26 @@ $html_blistar1904=$objCombos->comboSistema(1904, 1, $objDB, 'paginarf1904()');
 $objCombos->nuevo('blistar1905', $_REQUEST['blistar1905'], true, '{'.$ETI['msg_todos'].'}');
 $html_blistar1905=$objCombos->comboSistema(1905, 1, $objDB, 'paginarf1905()');
 */
+
+$objCombos->nuevo('bzona', $_REQUEST['bzona'], true, '{'.$ETI['msg_todas'].'}');
+$objCombos->sAccion='carga_combo_bcead()';
+$sSQL='SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona WHERE unad23conestudiantes="S" ORDER BY unad23nombre';
+$html_bzona=$objCombos->html($sSQL, $objDB);
+$html_bcead=f1902_HTMLComboV2_bcead($objDB, $objCombos, $_REQUEST['bcead'], $_REQUEST['bzona']);
+$objCombos->nuevo('bperiodo', $_REQUEST['bperiodo'], true, '{'.$ETI['msg_todos'].'}');
+$objCombos->sAccion='paginarf1902()';
+$sSQL=f146_ConsultaCombo();
+$html_bperiodo=$objCombos->html($sSQL, $objDB);
+
 //Permisos adicionales
 $seg_5=0;
 $seg_6=0;
 $seg_8=0;
 if (seg_revisa_permiso($iCodModulo, 6, $objDB)){$seg_6=1;}
 if ($seg_6==1){}
-if (false){
+
+$seg_6=1;// ojo machete!
+if (true){
 	$objCombos->nuevo('csv_separa', $_REQUEST['csv_separa'], false);
 	$objCombos->addItem(',', $ETI['msg_coma']);
 	$objCombos->addItem(';', $ETI['msg_puntoycoma']);
@@ -655,6 +691,13 @@ $aParametros[101]=$_REQUEST['paginaf1902'];
 $aParametros[102]=$_REQUEST['lppf1902'];
 //$aParametros[103]=$_REQUEST['bnombre'];
 //$aParametros[104]=$_REQUEST['blistar'];
+$aParametros[106]=$_REQUEST['bperiodo'];
+$aParametros[109]=$_REQUEST['bzona']; //109
+$aParametros[110]=$_REQUEST['bcead'];// 110
+$aParametros[111]=$_REQUEST['bdesde'];
+$aParametros[112]=$_REQUEST['bhasta'];
+
+
 list($sTabla1902, $sDebugTabla)=f1902_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sDebug=$sDebug.$sDebugTabla;
 $sTabla1903='';
@@ -824,6 +867,11 @@ function imprimelista(){
 		}
 	}
 function asignarvariables(){
+        window.document.frmimpp.bperiodoe.value=window.document.frmedita.bperiodo.value;
+		window.document.frmimpp.bzonae.value=window.document.frmedita.bzona.value;
+		window.document.frmimpp.bceade.value=window.document.frmedita.bcead.value;
+		window.document.frmimpp.bdesdee.value=window.document.frmedita.bdesde.value;
+		window.document.frmimpp.bhastae.value=window.document.frmedita.bhasta.value;
 	//window.document.frmimpp.v3.value=window.document.frmedita.bnombre.value;
 	//window.document.frmimpp.v4.value=window.document.frmedita.bcodigo.value;
 	//window.document.frmimpp.separa.value=window.document.frmedita.csv_separa.value.trim();
@@ -831,7 +879,8 @@ function asignarvariables(){
 function imprimeexcel(){
 	if (window.document.frmedita.seg_6.value==1){
 		asignarvariables();
-		window.document.frmimpp.action='e1902.php';
+		window.document.frmimpp.action='t1902.php';
+		window.document.frmimpp.separa.value=window.document.frmedita.csv_separa.value;
 		window.document.frmimpp.submit();
 		}else{
 		window.alert("<?php echo $ERR['6']; ?>");
@@ -923,6 +972,13 @@ function paginarf1902(){
 	params[99]=window.document.frmedita.debug.value;
 	params[101]=window.document.frmedita.paginaf1902.value;
 	params[102]=window.document.frmedita.lppf1902.value;
+	params[106]=window.document.frmedita.bperiodo.value;
+	params[109]=window.document.frmedita.bzona.value;
+	params[110]=window.document.frmedita.bcead.value;
+	params[111]=window.document.frmedita.bdesde.value;
+	params[112]=window.document.frmedita.bhasta.value;
+	console.log =params[111];
+	
 	//params[103]=window.document.frmedita.bnombre.value;
 	//params[104]=window.document.frmedita.blistar.value;
 	//document.getElementById('div_f1902detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf1902" name="paginaf1902" type="hidden" value="'+params[101]+'" /><input id="lppf1902" name="lppf1902" type="hidden" value="'+params[102]+'" />';
@@ -1057,6 +1113,26 @@ function masivo_cargarparticipantes(){
 	return 0;
 	}
 
+function carga_combo_bcead(){
+	var params=new Array();
+	params[0]=window.document.frmedita.bzona.value;
+	xajax_f1902_Combobcead(params);
+	}
+	
+function descargarparticipantestotal(){
+	if (window.document.frmedita.seg_6.value==1){
+		window.document.frmplantillaparticipantestotal.nombrearchivot.value='Participantes de Eventos';
+		window.document.frmplantillaparticipantestotal.bperiodot.value=window.document.frmedita.bperiodo.value;
+		window.document.frmplantillaparticipantestotal.bzonat.value=window.document.frmedita.bzona.value;
+		window.document.frmplantillaparticipantestotal.bceadt.value=window.document.frmedita.bcead.value;
+		window.document.frmplantillaparticipantestotal.bdesdet.value=window.document.frmedita.bdesde.value;
+		window.document.frmplantillaparticipantestotal.bhastat.value=window.document.frmedita.bhasta.value;
+		window.document.frmplantillaparticipantestotal.separa1904t.value=window.document.frmedita.csv_separa.value;
+		window.document.frmplantillaparticipantestotal.submit();
+		}else{
+		window.alert("<?php echo $ERR['6']; ?>");
+		}
+	}	
 /*function carga_combo_even02idcead(){
     var params=new Array();
     params[0]=window.document.frmedita.even02idcead.value;
@@ -1074,14 +1150,16 @@ if ($_REQUEST['paso']!=0){
 	}
 ?>
 <?php
-if ($_REQUEST['paso']!=0){
+if (true){
 ?>
-<form id="frmimpp" name="frmimpp" method="post" action="p1902.php" target="_blank">
+<form id="frmimpp" name="frmimpp" method="post" action="t1902.php" target="_blank">
 <input id="r" name="r" type="hidden" value="1902" />
-<input id="id1902" name="id1902" type="hidden" value="<?php echo $_REQUEST['even02id']; ?>" />
-<input id="v3" name="v3" type="hidden" value="" />
-<input id="v4" name="v4" type="hidden" value="" />
-<input id="v5" name="v5" type="hidden" value="" />
+<input id="bperiodoe" name="bperiodoe" type="hidden" value="<?php echo $_REQUEST['bperiodo']; ?>" />
+<input id="bzonae" name="bzonae" type="hidden" value="<?php echo $_REQUEST['bzona']; ?>" />
+<input id="bceade" name="bceade" type="hidden" value="<?php echo $_REQUEST['bcead']; ?>" />
+<input id="bdesdee" name="bdesdee" type="hidden" value="<?php echo $_REQUEST['bdesde']; ?>" />
+<input id="bhastae" name="bhastae" type="hidden" value="<?php echo $_REQUEST['bhasta']; ?>" />
+<input id="nombrearchivot" name="nombrearchivot" type="hidden" value="" />
 <input id="iformato94" name="iformato94" type="hidden" value="0" />
 <input id="separa" name="separa" type="hidden" value="," />
 <input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
@@ -1093,6 +1171,17 @@ if ($_REQUEST['paso']!=0){
 <form id="frmplantillaparticipantes" name="frmplantillaparticipantes" action="t1904.php" method="post" target="_blank">
 <input id="idevento" name="idevento" type="hidden" value="<?php echo $_REQUEST['even02id']; ?>" />
 <input id="separa1904" name="separa1904" type="hidden" value=";" />
+</form>
+
+<form id="frmplantillaparticipantestotal" name="frmplantillaparticipantestotal" action="t1904_Total.php" method="post" target="_blank">
+<input id="idevento" name="idevento" type="hidden" value="<?php echo $_REQUEST['even02id']; ?>" />
+<input id="bperiodot" name="bperiodot" type="hidden" value="<?php echo $_REQUEST['bperiodo']; ?>" />
+<input id="bzonat" name="bzonat" type="hidden" value="<?php echo $_REQUEST['bzona']; ?>" />
+<input id="bceadt" name="bceadt" type="hidden" value="<?php echo $_REQUEST['bcead']; ?>" />
+<input id="bdesdet" name="bdesdet" type="hidden" value="<?php echo $_REQUEST['bdesde']; ?>" />
+<input id="bhastat" name="bhastat" type="hidden" value="<?php echo $_REQUEST['bhasta']; ?>" />
+<input id="nombrearchivot" name="nombrearchivot" type="hidden" value="" />
+<input id="separa1904t" name="separa1904t" type="hidden" value=";" />
 </form>
 
 <form id="frmlista" name="frmlista" method="post" action="listados.php" target="_blank">
@@ -1122,7 +1211,8 @@ if ($_REQUEST['paso']==2){
 <?php
 	}
 $bHayImprimir=true;
-$sScript='imprimelista()';
+//$sScript='imprimelista()';
+$sScript='imprimeexcel()';
 $sClaseBoton='btEnviarExcel';
 if ($seg_6==1){$bHayImprimir=true;}
 if ($_REQUEST['paso']!=0){
@@ -1313,6 +1403,20 @@ echo $ETI['even02lugar'];
 </label>
 <label class="L">
 <?php
+echo $ETI['even02url'];
+?>
+<input id="even02url" name="even02url" type="text" value="<?php echo $_REQUEST['even02url']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even02url']; ?>"/>
+</label>
+<label class="L">
+<?php
+echo $ETI['even02urlinfo'];
+?>
+<input id="even02urlinfo" name="even02urlinfo" type="text" value="<?php echo $_REQUEST['even02urlinfo']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even02urlinfo']; ?>"/>
+</label>
+
+
+<label class="L">
+<?php
 echo $ETI['even02contacto'];
 ?>
 <input id="even02contacto" name="even02contacto" type="text" value="<?php echo $_REQUEST['even02contacto']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['even02contacto']; ?>"/>
@@ -1395,6 +1499,17 @@ echo $ETI['even02formainscripcion'];
 <label class="Label30">
 <?php
 echo $html_even02formainscripcion;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label200">
+<?php
+echo $ETI['even02modalidad'];
+?>
+</label>
+<label class="Label30">
+<?php
+echo $html_even02modalidad;
 ?>
 </label>
 <div class="salto1px"></div>
@@ -1485,7 +1600,7 @@ echo $ETI['even02detalle'];
 ?>
 <?php
 if(false){
-?>
+?><!-- </div> ERROR, este DIV estaba de más-->
 <div class="salto1px"></div>
 <div class="GrupoCampos">
 <label class="TituloGrupo">
@@ -1621,7 +1736,7 @@ echo $sTabla1903;
 // -- Termina Grupo campos 1903 Cursos
 ?>
 <?php
-};
+}
 ?>
 <?php
 // -- Inicia Grupo campos 1904 Participantes
@@ -1701,7 +1816,7 @@ echo $html_even04estadoasistencia;
 ?>
 </label>
 <label class="Label30">
-<input id="cmdDescargaParticipantes" name="cmdDescargaParticipantes" type="button" value="" class="btMiniExcel" onclick="descargarparticipantes()" title="Descargar Plantilla de Responsables" />
+<input id="cmdDescargaParticipantes" name="cmdDescargaParticipantes" type="button" value="" class="btMiniExcel" onclick="descargarparticipantes()" title="Descargar Lista de Participantes" />
 </label>
 <div class="salto1px"></div>
 <div id="div_p1791" style="display:<?php if ($_REQUEST['boculta1791']==0){echo 'block'; }else{echo 'none';} ?>;">
@@ -1803,7 +1918,7 @@ echo $html_blistar1904;
 <?php
 	}
 ?>
-<!--<div id="div_f1904detalle">-->
+<div id="div_f1904detalle">
 <?php
 echo $sTabla1904;
 ?>
@@ -1822,6 +1937,7 @@ if (false){
 <?php
 // -- Inicia Grupo campos 1905 Noticias
 ?>
+<!-- </div> -->
 
 
 <div class="salto1px"></div>
@@ -2036,9 +2152,78 @@ echo $html_blistar;
 <?php
 	}
 ?>
+
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['even02idzona'];
+?>
+</label>
+<label class="Label350">
+<?php
+echo $html_bzona;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['even02idcead'];
+?>
+</label>
+<label class="Label130">
+<div id="div_bcead">
+<?php
+echo $html_bcead;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['even02peraca'];
+?>
+</label>
+<label class="Label500">
+<?php
+echo $html_bperiodo;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['even02inifecha'];
+?>
+</label>
+<label class="Label250">
+<?php
+echo html_FechaEnNumero('bdesde', $_REQUEST['bdesde'], true, 'paginarf1902();', 1900, date('Y'));
+?>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['even02finfecha'];
+?>
+</label>
+<label class="Label250">
+<?php
+echo html_FechaEnNumero('bhasta', $_REQUEST['bhasta'], true, 'paginarf1902();', 1900, date('Y'));
+?>
+</label>
+<label class="Label30">
+<input id="cmdDescargaParticipantesTodo" name="cmdDescargaParticipantesTodo" type="button" value="" class="btMiniExcel" onclick="descargarparticipantestotal()" title="Descargar Lista de Participantes" />
+</label>
+<div class="salto1px"></div>
 <?php
 echo ' '.$csv_separa;
 ?>
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
+
+
+
+
+
 <div id="div_f1902detalle">
 <?php
 echo $sTabla1902;
