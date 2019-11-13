@@ -1,20 +1,25 @@
 <?php
 /*  
---- © Angel Mauro Avellaneda Barreto - UNAD - 2014 - 2016 ---
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2014 - 2019 ---
 --- angel.avellaneda@unad.edu.co - http://www.mauroavellaneda.com
 --- Modelo Version 0.1.0 martes, 28 de enero de 2014
 Marzo 31 se agrega cadena_utf8
+--- 31 de Octubre de 2019 - Se ajusta la funcion de fecha_esvalida
 */
+define ('TONO_AMARILLO', '');
+define ('TONO_VERDE', '');
+define ('TONO_ROJO', '');
+
 function archivo_eliminar($stabla, $scampoid, $scidorigen, $scidarchivo, $vrid, $objDB){
-	$sql='SELECT '.$scidorigen.', '.$scidarchivo.' FROM '.$stabla.' WHERE '.$scampoid.'='.$vrid;
-	$arbol=$objDB->ejecutasql($sql);
+	$sSQL='SELECT '.$scidorigen.', '.$scidarchivo.' FROM '.$stabla.' WHERE '.$scampoid.'='.$vrid;
+	$arbol=$objDB->ejecutasql($sSQL);
 	if ($arbol!=false){
 		if ($objDB->nf($arbol)>0){
 			$fila=$objDB->sf($arbol);
 			$dbo=$fila[0];
 			$idar=$fila[1];
-			$sql='UPDATE '.$stabla.' SET '.$scidorigen.'=0, '.$scidarchivo.'=0 WHERE '.$scampoid.'='.$vrid;
-			$arbol=$objDB->ejecutasql($sql);
+			$sSQL='UPDATE '.$stabla.' SET '.$scidorigen.'=0, '.$scidarchivo.'=0 WHERE '.$scampoid.'='.$vrid;
+			$arbol=$objDB->ejecutasql($sSQL);
 			if ($arbol!=false){
 				if ($dbo==0){
 					$objDBar=$objDB;
@@ -22,8 +27,8 @@ function archivo_eliminar($stabla, $scampoid, $scidorigen, $scidarchivo, $vrid, 
 					$objDBar=DBalterna_Traer($dbo, $objDB);
 					}
 				if ($objDBar!=NULL){
-					$sql='DELETE FROM unad51archivos WHERE unad51id='.$idar.';';
-					$arbol=$objDBar->ejecutasql($sql);
+					$sSQL='DELETE FROM unad51archivos WHERE unad51id='.$idar.';';
+					$arbol=$objDBar->ejecutasql($sSQL);
 					}
 				}
 			}
@@ -172,13 +177,13 @@ function cadena_notildes($origen,$butf8=false){
 		}
 	*/
 	$sT=array('á','é','í','ó','ú', 'è','ì','ò','ñ','Ñ', 
-	'Á','É','Í','Ó','Ú', '¿','¬','°','Â','Ç', 
-	'©','¡','ª','­','–', '™','ê','ã','ç','â',
-	'õ','“','”', '´', 'ü', 'Ü');
+'Á','É','Í','Ó','Ú', '¿','¬','°','Â','Ç', 
+'©','¡','ª','­','–', '™','ê','ã','ç','â',
+'õ','“','”', '´', 'ü', 'Ü');
 	$sH=array('&aacute;','&eacute;','&iacute;','&oacute;','&uacute;', '&egrave;','&igrave;','&ograve;','&ntilde;','&Ntilde;', 
-	'&Aacute;','&Eacute;','&Iacute;','&Oacute;','&Uacute;', '&iquest;','&not;','&deg;','&Acirc;','&Ccedil;', 
-	'&copy;','&iexcl;','&ordf;','&shy;','&ndash;', '&trade;','&ecirc;','&atilde;','&ccedil;','&acirc;',
-	'&otilde;','&ldquo;','&rdquo;','&acute;', '&uuml;', '&Uuml;');
+'&Aacute;','&Eacute;','&Iacute;','&Oacute;','&Uacute;', '&iquest;','&not;','&deg;','&Acirc;','&Ccedil;', 
+'&copy;','&iexcl;','&ordf;','&shy;','&ndash;', '&trade;','&ecirc;','&atilde;','&ccedil;','&acirc;',
+'&otilde;','&ldquo;','&rdquo;','&acute;', '&uuml;', '&Uuml;');
 	$iTotal=35;
 	for ($k=0;$k<=$iTotal;$k++){
 		$nuevo=str_replace($sT[$k],$sH[$k],$nuevo);
@@ -264,16 +269,16 @@ function correo_VerificarDireccion($email){
 // -- funciones con datos
 function dato_spredet($numtabla,$objDB,$sconsulta=''){
 	$res='';
-	$sql='';
+	$sSQL='';
 	if ($sconsulta==''){
 		switch ($numtabla){
-			//case 11:$sql='SELECT int11id FROM int11estadocivil WHERE int11predeterm="S"';break;
+			//case 11:$sSQL='SELECT int11id FROM int11estadocivil WHERE int11predeterm="S"';break;
 			}
 		}else{
-		$sql=$sconsulta;
+		$sSQL=$sconsulta;
 		}
-	if ($sql!=''){
-		$tabla=$objDB->ejecutasql($sql);
+	if ($sSQL!=''){
+		$tabla=$objDB->ejecutasql($sSQL);
 		if ($tabla!=false){
 			if ($objDB->nf($tabla)>0){
 				$fila=$objDB->sf($tabla);
@@ -289,17 +294,20 @@ function DBalterna_Traer($idAlterna, $objDB){
 	if ($idAlterna==0){
 		$objalterna=$objDB;
 		}else{
-		$sql='SELECT unad50server, unad50puerto, unad50usuario, unad50pwd, unad50db, unad50modelo FROM unad50dbalterna WHERE unad50id='.$idAlterna.'';
-		$result=$objDB->ejecutasql($sql);
+		$sSQL='SELECT unad50server, unad50puerto, unad50usuario, unad50pwd, unad50db, unad50modelo FROM unad50dbalterna WHERE unad50id='.$idAlterna.'';
+		$result=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($result)>0){
 			$row=$objDB->sf($result);
 			switch ($row['unad50modelo']){
-				case 'M':
+				case 'O': //ODBC
+				case 'M': //MySQL
 				$objalterna=new clsdbadmin($row['unad50server'], $row['unad50usuario'], $row['unad50pwd'], $row['unad50db'], $row['unad50modelo']);
 				if ($row['unad50puerto']!=''){$objalterna->dbPuerto=$row['unad50puerto'];}
 				$objalterna->conectar();
 				break;
-				case 'D':
+				break;
+				case 'D': //Directorio
+				case 'S': //SFTP
 				$objalterna=$objDB;
 				break;
 				}
@@ -584,18 +592,72 @@ function fecha_esmayor($sfecha, $sfechatope){
 		}
 	return $bres;
 	}
-function fecha_esvalida($sfecha){
-	$res=false;
-	if (strlen($sfecha)==10){
-		$res=checkdate(substr($sfecha,3,2),substr($sfecha,0,2),substr($sfecha,6,4));
+function fecha_esvalida($sFecha){
+	list($sError)=fecha_Validar($sFecha);
+	if ($sError==''){
+		return true;
+		}else{
+		return false;
 		}
-	return $res;
+	}
+function fecha_Validar($sFecha, $sFormato='dd/mm/YYYY'){
+/* -------- Nota Curiosa --------
+Esta es la primera funcion modificada por solicitud de las personas que aprendieron a usar la plataforma AUREA, estos fueron Saul Alexander Hernandez Albarración y Omar Augusto Bautista Mora el 31 de Octubre de 2019.
+*/
+	$sError='';
+	$iDia=0;
+	$iMes=0;
+	$iAgno=0;
+	$sSeparador='/';
+	$iPosA=2;
+	$iPosM=1;
+	$iPosD=0;
+	$iTamano=10;
+	switch($sFormato){
+		case 'dd/mm/YYYY':
+		break;
+		case 'YYYY/mm/dd':
+		$iPosA=0;
+		$iPosD=2;
+		break;
+		case 'dd-mm-YYYY':
+		$sSeparador='-';
+		break;
+		case 'YYYY-mm-dd':
+		$sSeparador='-';
+		$iPosA=0;
+		$iPosD=2;
+		break;
+		default:
+		$sError='No se reconoce el formato de fecha solicitado.';
+		break;
+		}
+	if ($sError==''){
+		if (strlen($sFecha)!=$iTamano){
+			$sError='La fecha no tiene el tamaño esperado.';
+			}
+		}
+	if ($sError==''){
+		$aFecha=explode($sSeparador,$sFecha);
+		if (count($aFecha)!=3){
+			$sError='La fecha no usa el separador '.$sSeparador;
+			}
+		}
+	if ($sError==''){
+		$iDia=$aFecha[$iPosD];
+		$iMes=$aFecha[$iPosM];
+		$iAgno=$aFecha[$iPosA];
+		if (!checkdate($iMes, $iDia, $iAgno)){
+			$sError='Fecha incorrecta';
+			}
+		}
+	return array($sError, $iDia, $iMes, $iAgno);
 	}
 function fecha_hora(){
 	return date('H');
 	}
-function fecha_hoy($separador="/"){
-	return date("d".$separador."m".$separador."Y");
+function fecha_hoy($separador='/'){
+	return date('d'.$separador.'m'.$separador.'Y');
 	}
 function fecha_mes(){
 	return date('m');
@@ -896,10 +958,10 @@ function html_check($sNombre, $sEtiqueta, $valor, $bMarcado, $accion='', $sSepar
 	}
 // -- Marzo 19 de 2014 Se agrega opcion de enviar multiples valores "vacio" separados por una barra |
 function html_combo($nombre,$cod_,$nom_,$tab_,$cond_,$ord_,$valor_,$objDB,$accion='',$bvacio=false,$etvacio='',$vrvacio='', $bConDebug=false){
-	$sql="SELECT ".$cod_.", ".$nom_." FROM ".$tab_;
-	if ($cond_!=''){$sql=$sql." WHERE ".$cond_;}
-	if ($ord_!=''){$sql=$sql." ORDER BY ".$ord_;}
-	$result=$objDB->ejecutasql($sql);
+	$sSQL="SELECT ".$cod_.", ".$nom_." FROM ".$tab_;
+	if ($cond_!=''){$sSQL=$sSQL." WHERE ".$cond_;}
+	if ($ord_!=''){$sSQL=$sSQL." ORDER BY ".$ord_;}
+	$result=$objDB->ejecutasql($sSQL);
 	//echo $objDB->nf($result);
 	$html_accion='';
 	if ($accion!=''){$html_accion=' onChange="'.$accion.'"';} 
@@ -946,15 +1008,15 @@ function html_combo($nombre,$cod_,$nom_,$tab_,$cond_,$ord_,$valor_,$objDB,$accio
 ';
 	if ($result==false){
 		if ($bConDebug){
-			$res=$sql.'<br>'.$res;
+			$res=$sSQL.'<br>'.$res;
 			}else{
 			$res=$res.'..<!-- 
-'.$sql.'
+'.$sSQL.'
  -->';
 			}
 		}else{
 		if ($bConDebug){
-			$res=$sql.'<br>'.$res;
+			$res=$sSQL.'<br>'.$res;
 			}
 		}
 	return $res;
@@ -1313,22 +1375,23 @@ function html_MenuGrupoV2($grupo, $idsistema, $objDB, $completo=true, $bDebug=fa
 	list($sRes, $sDebug)=html_MenuGrupoV3($grupo, $idsistema, $iPiel, $objDB, $completo, $bDebug);
 	return $sRes;
 	}
-function html_MenuGrupoV3($grupo, $idsistema, $iPiel, $objDB, $completo=true, $bDebug=false){
+function html_MenuGrupoV3($grupo, $idsistema, $iPiel, $objDB, $completo=true, $bDebug=false, $idTercero=0){
 	$bentra=false;
 	$sDebug='';
 	$sadd='';
 	$res='';
 	if (($idsistema==10)&&($grupo==99)){$sadd='99,';}
-	$sql="SELECT T9.unad09nombre, T9.unad09pagina, T9.unad09nombre_en, T9.unad09nombre_pt 
+	if ($idTercero==0){$idTercero=$_SESSION['unad_id_tercero'];}
+	$sSQL='SELECT T9.unad09nombre, T9.unad09pagina, T9.unad09nombre_en, T9.unad09nombre_pt 
 FROM unad07usuarios as T7, unad06perfilmodpermiso AS T6, unad09modulomenu AS T9, unad02modulos AS T2 
-WHERE T7.unad07idtercero=".$_SESSION['unad_id_tercero']." AND T7.unad07vigente='S' AND T7.unad07idperfil=T6.unad06idperfil AND T6.unad06vigente='S' AND T6.unad06idpermiso=1 AND T6.unad06idmodulo=T9.unad09idmodulo AND T9.unad09grupo=".$grupo." AND T6.unad06idmodulo=T2.unad02id AND T2.unad02idsistema IN (0,".$sadd.$idsistema.") 
+WHERE T7.unad07idtercero='.$idTercero.' AND T7.unad07vigente="S" AND T7.unad07idperfil=T6.unad06idperfil AND T6.unad06vigente="S" AND T6.unad06idpermiso=1 AND T6.unad06idmodulo=T9.unad09idmodulo AND T9.unad09grupo='.$grupo.' AND T6.unad06idmodulo=T2.unad02id AND T2.unad02idsistema IN (0,'.$sadd.$idsistema.') 
 GROUP BY T9.unad09nombre, T9.unad09pagina, T9.unad09nombre_en, T9.unad09nombre_pt 
-ORDER BY T9.unad09orden";
-	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta grupo '.$grupo.' App '.$idsistema.' '.$sql.'<br>';}
-	$resultm=$objDB->ejecutasql($sql);
+ORDER BY T9.unad09orden';
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta grupo '.$grupo.' App '.$idsistema.' '.$sSQL.'<br>';}
+	$resultm=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($resultm)>0){$bentra=true;}
-	//$sql='SELECT sys44url, sys44target, sys44etiqueta FROM sys44menus WHERE sys44activo="S" AND sys44idsistema IN (0,'.$idsistema.') AND sys44grupomenu='.$grupo.' ORDER BY sys44orden, sys44consec';
-	//$resultm2=$objDB->ejecutasql($sql);
+	//$sSQL='SELECT sys44url, sys44target, sys44etiqueta FROM sys44menus WHERE sys44activo="S" AND sys44idsistema IN (0,'.$idsistema.') AND sys44grupomenu='.$grupo.' ORDER BY sys44orden, sys44consec';
+	//$resultm2=$objDB->ejecutasql($sSQL);
 	//if ($objDB->nf($resultm2)>0){$bentra=true;}
 	if ($bentra){
 		$bc=false;
@@ -1397,9 +1460,7 @@ function html_menuV2($idsistema, $objDB, $iPiel=0, $bDebug=false, $idTercero=0){
 		if ($APP->entidad==1){$idEntidad=1;}
 		}
 	$_SESSION['u_ultimominuto']=iminutoavance();
-	if ($idTercero==0){
-		$idTercero=$_SESSION['unad_id_tercero'];
-		}
+	if ($idTercero==0){$idTercero=$_SESSION['unad_id_tercero'];}
 	$sDebug=sesion_actualizar_v2($objDB, $bDebug);
 	$et_ini='Inicio';
 	$et_panel='Panel';
@@ -1433,7 +1494,7 @@ function html_menuV2($idsistema, $objDB, $iPiel=0, $bDebug=false, $idTercero=0){
 		$et_salir='Sair';
 		break;
 		}
-	$res='';
+	$sHTML='';
 	$sClaseLinkBase='';
 	$sClaseLinkItem='';
 	$sClaseLiBase='';
@@ -1443,7 +1504,7 @@ function html_menuV2($idsistema, $objDB, $iPiel=0, $bDebug=false, $idTercero=0){
 	$sInicioItem='';
 	$sFinItem='';
 	if ($iPiel==0){
-		$res='
+		$sHTML='
 <div class="menuapp">
 <ul id="navmenu-h">';
 		$sClaseLinkBase=' class="ppal"';
@@ -1453,51 +1514,56 @@ function html_menuV2($idsistema, $objDB, $iPiel=0, $bDebug=false, $idTercero=0){
 		$sFinItem='</li>';
 		}
 	if ($iPiel==1){
-		$res='<ul class="nav nav-tabs">';
+		$sHTML='<ul class="nav nav-tabs">';
 		$sClaseLinkBase=' class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"';
 		$sClaseLinkItem=' class="dropdown-item"';
 		$sClaseLiBase=' class="nav-item dropdown"';
 		$sInicioBloque='<div class="dropdown-menu">';
 		$sFinBloque='</div>';
 		}
-	$res=$res.'<li'.$sClaseLiBase.'><a href="index.php"'.$sClaseLinkBase.'><span>'.$et_ini.'</span></a>';
+	$sHTML=$sHTML.'<li'.$sClaseLiBase.'><a href="index.php"'.$sClaseLinkBase.'><span>'.$et_ini.'</span></a>';
 	if (($idTercero!=0)){
 		if ($_SESSION['cfg_movil']==1){$bpasa=false;}
 		if ($bpasa){
-			$res=$res.$sInicioBloque;
-			$res=$res.$sInicioItem.'<a href="index.php"'.$sClaseLinkItem.'><span>'.$et_ini.'</span></a>'.$sFinItem;
+			$sHTML=$sHTML.$sInicioBloque;
+			$sHTML=$sHTML.$sInicioItem.'<a href="index.php"'.$sClaseLinkItem.'><span>'.$et_ini.'</span></a>'.$sFinItem;
 			if ($idsistema!=51){
-				list($sgrupo, $sDebugG)=html_MenuGrupoV3(0, $idsistema, $iPiel, $objDB, false, $bDebug);
+				list($sgrupo, $sDebugG)=html_MenuGrupoV3(0, $idsistema, $iPiel, $objDB, false, $bDebug, $idTercero);
+				$sDebug=$sDebug.$sDebugG;
 				}else{
 				$sgrupo='';
 				}
 			if ($iPiel==1){
-				$res=$res.$sInicioItem.'<a href="salir.php"'.$sClaseLinkItem.'><span>'.$et_salir.'</span></a>'.$sFinItem;
+				$sHTML=$sHTML.$sInicioItem.'<a href="salir.php"'.$sClaseLinkItem.'><span>'.$et_salir.'</span></a>'.$sFinItem;
 				}
 			//if ($_SESSION['ent_chat']=='S')
-			$res=$res.$sgrupo;
-			$res=$res.$sFinBloque;
+			$sHTML=$sHTML.$sgrupo;
+			$sHTML=$sHTML.$sFinBloque;
 			}
-		$res=$res.'</li>';
+		$sHTML=$sHTML.'</li>';
 		//traer los encabezados que estan disponible para ese sistema.
 		/*
-		$sql="SELECT unad08nombre, unad08pagina, unad08id, unad08nombre_en, unad08nombre_pt FROM unad08grupomenu, sys44menus WHERE sys44grupomenu=unad08id AND sys44idsistema IN (0, ".$idsistema.") GROUP BY unad08nombre, unad08pagina, unad08id, unad08nombre_en, unad08nombre_pt UNION ";
+		$sSQL="SELECT unad08nombre, unad08pagina, unad08id, unad08nombre_en, unad08nombre_pt FROM unad08grupomenu, sys44menus WHERE sys44grupomenu=unad08id AND sys44idsistema IN (0, ".$idsistema.") GROUP BY unad08nombre, unad08pagina, unad08id, unad08nombre_en, unad08nombre_pt UNION ";
 		*/
 		$sIds='-99';
-		$sql='SELECT T9.unad09grupo 
-FROM unad07usuarios AS T7, unad06perfilmodpermiso AS T6, unad09modulomenu AS T9, unad02modulos AS T2 
-WHERE T7.unad07idtercero='.$idTercero.' AND T7.unad07vigente="S" AND T7.unad07idperfil=T6.unad06idperfil AND T6.unad06vigente="S" AND T6.unad06idmodulo=T9.unad09idmodulo AND T6.unad06idmodulo=T2.unad02id AND T2.unad02idsistema IN (0,'.$idsistema.')  AND T9.unad09grupo NOT IN (0, 99) 
+		$sSQL='SELECT T9.unad09grupo 
+FROM unad07usuarios AS T7, unad06perfilmodpermiso AS T6, unad02modulos AS T2, unad09modulomenu AS T9 
+WHERE T7.unad07idtercero='.$idTercero.' AND T7.unad07vigente="S" 
+AND T7.unad07idperfil=T6.unad06idperfil AND T6.unad06idpermiso=1 AND T6.unad06vigente="S" 
+AND T6.unad06idmodulo=T2.unad02id AND T2.unad02idsistema IN (0,'.$idsistema.') 
+AND T6.unad06idmodulo=T9.unad09idmodulo  AND T9.unad09grupo NOT IN (0, 99) 
 GROUP BY T9.unad09grupo ';
-		$tabla=$objDB->ejecutasql($sql);
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Grupos del menu: '.$sSQL.'<br>';}
+		$tabla=$objDB->ejecutasql($sSQL);
 		while ($fila=$objDB->sf($tabla)){
 			$sIds=$sIds.','.$fila['unad09grupo'];
 			}
-		$sql='SELECT unad08nombre, unad08pagina, unad08id, unad08nombre_en, unad08nombre_pt
+		$sSQL='SELECT unad08nombre, unad08pagina, unad08id, unad08nombre_en, unad08nombre_pt
 FROM unad08grupomenu 
 WHERE unad08id IN ('.$sIds.')
 ORDER BY unad08id';
-		$result=$objDB->ejecutasql($sql);
-		if ($result==false){echo '...<!-- '.$sql.'<br>'.$objDB->serror.' -->';}
+		$result=$objDB->ejecutasql($sSQL);
+		if ($result==false){echo '...<!-- '.$sSQL.'<br>'.$objDB->serror.' -->';}
 		while ($row=$objDB->sf($result)){
 			if ($row[1]!=""){
 				$eti=cadena_notildes($row['unad08nombre']);
@@ -1509,21 +1575,22 @@ ORDER BY unad08id';
 					if (trim($row['unad08nombre_pt'])!=''){$eti=$row['unad08nombre_pt'];}
 					break;
 					}
-				$res=$res.'<li'.$sClaseLiBase.'><a href="'.$row[1].'"'.$sClaseLinkBase.'><span>'.$eti.'</span></a>';
+				$sHTML=$sHTML.'<li'.$sClaseLiBase.'><a href="'.$row[1].'"'.$sClaseLinkBase.'><span>'.$eti.'</span></a>';
 				$sHTMLgrupo='';
 				if ($bpasa){
-					list($sHTMLgrupo, $sDebugG)=html_MenuGrupoV3($row[2], $idsistema, $iPiel, $objDB, true, $bDebug);
+					list($sHTMLgrupo, $sDebugG)=html_MenuGrupoV3($row[2], $idsistema, $iPiel, $objDB, true, $bDebug, $idTercero);
+					$sDebug=$sDebug.$sDebugG;
 					}
-				$res=$res.$sHTMLgrupo.'</li>';
+				$sHTML=$sHTML.$sHTMLgrupo.'</li>';
 				}
 			}
 		}else{
 		//no hay tercero
 		$sRutaLogin='http://campus.unad.edu.co';
 		if ($idEntidad==1){$sRutaLogin='http://aurea.unad.us/campus/';}
-		$res=$res.$sInicioBloque.$sInicioItem.'<a href="'.$sRutaLogin.'"'.$sClaseLinkItem.'><span>'.$et_inisesion.'</span></a>'.$sFinItem.$sFinBloque;
+		$sHTML=$sHTML.$sInicioBloque.$sInicioItem.'<a href="'.$sRutaLogin.'"'.$sClaseLinkItem.'><span>'.$et_inisesion.'</span></a>'.$sFinItem.$sFinBloque;
 		}
-	$res=$res.'<li'.$sClaseLiBase.'><a href="#"'.$sClaseLinkBase.'><span>'.$et_ayuda.'</span></a>'.$sInicioBloque;
+	$sHTML=$sHTML.'<li'.$sClaseLiBase.'><a href="#"'.$sClaseLinkBase.'><span>'.$et_ayuda.'</span></a>'.$sInicioBloque;
 	//Acceso a los modulos en los que tiene permiso.
 	$sPerfiles='-99';
 	$sSQL='SELECT unad07idperfil FROM unad07usuarios WHERE unad07idtercero='.$idTercero.' AND unad07vigente="S"';
@@ -1540,22 +1607,25 @@ GROUP BY T1.unad02idsistema';
 	while($fila=$objDB->sf($tabla)){
 		$sSistema=$sSistema.','.$fila['unad02idsistema'];
 		}
-	$sSQL='SELECT unad01nombre, unad01descripcion, unad01ruta FROM unad01sistema WHERE unad01id IN ('.$sSistema.') AND unad01publico="S" ORDER BY unad01orden, unad01nombre';
+	$sSQL='SELECT unad01nombre, unad01descripcion, unad01ruta 
+FROM unad01sistema 
+WHERE unad01id IN ('.$sSistema.') AND unad01publico="S" AND unad01instalado="S" 
+ORDER BY unad01orden, unad01nombre';
 	$tabla=$objDB->ejecutasql($sSQL);
 	while($fila=$objDB->sf($tabla)){
-		$res=$res.$sInicioItem.'<a href="'.$fila['unad01ruta'].'"'.$sClaseLinkItem.' title="'.cadena_notildes($fila['unad01descripcion']).'" target="_blank"><span>'.strtoupper($fila['unad01nombre']).'</span></a>'.$sFinItem;
+		$sHTML=$sHTML.$sInicioItem.'<a href="'.$fila['unad01ruta'].'"'.$sClaseLinkItem.' title="'.cadena_notildes($fila['unad01descripcion']).'" target="_blank"><span>'.strtoupper($fila['unad01nombre']).'</span></a>'.$sFinItem;
 		}
 	//Termina de revisar el acceso.
-	$res=$res.$sInicioItem.'<a href="acercade.php"'.$sClaseLinkItem.'><span>'.$et_acerca.'</span></a>'.$sFinItem;
-	$res=$res.$sFinBloque.'</li>';
+	$sHTML=$sHTML.$sInicioItem.'<a href="acercade.php"'.$sClaseLinkItem.'><span>'.$et_acerca.'</span></a>'.$sFinItem;
+	$sHTML=$sHTML.$sFinBloque.'</li>';
 	if ($iPiel==0){
-		$res=$res.'</ul>
+		$sHTML=$sHTML.'</ul>
 </div>';
 		}
 	if ($iPiel==1){
-		$res=$res.'</ul>';
+		$sHTML=$sHTML.'</ul>';
 		}
-	return array($res, $sDebug);
+	return array($sHTML, $sDebug);
 	}
 function html_oculto($snombre,$svalor,$setiqueta=''){
 	if ($setiqueta==''){$setiqueta=$svalor;}
@@ -1841,8 +1911,8 @@ function html_tercero($sTipoDoc, $sDoc, $id, $iModelo, $objDB){
 		}else{
 		$sCondi=$sCondi.' unad11id='.$id.'';
 		}
-	$sql='SELECT unad11razonsocial, unad11direccion, unad11telefono, unad11id, unad11tipodoc, unad11doc FROM unad11terceros WHERE '.$sCondi.' AND unad11id>0';
-	$tablater=$objDB->ejecutasql($sql);
+	$sSQL='SELECT unad11razonsocial, unad11direccion, unad11telefono, unad11id, unad11tipodoc, unad11doc FROM unad11terceros WHERE '.$sCondi.' AND unad11id>0';
+	$tablater=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tablater)>0){
 		$filater=$objDB->sf($tablater);
 		$sHTML='<b>'.cadena_notildes($filater['unad11razonsocial']).'</b>';
@@ -1897,20 +1967,25 @@ function html_tipodocV2($nombre, $valor, $accion='', $con_nulo=false){
 	}
 
 function login_activaperfil($idtercero, $idperfil, $sestado, $objDB, $fechalimite='00/00/0000'){
-	$sql='SELECT unad07vigente FROM unad07usuarios WHERE unad07idtercero='.$idtercero.' AND unad07idperfil='.$idperfil.'';
-	$result=$objDB->ejecutasql($sql);
-	$sql='';
-	if ($objDB->nf($result)==0){
-		if ($sestado=='S'){
-			$sql='INSERT INTO unad07usuarios (unad07idperfil, unad07idtercero, unad07vigente, unad07fechavence) VALUES ('.$idperfil.', '.$idtercero.', "S", "'.$fechalimite.'")';
-			}
+	if ($idtercero<1){
+		return true;
 		}else{
-		$temp='N';
-		if ($sestado=='S'){$temp='S';}
-		$sql='UPDATE unad07usuarios SET unad07vigente="'.$temp.'" WHERE unad07idperfil='.$idperfil.' AND unad07idtercero='.$idtercero.' AND unad07vigente<>"'.$temp.'"';
-		}
-	if ($sql!=''){
-		$result=$objDB->ejecutasql($sql);
+		$sSQL='SELECT 1 FROM unad07usuarios WHERE unad07idtercero='.$idtercero.' AND unad07idperfil='.$idperfil.'';
+		$result=$objDB->ejecutasql($sSQL);
+		$sSQL='';
+		if ($objDB->nf($result)==0){
+			if ($sestado=='S'){
+				$sSQL='INSERT INTO unad07usuarios (unad07idperfil, unad07idtercero, unad07vigente, unad07fechavence) VALUES ('.$idperfil.', '.$idtercero.', "S", "'.$fechalimite.'")';
+				}
+			}else{
+			$temp='N';
+			if ($sestado=='S'){$temp='S';}
+			$sSQL='UPDATE unad07usuarios SET unad07vigente="'.$temp.'" WHERE unad07idperfil='.$idperfil.' AND unad07idtercero='.$idtercero.' AND unad07vigente<>"'.$temp.'"';
+			}
+		if ($sSQL!=''){
+			$result=$objDB->ejecutasql($sSQL);
+			}
+		return true;
 		}
 	}
 function login_cerrarsesion_v2($idsesion, $objDB, $bDebug=false){
@@ -1921,13 +1996,13 @@ function login_cerrarsesion_v2($idsesion, $objDB, $bDebug=false){
 		if (!tabla_existe($sTabla, $objDB)){
 			$sTabla='unad71sesion';
 			}
-		$sql='SELECT unad71fechaini, unad71horaini, unad71minutoini, unad71fechafin, unad71horafin, unad71minutofin FROM '.$sTabla.' WHERE unad71id='.$idsesion.';';
-		$result=$objDB->ejecutasql($sql);
+		$sSQL='SELECT unad71fechaini, unad71horaini, unad71minutoini, unad71fechafin, unad71horafin, unad71minutofin FROM '.$sTabla.' WHERE unad71id='.$idsesion.';';
+		$result=$objDB->ejecutasql($sSQL);
 		$row=$objDB->sf($result);
 		$itotal=fecha_tiempoenminutos($row['unad71fechaini'],$row['unad71horaini'],$row['unad71minutoini'],$row['unad71fechafin'],$row['unad71horafin'],$row['unad71minutofin'])+1;
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Tiempo de la sesion '.$itotal.'.<br>';}
-		$sql='UPDATE '.$sTabla.' SET unad71tiempototal='.$itotal.' WHERE unad71id='.$idsesion.';';
-		$result=$objDB->ejecutasql($sql);
+		$sSQL='UPDATE '.$sTabla.' SET unad71tiempototal='.$itotal.' WHERE unad71id='.$idsesion.';';
+		$result=$objDB->ejecutasql($sSQL);
 		}else{
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' No hay sesion a cerrar.<br>';}
 		}
@@ -1974,12 +2049,19 @@ function login_iniciarsesion($objDB, $bDebug=false){
 		$_SESSION['unad_sesion_minuto']=($horaini*60)+$minutoini;
 		$scampos='unad71id, unad71idtercero, unad71iporigen, unad71fechaini, unad71horaini, unad71minutoini, unad71fechafin, unad71horafin, unad71minutofin, unad71tiempototal, unad71navegador, unad71sistoperativo, unad71latgrados, unad71latdecimas, unad71longrados, unad71longdecimas, unad71proximidad, unad71estado, unad71hostname';
 		$svalores=''.$res.', '.$_SESSION['unad_id_tercero'].', "'.$dirip.'", "'.$fechaini.'", '.$horaini.', '.$minutoini.', "'.$fechaini.'", '.$horaini.', '.$minutoini.', 0,"'.$sNavegador.'","", 0, "", 0, "", 0, 0, "'.$sHost.'"';
-		$sql='INSERT INTO '.$sTabla71.'('.$scampos.') VALUES ('.$svalores.');';
-		$result=$objDB->ejecutasql($sql);
+		$sSQL='INSERT INTO '.$sTabla71.'('.$scampos.') VALUES ('.$svalores.');';
+		$result=$objDB->ejecutasql($sSQL);
 		//Junio 14 2018 agregamos la ultima fecha de acceso al sistema.
-		$sql='UPDATE unad11terceros SET unad11fechaultingreso='.$fechaini.'  WHERE unad11id='.$_SESSION['unad_id_tercero'].'';
-		$result=$objDB->ejecutasql($sql);
+		$sSQL='UPDATE unad11terceros SET unad11fechaultingreso='.$fechaini.'  WHERE unad11id='.$_SESSION['unad_id_tercero'].'';
+		$result=$objDB->ejecutasql($sSQL);
 		seg_rastro(17, 1, 0, $_SESSION['unad_id_tercero'], 'Inicia sesion '.$res.' en '.$sTabla71.'', $objDB);
+		//Junio 28 de 2019 - Se cargan los parametros del tercero para la sesion
+		$sSQL='SELECT unad11idioma FROM unad11terceros WHERE unad11id='.$_SESSION['unad_id_tercero'].'';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
+			$_SESSION['unad_idioma']=$fila['unad11idioma'];
+			}
 		//Enero 23 de 2019 - Se incluye la revision de perfiles que se deja en la libdatos.
 		list($sError, $sDebugG)=f107_VerificarPerfiles($_SESSION['unad_id_tercero'], '', $objDB, $bDebug);
 		$sDebug=$sDebug.$sDebugG;
@@ -1994,8 +2076,8 @@ function login_valida_usuario_v3($susuario, $spw, $idsistema, $objDB){
 	if ($spw==""){$sError="Se necesita una contrase&ntilde;a";}
 	if ($susuario==""){$sError="Se necesita un nombre de usuario";}
 	if ($sError==''){
-		$sql="SELECT unad11tipodoc, unad11doc, unad11clave FROM unad11terceros WHERE unad11usuario='".$susuario."'";
-		$result=$objDB->ejecutasql($sql);
+		$sSQL="SELECT unad11tipodoc, unad11doc, unad11clave FROM unad11terceros WHERE unad11usuario='".$susuario."'";
+		$result=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($result)>0){
 			$row=$objDB->sf($result);
 			if (md5($spw)==$row['unad11clave']){
@@ -2109,21 +2191,21 @@ function numeros_validar($semilla, $decimal=false, $idecimales=0, $permitircomas
 function Perfiles_OIL($idTercero, $objDB, $bDebug=false){
 	$sDebug='';
 	$sRoles='';
-	$sql='SELECT olab05idrol FROM olab05roles WHERE olab05activo="S" AND olab05idrol>0 GROUP BY olab05idrol';
-	$tabla17=$objDB->ejecutasql($sql);
+	$sSQL='SELECT olab05idrol FROM olab05roles WHERE olab05activo="S" AND olab05idrol>0 GROUP BY olab05idrol';
+	$tabla17=$objDB->ejecutasql($sSQL);
 	while($fila17=$objDB->sf($tabla17)){
 		$sRoles=$sRoles.$fila17['olab05idrol'].' ';
 		login_activaperfil($idTercero, $fila17['olab05idrol'], 'N', $objDB);
 		}
 	login_activaperfil($idTercero, 2108, 'N', $objDB);
 	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' ACTUALIZANDO PERFILES OIL: Se inactivan los siguientes perfiles: '.$sRoles.' 2108<br>';}
-	$sql='SELECT T1.olab05idrol 
+	$sSQL='SELECT T1.olab05idrol 
 FROM olab17actores AS TB, olab05roles AS T1 
 WHERE TB.olab17idactor='.$idTercero.' AND TB.olab17idrol=T1.olab05id AND TB.olab17activo="S" 
 GROUP BY T1.olab05idrol';
 	$sRoles='';
-	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' ACTUALIZANDO PERFILES OIL: Consulta de actores: '.$sql.'<br>';}
-	$tabla17=$objDB->ejecutasql($sql);
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' ACTUALIZANDO PERFILES OIL: Consulta de actores: '.$sSQL.'<br>';}
+	$tabla17=$objDB->ejecutasql($sSQL);
 	while($fila17=$objDB->sf($tabla17)){
 		//Agregar el usuario...
 		$sRoles=$sRoles.$fila17['olab05idrol'].' ';
@@ -2133,30 +2215,30 @@ GROUP BY T1.olab05idrol';
 	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' ACTUALIZANDO PERFILES OIL: Se <b>ACTIVAN</b> los siguientes perfiles: '.$sRoles.'<br>';}
 	//Directores de curso.
 	$sListaPeracas='-99';
-	$sql='SELECT olab08idperaca FROM olab08oferta GROUP BY olab08idperaca';
-	$tabla17=$objDB->ejecutasql($sql);
+	$sSQL='SELECT olab08idperaca FROM olab08oferta GROUP BY olab08idperaca';
+	$tabla17=$objDB->ejecutasql($sSQL);
 	while($fila17=$objDB->sf($tabla17)){
 		$sListaPeracas=$sListaPeracas.', '.$fila17['olab08idperaca'];
 		}
-	$sql='SELECT olab08idresponsable FROM olab08oferta WHERE olab08idresponsable='.$idTercero.' AND olab08idperaca IN ('.$sListaPeracas.') AND olab08cerrado="S" LIMIT 0, 1';
-	$tabla17=$objDB->ejecutasql($sql);
+	$sSQL='SELECT olab08idresponsable FROM olab08oferta WHERE olab08idresponsable='.$idTercero.' AND olab08idperaca IN ('.$sListaPeracas.') AND olab08cerrado="S" LIMIT 0, 1';
+	$tabla17=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla17)>0){
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' ACTUALIZANDO PERFILES OIL: Se <b>ACTIVAN</b> el perfil de director {2104}<br>';}
 		login_activaperfil($idTercero, 2104, 'S', $objDB);
 		}
 	//
-	$sql='SELECT TB.ofer11per_aca 
+	$sSQL='SELECT TB.ofer11per_aca 
 FROM ofer11actores AS TB, ofer10rol AS T1 
 WHERE TB.ofer11idtercero='.$idTercero.' AND TB.ofer11per_aca IN ('.$sListaPeracas.') AND TB.ofer11idcurso<>-1 AND TB.ofer11idrol=T1.ofer10id AND T1.ofer10claserol IN (1,2,3,4)';
-	$tabla17=$objDB->ejecutasql($sql);
+	$tabla17=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla17)>0){
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' ACTUALIZANDO PERFILES OIL: Se <b>ACTIVAN</b> los perfiles de director {1704 y 2105}<br>';}
 		login_activaperfil($idTercero, 1704, 'S', $objDB);
 		login_activaperfil($idTercero, 2105, 'S', $objDB);
 		}	
 	//Tutores de laboratorio.... Se utiliza el perfil. 2108
-	$sql='SELECT TB.olab37idperaca FROM olab37tutores AS TB, exte02per_aca AS T2 WHERE TB.olab37idtutor='.$idTercero.' AND TB.olab37idproceso=1 AND TB.olab37activo="S" AND TB.olab37idperaca=T2.exte02id AND T2.exte02vigente="S"';
-	$tabla17=$objDB->ejecutasql($sql);
+	$sSQL='SELECT TB.olab37idperaca FROM olab37tutores AS TB, exte02per_aca AS T2 WHERE TB.olab37idtutor='.$idTercero.' AND TB.olab37idproceso=1 AND TB.olab37activo="S" AND TB.olab37idperaca=T2.exte02id AND T2.exte02vigente="S"';
+	$tabla17=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla17)>0){
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' ACTUALIZANDO PERFILES OIL: Se <b>ACTIVAN</b> el perfil de director de laboratorio {2108}<br>';}
 		login_activaperfil($idTercero, 2108, 'S', $objDB);
@@ -2174,14 +2256,14 @@ function registro_duplicar($stabla, $scamposclave, $scampoid, $svrid, $svrclave,
 		if (count($nclaves)!=count($vclaves)){$sError='Los valores para el nuevo registro no coinciden con las claves.';}
 		}
 	if ($sError==''){
-		$sql='SELECT * FROM '.$stabla.' WHERE '.$scampoid.'='.$svrid;
-		$torigen=$objDB->ejecutasql($sql);
+		$sSQL='SELECT * FROM '.$stabla.' WHERE '.$scampoid.'='.$svrid;
+		$torigen=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($torigen)!=0){
 			$forigen=$objDB->sf($torigen);
 			$scampos='';
 			$svalores='';
-			$sql='DESCRIBE '.$stabla;
-			$test=$objDB->ejecutasql($sql);
+			$sSQL='DESCRIBE '.$stabla;
+			$test=$objDB->ejecutasql($sSQL);
 			while ($fest=$objDB->sf($test)){
 				if ($scampos!=''){
 					$scampos=$scampos.',';
@@ -2203,10 +2285,10 @@ function registro_duplicar($stabla, $scamposclave, $scampoid, $svrid, $svrclave,
 					$svalores=$svalores.'"'.$forigen[$fest['Field']].'"';
 					}
 				}
-			$sql='INSERT INTO '.$stabla.' ('.$scampos.') VALUES ('.$svalores.')';
-			$tfin=$objDB->ejecutasql($sql);
+			$sSQL='INSERT INTO '.$stabla.' ('.$scampos.') VALUES ('.$svalores.')';
+			$tfin=$objDB->ejecutasql($sSQL);
 			if ($tfin==false){
-				$sError=$sql;
+				$sError=$sSQL;
 				}
 			}else{
 			$sError='No se encontro el registro de origen Ref {'.$svrid.'}';
@@ -2296,17 +2378,17 @@ function seg_auditar($idmodulo, $idtercero, $idaccion, $idregistro, $sdetalle, $
 		if (!$bexiste){
 			//crear la tabla
 			//OJO PROBLEMA... EL USUARIO NO TIENE PERMISOS....
-			$sql="CREATE TABLE ".$stabla." (unad52id int AUTO_INCREMENT PRIMARY KEY, unad52idistema int NULL, unad52codmodulo int NULL, unad52idtercero int NULL, unad52fecha varchar(10) NULL, unad52hora int NULL, unad52minuto int NULL, unad52segundo int NULL, unad52codaccion int NULL, unad52idregistro int NULL, unad52detalle Text NULL)";
-			$result=$objDB->ejecutasql($sql);
+			$sSQL="CREATE TABLE ".$stabla." (unad52id int AUTO_INCREMENT PRIMARY KEY, unad52idistema int NULL, unad52codmodulo int NULL, unad52idtercero int NULL, unad52fecha varchar(10) NULL, unad52hora int NULL, unad52minuto int NULL, unad52segundo int NULL, unad52codaccion int NULL, unad52idregistro int NULL, unad52detalle Text NULL)";
+			$result=$objDB->ejecutasql($sSQL);
 			if ($result==false){
 				$objDB->serror='No es posible iniciar la auditoria para el a&ntilde;o '.date('Y');
 				}else{
-				//$sql='';
-				//$result=$objDB->ejecutasql($sql);
+				//$sSQL='';
+				//$result=$objDB->ejecutasql($sSQL);
 				}
 			}
-		$sql='INSERT INTO '.$stabla.' (unad52idistema, unad52codmodulo, unad52idtercero, unad52fecha, unad52hora, unad52minuto, unad52segundo, unad52codaccion, unad52idregistro, unad52detalle) VALUES ('.$APP->idsistema.', '.$idmodulo.', '.$idtercero.', "'.date("d")."/".date("m")."/".date("Y").'", '.date("G").', '.date("i").', '.date("s").', '.$idaccion.', '.$idregistro.', "'.str_replace('"','\"',$sdetalle).'")';
-		$result=$objDB->ejecutasql($sql);
+		$sSQL='INSERT INTO '.$stabla.' (unad52idistema, unad52codmodulo, unad52idtercero, unad52fecha, unad52hora, unad52minuto, unad52segundo, unad52codaccion, unad52idregistro, unad52detalle) VALUES ('.$APP->idsistema.', '.$idmodulo.', '.$idtercero.', "'.date("d")."/".date("m")."/".date("Y").'", '.date("G").', '.date("i").', '.date("s").', '.$idaccion.', '.$idregistro.', "'.str_replace('"','\"',$sdetalle).'")';
+		$result=$objDB->ejecutasql($sSQL);
 		}
 	return array($res, $sDebug);
 	}
@@ -2319,21 +2401,21 @@ function seg_rastro($unad93codmodulo, $unad93codaccion, $unad93idcurso, $unad93i
 	$sTabla='unad93rastros'.date('Ym');
 	$bexiste=$objDB->bexistetabla($sTabla);
 	if (!$bexiste){
-		$sql="CREATE TABLE ".$sTabla." (unad93id int NOT NULL, unad93idtercero int NULL DEFAULT 0, unad93fecha int NULL DEFAULT 0, unad93hora int NULL DEFAULT 0, unad93minuto int NULL DEFAULT 0, unad93segundo int NULL DEFAULT 0, unad93url varchar(250) NULL, unad93codmodulo int NULL DEFAULT 0, unad93codaccion int NULL DEFAULT 0, unad93idcurso int NULL DEFAULT 0, unad93idusuario int NULL DEFAULT 0, unad93detalle Text NULL)";
-		$result=$objDB->ejecutasql($sql);
+		$sSQL="CREATE TABLE ".$sTabla." (unad93id int NOT NULL, unad93idtercero int NULL DEFAULT 0, unad93fecha int NULL DEFAULT 0, unad93hora int NULL DEFAULT 0, unad93minuto int NULL DEFAULT 0, unad93segundo int NULL DEFAULT 0, unad93url varchar(250) NULL, unad93codmodulo int NULL DEFAULT 0, unad93codaccion int NULL DEFAULT 0, unad93idcurso int NULL DEFAULT 0, unad93idusuario int NULL DEFAULT 0, unad93detalle Text NULL)";
+		$result=$objDB->ejecutasql($sSQL);
 		if ($result==false){
 			$objDB->serror='No es posible iniciar el seguimiento para el a&ntilde;o '.date('Y').' mes '.date('m').'';
 			}else{
-			$sql="ALTER TABLE ".$sTabla." ADD PRIMARY KEY(unad93id)";
-			$result=$objDB->ejecutasql($sql);
-			$sql="ALTER TABLE ".$sTabla." ADD INDEX unad93rastros_tercero(unad93idtercero)";
-			$result=$objDB->ejecutasql($sql);
-			$sql="ALTER TABLE ".$sTabla." ADD INDEX unad93rastros_fecha(unad93fecha)";
-			$result=$objDB->ejecutasql($sql);
-			$sql="ALTER TABLE ".$sTabla." ADD INDEX unad93rastros_url(unad93url)";
-			$result=$objDB->ejecutasql($sql);
-			$sql="ALTER TABLE ".$sTabla." ADD INDEX unad93rastros_accion(unad93codaccion)";
-			$result=$objDB->ejecutasql($sql);
+			$sSQL="ALTER TABLE ".$sTabla." ADD PRIMARY KEY(unad93id)";
+			$result=$objDB->ejecutasql($sSQL);
+			$sSQL="ALTER TABLE ".$sTabla." ADD INDEX unad93rastros_tercero(unad93idtercero)";
+			$result=$objDB->ejecutasql($sSQL);
+			$sSQL="ALTER TABLE ".$sTabla." ADD INDEX unad93rastros_fecha(unad93fecha)";
+			$result=$objDB->ejecutasql($sSQL);
+			$sSQL="ALTER TABLE ".$sTabla." ADD INDEX unad93rastros_url(unad93url)";
+			$result=$objDB->ejecutasql($sSQL);
+			$sSQL="ALTER TABLE ".$sTabla." ADD INDEX unad93rastros_accion(unad93codaccion)";
+			$result=$objDB->ejecutasql($sSQL);
 			}
 		}
 	$unad93id=tabla_consecutivo($sTabla, 'unad93id', '', $objDB);
@@ -2349,16 +2431,16 @@ function seg_rastro($unad93codmodulo, $unad93codaccion, $unad93idcurso, $unad93i
 	$unad93minuto=fecha_minuto();
 	$unad93segundo=fecha_segundo();
 	$unad93url=$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-	$sql='INSERT INTO '.$sTabla.' (unad93id, unad93idtercero, unad93fecha, unad93hora, unad93minuto, unad93segundo, unad93url, unad93codmodulo, unad93codaccion, unad93idcurso, unad93idusuario, unad93detalle) VALUES ('.$unad93id.', '.$unad93idtercero.', '.$unad93fecha.', '.$unad93hora.', '.$unad93minuto.', '.$unad93segundo.', "'.$unad93url.'", '.$unad93codmodulo.', '.$unad93codaccion.', '.$unad93idcurso.', '.$unad93idusuario.', "'.$unad93detalle.'")';
-	$result=$objDB->ejecutasql($sql);
-	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' RASTRO: '.$sql.'<br>';}
+	$sSQL='INSERT INTO '.$sTabla.' (unad93id, unad93idtercero, unad93fecha, unad93hora, unad93minuto, unad93segundo, unad93url, unad93codmodulo, unad93codaccion, unad93idcurso, unad93idusuario, unad93detalle) VALUES ('.$unad93id.', '.$unad93idtercero.', '.$unad93fecha.', '.$unad93hora.', '.$unad93minuto.', '.$unad93segundo.', "'.$unad93url.'", '.$unad93codmodulo.', '.$unad93codaccion.', '.$unad93idcurso.', '.$unad93idusuario.', "'.$unad93detalle.'")';
+	$result=$objDB->ejecutasql($sSQL);
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' RASTRO: '.$sSQL.'<br>';}
 	return array($res, $sDebug);
 	}
 // -- Revisión de permisos de usuario por modulo.
-function seg_revisa_permiso($idModulo, $permiso, $objDB){
+function seg_revisa_permiso($idModulo, $idPermiso, $objDB){
 	$devuelve=false;
 	if (isset($_SESSION['unad_id_tercero'])!=0){
-		$devuelve=seg_revisa_permisoV2($idModulo, $permiso, $_SESSION['unad_id_tercero'], $objDB);
+		list($devuelve, $sDebug)=seg_revisa_permisoV3($idModulo, $idPermiso, $_SESSION['unad_id_tercero'], $objDB);
 		}
 	return $devuelve;
 	}
@@ -2370,9 +2452,9 @@ function seg_revisa_permisoV3($idModulo, $idPermiso, $idTercero, $objDB, $bDebug
 	$devuelve=false;
 	$sDebug='';
 	if (($idTercero!=0)&&($idModulo!=0)){
-		$sSQL="SELECT TB.unad07idperfil 
+		$sSQL='SELECT 1 
 FROM unad07usuarios AS TB, unad06perfilmodpermiso AS T6 
-WHERE TB.unad07idtercero=".$idTercero." AND TB.unad07vigente='S' AND TB.unad07idperfil=T6.unad06idperfil AND T6.unad06vigente='S' AND T6.unad06idmodulo=".$idModulo." AND T6.unad06idpermiso=".$idPermiso.'';
+WHERE TB.unad07idtercero='.$idTercero.' AND TB.unad07vigente="S" AND TB.unad07idperfil=T6.unad06idperfil AND T6.unad06vigente="S" AND T6.unad06idmodulo='.$idModulo.' AND T6.unad06idpermiso='.$idPermiso.'';
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Revision del permiso ['.$idPermiso.']: '.$sSQL.'<br>';}
 		$result=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($result)>0){$devuelve=true;}
@@ -2598,8 +2680,8 @@ function tercero_Bloqueado($idTercero, $objDB){
 	$sError='';
 	$sInfo='';
 	require 'app.php';
-	$sql='SELECT unad11bloqueado, unad11tipodoc, unad11doc, unad11razonsocial FROM unad11terceros WHERE unad11id='.$idTercero.'';
-	$tabla11=$objDB->ejecutasql($sql);
+	$sSQL='SELECT unad11bloqueado, unad11tipodoc, unad11doc, unad11razonsocial FROM unad11terceros WHERE unad11id='.$idTercero.'';
+	$tabla11=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla11)>0){
 		$fila11=$objDB->sf($tabla11);
 		if ($fila11['unad11bloqueado']=='S'){
@@ -2681,10 +2763,10 @@ function usuario_OpcionLeer($cod_modulo, $cod_opcion, $svalordefecto, $objDB){
 	if ($cod_modulo==''){$sError='Sin codigo de modulo';}
 	if ($cod_opcion==''){$sError='Sin codigo de opcion';}
 	if ($sError==''){
-		$sql='SELECT TB.unad59svalor, TB.unad59ivalor, T1.unad60tipo 
+		$sSQL='SELECT TB.unad59svalor, TB.unad59ivalor, T1.unad60tipo 
 FROM unad59params AS TB, unad60preferencias AS T1 
 WHERE TB.unad59idtercero='.$_SESSION['unad_id_tercero'].' AND TB.unad59idmodulo='.$cod_modulo.' AND TB.unad59idpreferencia='.$cod_opcion.' AND TB.unad59idmodulo=T1.unad60idmodulo AND TB.unad59idpreferencia=T1.unad60codigo';
-		$tabla=$objDB->ejecutasql($sql);
+		$tabla=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla)>0){
 			$fila=$objDB->sf($tabla);
 			if ($fila['unad60tipo']==0){
