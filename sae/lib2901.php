@@ -1,16 +1,9 @@
 <?php
 /*
---- © Sandra Milena Cifuentes Alfonso - Punto Software C&S S.A.S - UNAD - 2019 ---
---- samicial@puntosoftware.net - http://www.puntosoftware.net 
-// --- Desarrollo por encargo para la UNAD Contrato OS-2019-000130 
-// --- Conforme a la metodología de desarrollo de la plataforma AUREA.
+--- © Omar Augusto Bautista Mora - UNAD - 2019 ---
+--- Omar Augusto Bautista Mora - omar.bautista@unad.edu.co
 --- Modelo Versión 2.23.7 Friday, October 18, 2019
 --- 2901 plab01hv
-*/
-/** Archivo lib2901.php.
-* Libreria 2901 plab01hv.
-* @author Sandra Milena Cifuentes Alfonso - Punto Software C&S S.A.S - samicial@puntosoftware.net
-* @date Friday, October 18, 2019
 */
 function f2901_HTMLComboV2_plab01emprbolsempleo($objDB, $objCombos, $valor){
 	require './app.php';
@@ -18,6 +11,7 @@ function f2901_HTMLComboV2_plab01emprbolsempleo($objDB, $objCombos, $valor){
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	require $mensajes_todas;
 	$objCombos->nuevo('plab01emprbolsempleo', $valor, true, '{'.$ETI['msg_seleccione'].'}');
+	$objCombos->iAncho=270;
 	$objCombos->sAccion='RevisaLlave();';
 	$sSQL='SELECT TB.plab08id AS id, T1.unad11razonsocial AS nombre 
 FROM plab08emprbolsempleo AS TB, unad11terceros AS T1
@@ -848,15 +842,15 @@ function f2901_ProcesarArchivo($DATA, $ARCHIVO, $objDB, $bDebug=false){
         $plab01nivingles=array();
         $sFormato='dd/mm/YYYY';
         switch ($plab01emprbolsempleo) {
-            case 1:
-            case 2:
-            case 3:
-            break;
-            case 4: $sFormato='YYYY/mm/dd';
+            case 1: $sFormato='YYYY/mm/dd';
             $iHoja=1;
             $iFila=8;
             $aColumnas=array('fechareg'=>2,'documento'=>7,'telprin'=>9,'telofic'=>10,'telmov'=>11,'correo'=>15,'ultprof'=>17,'aspsal'=>19,'nomemprultexp'=>20,'cargo'=>21,'industria'=>23,'sector'=>24,'fechainiexp'=>25,'fechafinexp'=>26,'nivingles'=>27,'fechaacthv'=>28);
             $objPHPExcel->setActiveSheetIndex($iHoja);
+            break;
+            case 2:
+            case 3:
+            case 4:
             break;
             }
         if (empty($aColumnas)){
@@ -900,7 +894,7 @@ function f2901_ProcesarArchivo($DATA, $ARCHIVO, $objDB, $bDebug=false){
                 $plab01fechainiexp=0;
                 $plab01fechafinexp=0;
                 $plab01fechaacthv=0;
-                if($plab01emprbolsempleo==4){
+                if($plab01emprbolsempleo==1){
                     $fecha=$objPHPExcel->getActiveSheet()->getCellByColumnAndRow($aColumnas['fechareg'], $iFila)->getValue(); // Fecha registro
                     if ($fecha != '' && $fecha != 'NA'){
                         list($sErrLinea, $iDia, $iMes, $iAgno)=fecha_Validar($fecha, $sFormato);

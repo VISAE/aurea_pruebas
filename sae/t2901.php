@@ -1,14 +1,10 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2019 ---
---- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
---- Modelo Version 2.23.5 Tuesday, August 27, 2019
-*/
-/*
 /** Archivo para reportes tipo csv 2901.
 * Aquí se genera un archivo tipo csv con la siguiente estructura (indicar estructura).
-* @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
-* @date Tuesday, August 27, 2019
+* © Omar Augusto Bautista Mora - UNAD - 2019 ---
+* @author Omar Augusto Bautista Mora - omar.bautista@unad.edu.co
+* @date Monday, Noviembre 18, 2019
 */
 error_reporting(E_ALL);
 ini_set("display_errors", 1);

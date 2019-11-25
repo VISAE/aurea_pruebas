@@ -576,7 +576,7 @@ function f1903_Comboeven02idcead($aParametros){
     $objDB->CerrarConexion();
     $objResponse=new xajaxResponse();
     $objResponse->assign('div_even02idcead', 'innerHTML', $html_even02idcead);
-    $objResponse->call('paginarf1903');
+    $objResponse->call('$("#even02idcead").chosen()');
     return $objResponse;
 }
 function f1903_HTMLComboV2_even02idcead($objDB, $objCombos, $valor, $vreven02idzona){

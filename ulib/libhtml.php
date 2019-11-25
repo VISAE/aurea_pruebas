@@ -5,12 +5,16 @@
 --- Modelo Versión 2.13.3 miércoles, 13 de julio de 2016
 */
 class clsHtmlCombos{
+	//const $iVerMay=1;
+	//const $iVerMen=1;
+	//const $iVerCor=0;
 	var $bConVacio=true;
 	var $bConDebug=false;
 	var $aItem=array();
 	var $iItems=0;
 	// Los origenes es de donde tomamos los datos 0= manual, 1=sql  la consulta debe ser enviada.
 	var $iOrigen=0;
+	var $iAncho=0;
 	var $sAccion='';
 	var $sClaseCombo='';
 	var $sEtiVacio='';
@@ -71,8 +75,13 @@ class clsHtmlCombos{
 		$sDebug='';
 		$sRes='';
 		$sAccion='';
+		$sEstilos='';
+		$sClaseC='';
 		if ($this->sAccion!=''){$sAccion=' onChange="'.$this->sAccion.'"';}
-		$sRes='<select id="'.$this->sNombre.'" name="'.$this->sNombre.'"'.$sAccion.'>';
+		if ($this->sClaseCombo!=''){$sClaseC=' class="'.$this->sClaseCombo.'"';}
+		if ($this->iAncho!=0){$sEstilos='width:'.$this->iAncho.'px;';}
+		if ($sEstilos!=''){$sEstilos=' style="'.$sEstilos.'"';}
+		$sRes='<select id="'.$this->sNombre.'" name="'.$this->sNombre.'"'.$sAccion.$sClaseC.$sEstilos.'>';
 		if ($this->bConVacio){
 			$sEstilo='';
 			if ($this->sVrVacio===''){$sEstilo=' style="color:#FF0000"';}
@@ -109,6 +118,7 @@ class clsHtmlCombos{
 	function nuevo($sNombre, $sValorCombo='', $bConVacio=true, $sEtiVacio='{Seleccione Uno}', $sVrVacio=''){
 		$this->bConVacio=$bConVacio;
 		$this->aItem=array();
+		$this->iAncho=0;
 		$this->iItems=0;
 		$this->sAccion='';
 		$this->sClaseCombo='';

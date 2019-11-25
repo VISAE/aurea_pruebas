@@ -78,9 +78,16 @@ $.Autocompleter = function(input, options) {
 	var select = $.Autocompleter.Select(options, input, selectCurrent, config);
 	
 	var blockSubmit;
-	
+
+	var opera = true;
+	try {
+		opera = $.browser.opera;
+	} catch (e) {
+		opera = false;
+	}
+
 	// prevent form submit in opera when selecting with return key
-	$.browser.opera && $(input.form).bind("submit.autocomplete", function() {
+	opera && $(input.form).bind("submit.autocomplete", function() {
 		if (blockSubmit) {
 			blockSubmit = false;
 			return false;
@@ -88,7 +95,7 @@ $.Autocompleter = function(input, options) {
 	});
 	
 	// only opera doesn't trigger keydown multiple times while pressed, others don't work with keypress at all
-	$input.bind(($.browser.opera ? "keypress" : "keydown") + ".autocomplete", function(event) {
+	$input.bind((opera ? "keypress" : "keydown") + ".autocomplete", function(event) {
 		// a keypress means the input has focus
 		// avoids issue where input had focus before the autocomplete was applied
 		hasFocus = 1;
@@ -583,7 +590,14 @@ $.Autocompleter.Select = function (options, input, select, config) {
 		needsInit = true,
 		element,
 		list;
-	
+
+	var msie = true;
+	try {
+		msie = $.browser.msie;
+	} catch (e) {
+		msie = false;
+	}
+
 	// Create results
 	function init() {
 		if (!needsInit)
@@ -733,7 +747,7 @@ $.Autocompleter.Select = function (options, input, select, config) {
 					overflow: 'auto'
 				});
 				
-                if($.browser.msie && typeof document.body.style.maxHeight === "undefined") {
+                if(msie && typeof document.body.style.maxHeight === "undefined") {
 					var listHeight = 0;
 					listItems.each(function() {
 						listHeight += this.offsetHeight;

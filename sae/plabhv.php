@@ -1,14 +1,10 @@
 <?php
-/*
---- © Cristhiam Dario Silva Chavez - UNAD - 2019 ---
---- cristhiam.silva@unad.edu.co - http://www.unad.edu.co
---- Modelo Versión 2.23.8 Thursday, October 31, 2019
-*/
 /** Archivo porlabhv.php.
 * Modulo 2901 plab01hv.
-* @author Cristhiam Dario Silva Chavez - cristhiam.silva@unad.edu.co
+* © Omar Augusto Bautista Mora - UNAD - 2019 ---
+* @author Omar Augusto Bautista Mora - omar.bautista@unad.edu.co
 * @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
-* @date Thursday, October 31, 2019
+* @date Monday, Noviembre 18, 2019
 */
 if (file_exists('./err_control.php')){require './err_control.php';}
 $bDebug=false;
@@ -323,24 +319,31 @@ $objCombos=new clsHtmlCombos();
 $objTercero=new clsHtmlTercero();
 list($plab01idtercero_rs, $_REQUEST['plab01idtercero'], $_REQUEST['plab01idtercero_td'], $_REQUEST['plab01idtercero_doc'])=html_tercero($_REQUEST['plab01idtercero_td'], $_REQUEST['plab01idtercero_doc'], $_REQUEST['plab01idtercero'], 0, $objDB);
 $objCombos->nuevo('plab01ultprof', $_REQUEST['plab01ultprof'], true, '{'.$ETI['msg_seleccione'].'}');
+$objCombos->iAncho=330;
 $sSQL='SELECT plab02id AS id, plab02nombre AS nombre FROM plab02prof ORDER BY plab02nombre';
 $html_plab01ultprof=$objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('plab01aspsal', $_REQUEST['plab01aspsal'], true, '{'.$ETI['msg_seleccione'].'}');
+$objCombos->iAncho=330;
 $sSQL='SELECT plab16id AS id, plab16nombre AS nombre FROM plab16aspsala ORDER BY plab16nombre';
 $html_plab01aspsal=$objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('plab01cargo', $_REQUEST['plab01cargo'], true, '{'.$ETI['msg_seleccione'].'}');
+$objCombos->iAncho=330;
 $sSQL='SELECT plab04id AS id, plab04nombre AS nombre FROM plab04cargo ORDER BY plab04nombre';
 $html_plab01cargo=$objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('plab01industria', $_REQUEST['plab01industria'], true, '{'.$ETI['msg_seleccione'].'}');
+$objCombos->iAncho=330;
 $sSQL='SELECT plab05id AS id, plab05nombre AS nombre FROM plab05industria ORDER BY plab05nombre';
 $html_plab01industria=$objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('plab01sector', $_REQUEST['plab01sector'], true, '{'.$ETI['msg_seleccione'].'}');
+$objCombos->iAncho=330;
 $sSQL='SELECT plab06id AS id, plab06nombre AS nombre FROM plab06sector ORDER BY plab06nombre';
 $html_plab01sector=$objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('plab01nivingles', $_REQUEST['plab01nivingles'], true, '{'.$ETI['msg_seleccione'].'}');
+$objCombos->iAncho=330;
 $sSQL='SELECT plab07id AS id, plab07nombre AS nombre FROM plab07nivingles ORDER BY plab07nombre';
 $html_plab01nivingles=$objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('plab01condicion', $_REQUEST['plab01condicion'], true, '{'.$ETI['msg_seleccione'].'}');
+$objCombos->iAncho=270;
 $sSQL='SELECT plab15id AS id, plab15nombre AS nombre FROM plab15hvcondicion ORDER BY plab15nombre';
 $html_plab01condicion=$objCombos->html($sSQL, $objDB);
 if ((int)$_REQUEST['paso']==0){
@@ -834,6 +837,12 @@ if ($bconexpande){
 	}
 //Mostrar formulario para editar
 ?>
+<div class="GrupoCampos520">
+<label class="TituloGrupo">
+<?php
+echo $ETI['plab01idtercero'];
+?>
+</label>
 <label class="Label60">
 <?php
 echo $ETI['plab01id'];
@@ -842,13 +851,6 @@ echo $ETI['plab01id'];
 <label class="Label60">
 <?php
 	echo html_oculto('plab01id', $_REQUEST['plab01id']);
-?>
-</label>
-<div class="salto1px"></div>
-<div class="GrupoCampos450">
-<label class="TituloGrupo">
-<?php
-echo $ETI['plab01idtercero'];
 ?>
 </label>
 <div class="salto1px"></div>
@@ -863,59 +865,15 @@ echo html_DivTerceroV2('plab01idtercero', $_REQUEST['plab01idtercero_td'], $_REQ
 <div class="salto1px"></div>
 <div id="div_plab01idtercero" class="L"><?php echo $plab01idtercero_rs; ?></div>
 <div class="salto1px"></div>
-<label class="Label130">
+<label class="Label220">
 <?php
 echo $ETI['plab01emprbolsempleo'];
 ?>
 </label>
-<label>
+<label class="Label220">
 <?php
 echo $html_plab01emprbolsempleo;
 ?>
-</label>
-</div>
-<div class="salto1px"></div>
-<div class="GrupoCampos450">
-<label class="TituloGrupo">
-<?php
-echo $ETI['grupocontacto'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['plab01telprin'];
-?>
-</label>
-<label>
-<input id="plab01telprin" name="plab01telprin" type="text" value="<?php echo $_REQUEST['plab01telprin']; ?>" maxlength="30" placeholder="<?php echo $ETI['ing_campo'].$ETI['plab01telprin']; ?>"/>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['plab01telofic'];
-?>
-</label>
-<label>
-<input id="plab01telofic" name="plab01telofic" type="text" value="<?php echo $_REQUEST['plab01telofic']; ?>" maxlength="30" placeholder="<?php echo $ETI['ing_campo'].$ETI['plab01telofic']; ?>"/>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['plab01telmov'];
-?>
-</label>
-<label>
-<input id="plab01telmov" name="plab01telmov" type="text" value="<?php echo $_REQUEST['plab01telmov']; ?>" maxlength="30" placeholder="<?php echo $ETI['ing_campo'].$ETI['plab01telmov']; ?>"/>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['plab01correo'];
-?>
-</label>
-<label>
-<input id="plab01correo" name="plab01correo" type="text" value="<?php echo $_REQUEST['plab01correo']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'].$ETI['plab01correo']; ?>"/>
 </label>
 </div>
 <div class="GrupoCampos520">
@@ -925,7 +883,7 @@ echo $ETI['grupoprofesion'];
 ?>
 </label>
 <div class="salto1px"></div>
-<label class="Label130">
+<label class="Label160">
 <?php
 echo $ETI['plab01ultprof'];
 ?>
@@ -936,7 +894,7 @@ echo $html_plab01ultprof;
 ?>
 </label>
 <div class="salto1px"></div>
-<label class="Label130">
+<label class="Label160">
 <?php
 echo $ETI['plab01nivingles'];
 ?>
@@ -947,7 +905,7 @@ echo $html_plab01nivingles;
 ?>
 </label>
 <div class="salto1px"></div>
-<label class="Label130">
+<label class="Label160">
 <?php
 echo $ETI['plab01aspsal'];
 ?>
@@ -959,14 +917,57 @@ echo $html_plab01aspsal;
 </label>
 </div>
 <div class="salto1px"></div>
-<div class="GrupoCampos450">
+<div class="GrupoCampos520">
+<label class="TituloGrupo">
+<?php
+echo $ETI['grupocontacto'];
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label160">
+<?php
+echo $ETI['plab01telprin'];
+?>
+</label>
+<label>
+<input id="plab01telprin" name="plab01telprin" type="text" value="<?php echo $_REQUEST['plab01telprin']; ?>" maxlength="30" placeholder="<?php echo $ETI['ing_campo'].$ETI['plab01telprin']; ?>"/>
+</label>
+<div class="salto1px"></div>
+<label class="Label160">
+<?php
+echo $ETI['plab01telofic'];
+?>
+</label>
+<label>
+<input id="plab01telofic" name="plab01telofic" type="text" value="<?php echo $_REQUEST['plab01telofic']; ?>" maxlength="30" placeholder="<?php echo $ETI['ing_campo'].$ETI['plab01telofic']; ?>"/>
+</label>
+<div class="salto1px"></div>
+<label class="Label160">
+<?php
+echo $ETI['plab01telmov'];
+?>
+</label>
+<label>
+<input id="plab01telmov" name="plab01telmov" type="text" value="<?php echo $_REQUEST['plab01telmov']; ?>" maxlength="30" placeholder="<?php echo $ETI['ing_campo'].$ETI['plab01telmov']; ?>"/>
+</label>
+<div class="salto1px"></div>
+<label class="Label160">
+<?php
+echo $ETI['plab01correo'];
+?>
+</label>
+<label>
+<input id="plab01correo" name="plab01correo" type="text" value="<?php echo $_REQUEST['plab01correo']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'].$ETI['plab01correo']; ?>"/>
+</label>
+</div>
+<div class="GrupoCampos520">
 <label class="TituloGrupo">
 <?php
 echo $ETI['gruporegistrohv'];
 ?>
 </label>
 <div class="salto1px"></div>
-<label class="Label130">
+<label class="Label220">
 <?php
 echo $ETI['plab01fechareg'];
 ?>
@@ -982,27 +983,27 @@ echo html_FechaEnNumero('plab01fechareg', $_REQUEST['plab01fechareg']);//$bvacio
 </label>
 -->
 <div class="salto1px"></div>
-<label class="Label130">
+<label class="Label220">
 <?php
 echo $ETI['plab01numpostula'];
 ?>
 </label>
-<label class="Label130">
+<label class="Label160">
 <input id="plab01numpostula" name="plab01numpostula" type="text" value="<?php echo $_REQUEST['plab01numpostula']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>"/>
 </label>
 <div class="salto1px"></div>
-<label class="Label130">
+<label class="Label220">
 <?php
 echo $ETI['plab01condicion'];
 ?>
 </label>
-<label>
+<label class="Label220">
 <?php
 echo $html_plab01condicion;
 ?>
 </label>
 <div class="salto1px"></div>
-<label class="Label130">
+<label class="Label220">
 <?php
 echo $ETI['plab01fechaacthv'];
 ?>
@@ -1018,8 +1019,9 @@ echo html_FechaEnNumero('plab01fechaacthv', $_REQUEST['plab01fechaacthv']);//$bv
 </label>
 -->
 </div>
+<div class="salto1px"></div>
 <div class="GrupoCampos520">
-<label class="TituloGrupo">
+<label class="TituloGrupo Label320">
 <?php
 echo $ETI['grupolaboral'];
 ?>
@@ -1032,7 +1034,7 @@ echo $ETI['plab01nomemprultexp'];
 
 <input id="plab01nomemprultexp" name="plab01nomemprultexp" type="text" value="<?php echo $_REQUEST['plab01nomemprultexp']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['plab01nomemprultexp']; ?>"/>
 </label>
-<label class="Label130">
+<label class="Label160">
 <?php
 echo $ETI['plab01cargo'];
 ?>
@@ -1042,7 +1044,7 @@ echo $ETI['plab01cargo'];
 echo $html_plab01cargo;
 ?>
 </label>
-<label class="Label130">
+<label class="Label160">
 <?php
 echo $ETI['plab01industria'];
 ?>
@@ -1052,7 +1054,7 @@ echo $ETI['plab01industria'];
 echo $html_plab01industria;
 ?>
 </label>
-<label class="Label130">
+<label class="Label160">
 <?php
 echo $ETI['plab01sector'];
 ?>
@@ -1062,7 +1064,7 @@ echo $ETI['plab01sector'];
 echo $html_plab01sector;
 ?>
 </label>
-<label class="Label130">
+<label class="Label220">
 <?php
 echo $ETI['plab01fechainiexp'];
 ?>
@@ -1078,7 +1080,7 @@ echo html_FechaEnNumero('plab01fechainiexp', $_REQUEST['plab01fechainiexp']);//$
 </label>
 -->
 <div class="salto1px"></div>
-<label class="Label130">
+<label class="Label220">
 <?php
 echo $ETI['plab01fechafinexp'];
 ?>
@@ -1102,7 +1104,7 @@ echo $ETI['grupocargamasiva'];
 ?>
 </label>
 <div class="salto1px"></div>
-<input id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" type="hidden" value="<?php echo (2*1024*1024); ?>" />
+<input id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" type="hidden" value="<?php echo (5*1024*1024); ?>" />
 <label class="Label500">
 <input id="archivodatos" name="archivodatos" type="file" />
 </label>
@@ -1186,7 +1188,7 @@ echo $html_blistar;
 	}
 ?>
 <div class="salto1px"></div>
-<label class="Label130">
+<label class="Label220">
 <?php
 echo $ETI['plab01inifechareg'];
 ?>
@@ -1196,7 +1198,7 @@ echo $ETI['plab01inifechareg'];
 echo html_FechaEnNumero('bdesde', $_REQUEST['bdesde'], true, 'paginarf2901();', 1900, date('Y'));
 ?>
 </label>
-<label class="Label130">
+<label class="Label220">
 <?php
 echo $ETI['plab01finfechareg'];
 ?>
